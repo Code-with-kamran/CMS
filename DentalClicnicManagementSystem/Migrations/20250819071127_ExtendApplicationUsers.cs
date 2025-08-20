@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace DentalClicnicManagementSystem.Migrations
+namespace CMS.Migrations
 {
     /// <inheritdoc />
     public partial class ExtendApplicationUsers : Migration

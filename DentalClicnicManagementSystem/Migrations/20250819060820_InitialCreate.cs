@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DentalClicnicManagementSystem.Migrations
+namespace CMS.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

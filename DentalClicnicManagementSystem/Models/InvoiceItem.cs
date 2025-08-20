@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace DentalClicnicManagementSystem.Models
+namespace CMS.Models
 {
     [Index(nameof(TreatmentId), IsUnique = true)] // enforce 1:1 between Treatment and InvoiceItem
     public class InvoiceItem

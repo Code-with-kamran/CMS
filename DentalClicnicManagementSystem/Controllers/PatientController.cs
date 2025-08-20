@@ -1,9 +1,9 @@
-﻿using DentalClicnicManagementSystem.Data;
-using DentalClicnicManagementSystem.Models;
+﻿using CMS.Data;
+using CMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace DentalClicnicManagementSystem.Controllers
+namespace CMS.Controllers
 {
     public class PatientController : Controller
     {

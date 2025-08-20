@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace DentalClicnicManagementSystem.Models
+namespace CMS.Models
 {
     [Index(nameof(LicenseNo), IsUnique = true)]
     public class Dentist

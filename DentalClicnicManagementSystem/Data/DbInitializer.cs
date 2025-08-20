@@ -1,7 +1,7 @@
-﻿using DentalClicnicManagementSystem.Models;
+﻿using CMS.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace DentalClicnicManagementSystem.Data
+namespace CMS.Data
 {
     public static class DbInitializer
     {

@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using DentalClicnicManagementSystem.Models;
+using CMS.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DentalClicnicManagementSystem.Controllers
+namespace CMS.Controllers
 {
     public class HomeController : Controller
     {

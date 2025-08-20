@@ -1,8 +1,8 @@
-﻿using DentalClicnicManagementSystem.Models;
+﻿using CMS.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace DentalClicnicManagementSystem.Data
+namespace CMS.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

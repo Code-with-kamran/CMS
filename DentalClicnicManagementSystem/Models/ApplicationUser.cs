@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace DentalClicnicManagementSystem.Models
+namespace CMS.Models
 {
     
         public class ApplicationUser : IdentityUser

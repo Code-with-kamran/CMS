@@ -1,0 +1,264 @@
+﻿@page
+@model RegisterModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Create a new account.</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
+                            about setting up this ASP.NET application to support logging in via external services</a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Register Illustration Form | Preclinic - Medical & Hospital - Bootstrap 5 Admin Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dreams Technologies">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/assets/img/favicon.png">
+
+    <!-- Apple Icon -->
+    <link rel="apple-touch-icon" href="~/assets/img/apple-icon.png">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+
+    <!-- Tabler Icon CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.34.1/tabler-icons.min.css" integrity="sha512-s0zOeW/zxh8f817uykbgBqmx1dwmdvWwQYamh+lU9NzP8jeQ/ikNPE9dBK+C55A5WUtOetZAI09tLxKIj0r9WQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="~/assets/plugins/simplebar/simplebar.min.css">
+
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
+
+</head>
+
+<body>
+
+    <!-- Begin Wrapper -->
+    <div class="main-wrapper auth-bg position-relative overflow-hidden">
+
+        <!-- Start Content -->
+        <div class="container-fuild position-relative z-1">
+            <div class="w-100 overflow-hidden position-relative flex-wrap d-block vh-100 bg-white">
+                <!-- start row-->
+                <div class="row">
+                    <div class="col-lg-6 p-0">
+                        <div class="login-backgrounds d-lg-flex align-items-center justify-content-center d-none flex-wrap p-4 position-relative h-100 z-0">
+                            <img src="~/assets/img/auth/reg-illustration-img.png" alt="log-illustration-img-01" class="img-fluid img1">
+                        </div>
+                    </div> <!-- end row-->
+
+                    <div class="col-lg-6 col-md-12 col-sm-12 position-relative">
+                        <div class="row justify-content-center align-items-center overflow-auto flex-wrap vh-100 py-3">
+                            <div class="col-md-8 mx-auto">
+                                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="d-flex justify-content-center align-items-center">
+                                    <div class="d-flex flex-column justify-content-lg-center p-4 p-lg-0 pb-0 flex-fill">
+                                        <div class=" mx-auto mb-4 text-center">
+                                            <img src="~/assets/img/logo.svg" class="img-fluid" alt="Logo">
+                                        </div>
+                                        <div class="card border-1 p-lg-3 shadow-md rounded-3 shadow-sm  mb-4">
+                                            <div class="card-body">
+                                                <div class="text-center mb-3">
+                                                    <h5 class="mb-1 fs-20 fw-bold">Register</h5>
+                                                    <p class="mb-0">Please enter your details to create account</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Full Name</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text border-end-0 bg-white">
+                                                            <i class="ti ti-user fs-14 text-dark"></i>
+                                                        </span>
+                                                        <input type="text" value="" class="form-control border-start-0 ps-0" placeholder="Enter Name">
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label asp-for="Input.Email" class="form-label">Email Address</label>
+                                                    
+                                                    <div class="input-group">
+                                                        <span class="input-group-text border-end-0 bg-white">
+                                                            <i class="ti ti-mail fs-14 text-dark"></i>
+                                                        </span>
+                                                        <input asp-for="Input.Email" class="form-control border-start-0 ps-0" autocomplete="username" aria-required="true" placeholder="Enter Email Address" />
+                                                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label asp-for="Input.Password" class="form-label">Password</label>
+                                                    <div class="position-relative">
+                                                        <div class="pass-group input-group position-relative border rounded">
+                                                            <span class="input-group-text bg-white border-0">
+                                                                <i class="ti ti-lock text-dark fs-14"></i>
+                                                            </span>
+                                                            <input asp-for="Input.Password" type="password" class="pass-input form-control ps-0 border-0" autocomplete="new-password" aria-required="true" placeholder="password">
+                                                            <span class="input-group-text bg-white border-0">
+                                                                <i class="ti toggle-password ti-eye-off text-dark fs-14"></i>
+                                                            </span>
+                                                        </div>
+                                                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    
+                                                    <label asp-for="Input.ConfirmPassword" class="form-label">Confirm Password</label>
+                                                    <div class="position-relative">
+                                                        <div class="pass-group input-group position-relative border rounded">
+                                                            <span class="input-group-text bg-white border-0">
+                                                                <i class="ti ti-lock text-dark fs-14"></i>
+                                                            </span>
+                                                            <input asp-for="Input.ConfirmPassword" type="password" class="pass-inputs form-control ps-0 border-0" autocomplete="new-password" aria-required="true" placeholder="password">
+                                                            <span class="input-group-text bg-white border-0">
+                                                                <i class="ti toggle-passwords ti-eye-off text-dark fs-14"></i>
+                                                            </span>
+                                                        </div>
+                                                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="form-check form-check-md mb-0">
+                                                            <input class="form-check-input" id="remember_me" type="checkbox">
+                                                            <label for="remember_me" class="form-check-label mt-0 text-dark">I agree to the <a href="terms-and-conditions.html" class="text-decoration-underline text-primary"> Terms of Service</a> & <a href="privacy-policy.html" class="text-decoration-underline text-primary">Privacy Policy </a></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <button type="submit" id="registerSubmit" class="btn bg-primary text-white w-100">Register</button>
+                                                </div>
+                                                <div class="login-or position-relative mb-3">
+                                                    <span class="span-or">OR</span>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <div class="d-flex align-items-center justify-content-center flex-wrap">
+                                                        <div class="text-center me-2 flex-fill">
+                                                            <a href="javascript:void(0);"
+                                                               class="br-10 p-1 btn btn-outline-light border d-flex align-items-center justify-content-center">
+                                                                <img class="img-fluid m-1" src="~/assets/img/icons/facebook-logo.svg" alt="Facebook">
+                                                            </a>
+                                                        </div>
+                                                        <div class="text-center me-2 flex-fill">
+                                                            <a href="javascript:void(0);"
+                                                               class="br-10 p-1 btn btn-outline-light border d-flex align-items-center justify-content-center">
+                                                                <img class="img-fluid m-1" src="~/assets/img/icons/google-logo.svg" alt="Google">
+                                                            </a>
+                                                        </div>
+                                                        <div class="text-center me-2 flex-fill">
+                                                            <a href="javascript:void(0);"
+                                                               class="br-10 p-1 btn btn-outline-light border d-flex align-items-center justify-content-center">
+                                                                <img class="img-fluid m-1" src="~/assets/img/icons/apple-logo.svg" alt="apple">
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-center">
+                                                    <h6 class="fw-normal fs-14 text-dark mb-0">
+                                                        Already have an account yet?
+                                                        <a href="login-illustration.html" class="hover-a"> Login</a>
+                                                    </h6>
+                                                </div>
+                                            </div><!-- end card body -->
+                                        </div><!-- end card -->
+                                    </div>
+                                </form>
+                                <p class="text-dark text-center">Copyright &copy; 2025 - Preclinic.</p>
+                            </div> <!-- end row-->
+                        </div>
+                    </div>
+                </div>
+                <!-- end row-->
+
+            </div>
+        </div>
+        <!-- End Content -->
+
+    </div>
+    <!-- End Wrapper -->
+    <!-- jQuery -->
+    <script src="~/assets/js/jquery-3.7.1.min.js" type="0866a3c111c8ecff09109d72-text/javascript"></script>
+
+    <!-- Bootstrap Core JS -->
+    <script src="~/assets/js/bootstrap.bundle.min.js" type="0866a3c111c8ecff09109d72-text/javascript"></script>
+
+    <!-- Main JS -->
+    <script src="~/assets/js/script.js" type="0866a3c111c8ecff09109d72-text/javascript"></script>
+
+    <script src="../../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="0866a3c111c8ecff09109d72-|49" defer></script>
+</body>
+
+</html>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
