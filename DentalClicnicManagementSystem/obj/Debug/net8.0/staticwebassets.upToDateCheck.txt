@@ -49,6 +49,10 @@ wwwroot\assets\img\blogs\blog-img-06.jpg
 wwwroot\assets\img\blogs\blog-img-07.jpg
 wwwroot\assets\img\blogs\blog-img-08.jpg
 wwwroot\assets\img\blogs\blog-img-09.jpg
+wwwroot\assets\img\CABINET DENTAIRE CORVIL  logo-01.png
+wwwroot\assets\img\CABINET-DENTAIRE-CORVIL.png
+wwwroot\assets\img\DOCTORAvatar.png
+wwwroot\assets\img\DoctorLoginScreen.png
 wwwroot\assets\img\doctors\doctor-01.jpg
 wwwroot\assets\img\doctors\doctor-02.jpg
 wwwroot\assets\img\doctors\doctor-03.jpg
@@ -139,6 +143,8 @@ wwwroot\assets\img\icons\clinic-06.svg
 wwwroot\assets\img\icons\clinic-07.svg
 wwwroot\assets\img\icons\clinic-08.svg
 wwwroot\assets\img\icons\cloud.svg
+wwwroot\assets\img\icons\Doctor-illustration.png
+wwwroot\assets\img\icons\DoctorLogin.png
 wwwroot\assets\img\icons\drive.svg
 wwwroot\assets\img\icons\driver-2.svg
 wwwroot\assets\img\icons\dropbox.svg
@@ -753,3 +759,8 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\uploads\doctors\27063f45d9be1203f0e0daa9fda14c8055613384.f30_3c9850c5-26ce-4a9b-b732-84bc671569bb.mp4
+wwwroot\uploads\doctors\76d32d5e-a56f-45c3-b73f-61ba466d3de7_748x1200_ecb3b891-d31a-45e3-b755-2253bb516ff2.webp
+wwwroot\uploads\doctors\76d32d5e-a56f-45c3-b73f-61ba466d3de7_748x1200_ff072e7e-416b-41f6-8f5a-4afebfec88be.webp
+wwwroot\uploads\doctors\IMG-20220427-WA0006_f5d99bde-a744-4b94-9be7-35e28bec4adc.jpg
+wwwroot\uploads\doctors\kamranHassan_bdfc7b63-7b14-4c67-9f35-d4851fd9f8e7.jpg

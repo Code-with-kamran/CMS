@@ -1,6 +1,7 @@
 using CMS.Data;
 using CMS.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
 // 2. Configure Identity with ApplicationUser
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -22,13 +22,26 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders()
 .AddDefaultUI();
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews();
+// Program.cs
+builder.Services.AddControllersWithViews(o =>
+    o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+
 builder.Services.AddRazorPages();
 // Program.cs
 builder.Services.AddHttpContextAccessor();   // <- add this line
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var context = services.GetRequiredService<ApplicationDbContext>();
 
+    await DbInitializer.SeedRolesAndAdminAsync(roleManager, userManager);
+    await DbInitializer.SeedDoctorsAsync(context);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

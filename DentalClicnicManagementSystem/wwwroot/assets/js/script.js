@@ -282,10 +282,10 @@ Template Name: Preclinic - Bootstrap Admin Template
 			}
 		});
 	}
-	if($('.toggle-passwordc').length > 0) {
+	if($('.toggle-password').length > 0) {
 		$(document).on('click', '.toggle-passwordc', function() {
 			$(this).toggleClass("ti-eye-off ti-eye-slash");
-			var input = $(".pass-inputc");
+			var input = $(".pass-input");
 			if (input.attr("type") == "password") {
 				input.attr("type", "text");
 			} else {setTimeout
@@ -1282,4 +1282,9 @@ Template Name: Preclinic - Bootstrap Admin Template
 
 	
 })();
+
+
+
+
+
 

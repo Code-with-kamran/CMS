@@ -12,7 +12,7 @@
     <meta name="author" content="Dreams Technologies">
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="~/assets/img/favicon.png">
+    <link rel="shortcut icon" href="~/assets/img/CABINET-DENTAIRE-CORVIL.png">
 
     <!-- Apple Icon -->
     <link rel="apple-touch-icon" href="~/assets/img/apple-icon.png">
@@ -40,7 +40,9 @@
     <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
 
 </head>
-
+<form id="__af" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
 <body>
 
     <!-- Begin Wrapper -->
@@ -286,7 +288,7 @@
                             <!-- item -->
                             <div class="form-check form-switch form-check-reverse d-flex align-items-center justify-content-between dropdown-item mb-0">
                                 <label class="form-check-label" for="notify"><i class="ti ti-bell me-1"></i>Notifications</label>
-                                <input class="form-check-input me-0" type="checkbox" role="switch" id="notify">
+                                <input class="form-check-input me-0" type="checkbox"  id="notify">
                             </div>
 
                             <!-- Item-->
@@ -334,12 +336,12 @@
                 <div>
                     <!-- Logo Normal -->
                     <a href="index.html" class="logo logo-normal">
-                        <img src="~/assets/img/logo.svg" alt="Logo">
+                        <img src="~/assets/img/CABINET-DENTAIRE-CORVIL.png" alt="Logo" class="w-25">
                     </a>
 
                     <!-- Logo Small -->
                     <a href="index.html" class="logo-small">
-                        <img src="~/assets/img/logo-small.svg" alt="Logo">
+                        <img src="~/assets/img/CABINET-DENTAIRE-CORVIL.png" alt="Logo">
                     </a>
 
                     <!-- Logo Dark -->
@@ -360,54 +362,8 @@
             <!-- Sidenav Menu -->
             <div class="sidebar-inner" data-simplebar>
                 <div id="sidebar-menu" class="sidebar-menu">
-                    <div class="sidebar-top shadow-sm p-2 rounded-1 mb-3 dropend">
-                        <a href="javascript:void(0);" class="drop-arrow-none" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <span class="avatar rounded-circle flex-shrink-0 p-2"><img src="~/assets/img/icons/trustcare.svg" alt="img"></span>
-                                    <div class="ms-2">
-                                        <h6 class="fs-14 fw-semibold mb-0">Trustcare Clinic</h6>
-                                        <p class="fs-13 mb-0">Lasvegas</p>
-                                    </div>
-                                </div>
-                                <i class="ti ti-arrows-transfer-up"></i>
-                            </div>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-lg">
-                            <div class="p-2">
-                                <label class="dropdown-item d-flex align-items-center justify-content-between p-1">
-                                    <span class="d-flex align-items-center">
-                                        <span class="me-2"><img src="~/assets/img/icons/clinic-01.svg" alt=""></span>
-                                        <span class="fw-semibold text-dark">CureWell Medical Hub<small class="d-block text-muted fw-normal fs-13">Ohio</small></span>
-                                    </span>
-                                    <input class="form-check-input m-0 me-2" type="checkbox">
-                                </label>
-                                <label class="dropdown-item d-flex align-items-center justify-content-between p-1">
-                                    <span class="d-flex align-items-center">
-                                        <span class="me-2"><img src="~/assets/img/icons/clinic-02.svg" alt=""></span>
-                                        <span class="fw-semibold text-dark">Trustcare Clinic<small class="d-block text-muted fw-normal fs-13">Lasvegas</small></span>
-                                    </span>
-                                    <input class="form-check-input m-0 me-2" type="checkbox">
-                                </label>
-                                <label class="dropdown-item d-flex align-items-center justify-content-between p-1">
-                                    <span class="d-flex align-items-center">
-                                        <span class="me-2"><img src="~/assets/img/icons/clinic-03.svg" alt=""></span>
-                                        <span class="fw-semibold text-dark">NovaCare Medical<small class="d-block text-muted fw-normal fs-13">Washington</small></span>
-                                    </span>
-                                    <input class="form-check-input m-0 me-2" type="checkbox">
-                                </label>
-                                <label class="dropdown-item d-flex align-items-center justify-content-between p-1">
-                                    <span class="d-flex align-items-center">
-                                        <span class="me-2"><img src="~/assets/img/icons/clinic-04.svg" alt=""></span>
-                                        <span class="fw-semibold text-dark">Greeny Medical Clinic<small class="d-block text-muted fw-normal fs-13">Illinios</small></span>
-                                    </span>
-                                    <input class="form-check-input m-0 me-2" type="checkbox">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <ul>
-                        <li class="menu-title"><span>Main Menu</span></li>
+                     <ul>
+                        
                         
                         <li>
                             <ul>
@@ -416,6 +372,9 @@
                                         <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
                                         <span class="menu-arrow"></span>
                                     </a>
+                                    <ul>
+                                        <li><a asp-action="Index">Admin Dashboard</a></li>
+                                    </ul>
                                    
                                 </li>
                                 
@@ -424,91 +383,74 @@
                         
                         
 
-                        @* // this is what i am working on *@
                         <li class="menu-title"><span>Authentication</span></li>
                         <li>
                             <ul>
                                 <li class="submenu">
                                     <a href="javascript:void(0);">
-                                        <i class="ti ti-login"></i><span>Login</span>
+                                        <i class="ti ti-login"></i><span>Login and Registration</span>
                                         <span class="menu-arrow"></span>
                                     </a>
                                     <ul>
-                                        <li><a asp-controller="" asp-action="" >Illustration</a></li>
+                                        <li><a href="/Identity/Account/Login">Login</a></li>
                                     </ul>
                                     
                                 </li>
                                
                             </ul>
                         </li>
+                        <li>
+                            <ul>
+                                <li class="submenu">
+                                    <a href="javascript:void(0);">
+                                        <i class="ti ti-login"></i><span>Doctors</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <ul>
+                                        <li><a asp-controller="Doctor" asp-action="Index">Doctors</a></li>
+                                        <li><a asp-controller="Doctor" asp-action="Upsert">Add Doctor</a></li>
+                                    </ul>
+
+                                </li>
+
+                            </ul>
+                        </li>
                         
                        
                     </ul>
                 </div>
-                <div class="sidebar-footer border-top mt-3">
-                    <div class="trial-item mt-0 p-3 text-center">
-                        <div class="trial-item-icon rounded-4 mb-3 p-2 text-center shadow-sm d-inline-flex">
-                            <img src="~/assets/img/icons/sidebar-icon.svg" alt="img">
-                        </div>
-                        <div>
-                            <h6 class="fs-14 fw-semibold mb-1">Upgrade To Pro</h6>
-                            <p class="fs-13 mb-0">Check 1 min video and begin use Preclinic like a pro</p>
-                        </div>
-                        <a href="javascript:void(0);" class="close-icon shadow-sm"><i class="ti ti-x"></i></a>
-                    </div>
-                </div>
-            </div>
+                 </div>
 
         </div>
-        <!-- Sidenav Menu End -->
-        <!-- ========================
-            Start Page Content
-        ========================= -->
+      
 
         <div class="page-wrapper">
 
-            <!-- Start Content -->
             @RenderBody()
-            <!-- End Content -->
-            <!-- Footer Start -->
-            <div class="footer text-center bg-white p-2 border-top">
-                <p class="text-dark mb-0">2025 &copy; <a href="javascript:void(0);" class="link-primary">Preclinic</a>, All Rights Reserved</p>
-            </div>
-            <!-- Footer End -->
-
+           
+           
         </div>
-
-        <!-- ========================
-            End Page Content
-        ========================= -->
-
-    
-    <!-- End Wrapper -->
-    <!-- jQuery -->
+    </div>
+      
         <script src="~/assets/js/jquery-3.7.1.min.js"></script>
         <script src="~/assets/js/jquery.validate.min.js"></script>
         <script src="~/assets/js/jquery.validate.unobtrusive.min.js"></script>
 
-    <!-- Bootstrap Core JS -->
     <script src="~/assets/js/bootstrap.bundle.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
 
-    <!-- Simplebar JS -->
     <script src="~/assets/plugins/simplebar/simplebar.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
 
-    <!-- Chart JS -->
     <script src="~/assets/plugins/apexchart/apexcharts.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
     <script src="~/assets/plugins/apexchart/chart-data.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
 
-    <!-- Daterangepikcer JS -->
     <script src="~/assets/js/moment.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
     <script src="~/assets/plugins/daterangepicker/daterangepicker.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
     <script src="~/assets/js/bootstrap-datetimepicker.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-    <!-- Theme Config Js -->
     <script src="~/assets/js/theme-script.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
 
-    <!-- Main JS -->
     <script src="~/assets/js/script.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-
+    @* <----------SweetAlert_--------------></> *@
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="~/assets/js/rocket-loader.min.js" data-cf-settings="cde9b608597c8cbfc0df63a6-|49" defer></script>
        @RenderSection("Scripts", required: false)
 </body>

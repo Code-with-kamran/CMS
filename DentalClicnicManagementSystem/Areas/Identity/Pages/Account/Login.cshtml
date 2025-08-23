@@ -3,17 +3,10 @@
 
 @{
     Layout = null;
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Se connecter";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-
-
 @* //  custome login page *@
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +16,7 @@
     <!-- Meta Tags -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Login Illustration Form | Preclinic - Medical & Hospital - Bootstrap 5 Admin Template</title>
+    <title>Formulaire d’illustration de connexion | Preclinic - Médical & Hôpital - Modèle d’administration Bootstrap 5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Dreams Technologies">
 
@@ -52,6 +45,11 @@
     <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
 
 </head>
+ <style>
+      html, body {
+        height: 100%;
+      }
+    </style>
 
 <body>
 
@@ -64,8 +62,8 @@
                 <!-- start row-->
                 <div class="row">
                     <div class="col-lg-6 p-0">
-                        <div class="login-backgrounds d-lg-flex align-items-center justify-content-center d-none flex-wrap p-4 position-relative h-100 z-0">
-                            <img src="~/assets/img/icons/log-illustration-img-01.png" alt="log-illustration-img-01" class="img-fluid img1">
+                        <div class="login-backgrounds d-lg-flex align-items-center justify-content-center d-none flex-wrap p-4 position-relative h-100 z-0" style="overflow: hidden;">
+                            <img src="~/assets/img/DoctorLoginScreen.png" alt="log-illustration" class="img-fluid" style="width: 75%; max-width: 100%; height: auto;">
                         </div>
                     </div> <!-- end row-->
 
@@ -75,37 +73,39 @@
                                 <form id="account" method="post" class="d-flex justify-content-center align-items-center">
                                     <div class="d-flex flex-column justify-content-lg-center p-4 p-lg-0 pb-0 flex-fill">
                                         <div class=" mx-auto mb-4 text-center">
-                                            <img src="~/assets/img/logo.svg" class="img-fluid" alt="Logo">
+
+                                            <img src="~/assets/img/CABINET-DENTAIRE-CORVIL.png" class="w-25" alt="Logo">
                                         </div>
                                         <div class="card border-1 p-lg-3 shadow-md rounded-3 mb-4">
                                             <div class="card-body">
                                                 <div class="text-center mb-3">
-                                                    <h5 class="mb-1 fs-20 fw-bold">Sign In</h5>
-                                                    <p class="mb-0">Please enter below details to access the dashboard</p>
+                                                    <h5 class="mb-1 fs-20 fw-bold">Se connecter</h5>
+                                                    <div asp-validation-summary="All" class="text-danger"></div>
+                                                    <p class="mb-0">Veuillez saisir les informations ci-dessous pour accéder au tableau de bord.</p>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label asp-for="Input.Email" class="form-label">Email Address</label>
+                                                    <label asp-for="Input.Email" class="form-label">Adresse e-mail</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text border-end-0 bg-white">
                                                             <i class="ti ti-mail fs-14 text-dark"></i>
                                                         </span>
-                                                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" type="text" value="" class="form-control border-start-0 ps-0" placeholder="Enter Email Address">
-                                                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" type="text" value="" class="form-control border-start-0 ps-0" placeholder="Saisissez votre adresse e-mail">
                                                     </div>
+                                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label asp-for="Input.Password" class="form-label">Password</label>
-                                                    <div class="position-relative">         
+                                                    <label asp-for="Input.Password" class="form-label">Mot de passe</label>
+                                                    <div class="position-relative">
                                                         <div class="pass-group input-group position-relative border rounded">
                                                             <span class="input-group-text bg-white border-0">
                                                                 <i class="ti ti-lock text-dark fs-14"></i>
                                                             </span>
-                                                            <input asp-for="Input.Password" class="pass-input form-control ps-0 border-0" autocomplete="current-password" aria-required="true" placeholder="password">
+                                                            <input asp-for="Input.Password" type="password" class="pass-input form-control border-0 border-start " autocomplete="current-password" aria-required="true" placeholder="mot de passe">
                                                             <span class="input-group-text bg-white border-0">
                                                                 <i class="ti toggle-password ti-eye-off text-dark fs-14"></i>
                                                             </span>
-                                                            <span asp-validation-for="Input.Password" class="text-danger"></span>
                                                         </div>
+                                                        <span asp-validation-for="Input.Password" class="text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -118,18 +118,18 @@
                                                         </div>
                                                     </div>
                                                     <div class="text-end">
-                                                        <a id="forgot-password" asp-page="./ForgotPassword" class="text-danger">Forgot password?</a>
+                                                        <a id="forgot-password" asp-page="./ForgotPassword" class="text-danger">Mot de passe oublié&nbsp;?</a>
                                                     </div>
                                                 </div>
                                                 <div class="mb-2">
-                                                    <button id="login-submit" type="submit" class="btn bg-primary text-white w-100">Log in</button>
+                                                    <button id="login-submit" type="submit" class="btn bg-primary text-white w-100">Se connecter</button>
                                                 </div>
-                                               
+
                                             </div><!-- end card body -->
                                         </div><!-- end card -->
                                     </div>
                                 </form>
-                                <p class="text-dark text-center">Copyright &copy; 2025 - Preclinic.</p>
+                                <p class="text-dark text-center">Droit d'auteur et copie ; 2025 - CABINET DENTAIRE CORVIL.</p>
                             </div> <!-- end row-->
                         </div>
                     </div>
@@ -151,7 +151,7 @@
     <!-- Main JS -->
     <script src="~/assets/js/script.js" type="d8803723127ea5fb08f6f7be-text/javascript"></script>
 
-    <script src="../../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="d8803723127ea5fb08f6f7be-|49" defer></script>
+    <script src="~/assets/js/rocket-loader.min.js" data-cf-settings="d8803723127ea5fb08f6f7be-|49" defer></script>
 </body>
 
 </html>

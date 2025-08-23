@@ -18,6 +18,7 @@ namespace CMS.Data
         public DbSet<Xray> Xrays { get; set; }
         public DbSet<InventoryItem> InventoryItems { get; set; }
         public DbSet<StockMovement> StockMovements { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

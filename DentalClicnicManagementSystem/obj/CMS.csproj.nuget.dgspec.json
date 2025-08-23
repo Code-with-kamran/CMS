@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kamran\\source\\repos\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj": {}
+    "C:\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kamran\\source\\repos\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj": {
+    "C:\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kamran\\source\\repos\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj",
+        "projectUniqueName": "C:\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj",
         "projectName": "CMS",
-        "projectPath": "C:\\Users\\kamran\\source\\repos\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj",
+        "projectPath": "C:\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj",
         "packagesPath": "C:\\Users\\kamran\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kamran\\source\\repos\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\obj\\",
+        "outputPath": "C:\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -102,7 +102,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
