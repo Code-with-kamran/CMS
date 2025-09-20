@@ -1,0 +1,117 @@
+﻿@model CMS.ViewModels.ThankYouViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Thank You";
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dreams Technologies">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/assets/img/CABINET-DENTAIRE-CORVIL.png">
+    <!-- Apple Icon -->
+    <link rel="apple-touch-icon" href="~/assets/img/apple-icon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+    <!-- Datetimepicker CSS -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap-datetimepicker.min.css">
+    <!-- Daterangepikcer CSS -->
+    <link rel="stylesheet" href="~/assets/plugins/daterangepicker/daterangepicker.css">
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="~/assets/plugins/simplebar/simplebar.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/tabler-icons/tabler-icons.min.css">
+    <!-- Datatable CSS -->
+    <link rel="stylesheet" href="~/assets/css/dataTables.bootstrap5.min.css">
+    <link href="~/assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link href="~/assets/plugins/toastr/toastr .min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
+
+</head>
+
+<body>
+
+    <div class="content p-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <div style="font-size:40px;line-height:1.2;">🗓️</div>
+                            <h3 class="mt-2 mb-0">Appointment Confirmed</h3>
+                            <div class="text-muted">Thanks! Your booking details are below.</div>
+                        </div>
+
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Appointment #</dt>
+                            <dd class="col-sm-8">@Model.AppointmentNo</dd>
+
+                            <dt class="col-sm-4">Patient</dt>
+                            <dd class="col-sm-8">@Model.PatientName</dd>
+
+                            <dt class="col-sm-4">Doctor</dt>
+                            <dd class="col-sm-8">Dr. @Model.DoctorName (@Model.DoctorSpecialty)</dd>
+
+                            <dt class="col-sm-4">Date</dt>
+                            <dd class="col-sm-8">@Model.AppointmentDate:dddd, MMM d, yyyy</dd>
+
+                            <dt class="col-sm-4">Time</dt>
+                            <dd class="col-sm-8">@Model.TimeRange</dd>
+
+                            <dt class="col-sm-4">Fee</dt>
+                            <dd class="col-sm-8">@Model.Fee.ToString("C")</dd>
+                        </dl>
+
+                        <div class="mt-4 d-flex gap-2">
+                            <a asp-controller="PublicAppointments" asp-action="Index" class="btn btn-primary">Book Another</a>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Home</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. ONLY ONE copy of jQuery (use the full build, not the slim one) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/assets/js/jquery.slimscroll.min.js"></script>
+    <script src="~/js/delete.js"></script>
+    <script src="~/js/hr.common.js"></script>
+    <!-- 2. jQuery-dependent plugins -->
+    <script data-cfasync="false" src="~/assets/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/assets/plugins/toastr/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Select2 JS -->
+    <script src="~/assets/plugins/select2/js/select2.min.js"></script>
+
+    <!-- 3. Bootstrap (do NOT use the bundle that contains slim jQuery) -->
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 4. Everything else -->
+    <script src="~/assets/plugins/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
+    <script src="~/assets/plugins/apexchart/chart-data.js"></script>
+    <script src="~/assets/js/moment.min.js"></script>
+    <script src="~/assets/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="~/assets/js/bootstrap-datetimepicker.min.js"></script>
+    @* <script src="~/assets/js/theme-script.js"></script> *@
+    <script src="~/assets/js/script.js"></script>
+    @* <script src="~/assets/js/rocket-loader.min.js" data-cf-settings="..." defer></script> *@
+    
+</body>
+
+</html>

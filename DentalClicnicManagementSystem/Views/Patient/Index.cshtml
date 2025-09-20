@@ -1,0 +1,274 @@
+﻿@{
+    ViewData["Title"] = "Patients";
+}
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Patients</h4>
+                </div>
+                <div class="text-end">
+                    <a asp-controller="Patient" asp-action="Upsert" class="btn btn-primary ms-2 fs-13 btn-md">
+                        <i class="ti ti-plus me-1"></i>New Patient
+                    </a>
+                </div>
+            </div>
+            <!-- Card -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- External controls -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Show</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entries</span>
+                        </div>
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="patientList" class="table table-hover align-middle w-100 nowrap" style="min-width: 900px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>DOB</th>
+                                    <th>Gender</th>
+                                    <th>Created</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <!-- Footer -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* Keep headers on one line */
+    
+
+    #patientList thead th,
+    #patientList tbody td {
+        white-space: nowrap !important;
+    }
+    /* Allow only body cells to wrap
+    #patientList tbody td {
+        white-space: normal !important;
+        word-break: break-word;
+    } */
+    /* Scoped truncation helpers */
+    .truncate-180, .truncate-220 {
+        display: inline-block;
+        vertical-align: middle;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .truncate-180 {
+        max-width: 180px;
+    }
+
+    .truncate-220 {
+        max-width: 220px;
+    }
+    /* Ensure the wrapper scrolls horizontally */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    /* Use nowrap class from DataTables to avoid wrapping header and control scroll */
+    #patientList {
+        min-width: 900px; /* ensures horizontal scroll rather than stacking */
+    }
+        /* Fix vertical stacking in Name column on small screens */
+        #patientList tbody tr td div.d-flex {
+            flex-wrap: nowrap !important;
+            gap: 0.5rem;
+        }
+</style>
+@section Scripts {
+    <script>
+        $(function () {
+          const token = $('#__af input[name="__RequestVerificationToken"]').val();
+          if ($.fn.DataTable.isDataTable('#patientList')) {
+            $('#patientList').DataTable().destroy();
+          }
+          const esc = s => s == null ? '' : String(s);
+          const table = $('#patientList').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: { url: '@Url.Action("GetPatientList", "Patient")', type: 'GET' },
+            dom: 'rtip',
+            paging: true,
+            pagingType: 'simple_numbers',
+            info: true,
+            order: [[4, 'desc']],
+            autoWidth: false,
+            responsive: true,
+            columnDefs: [
+              { targets: 0, responsivePriority: 1 },
+              { targets: 6, responsivePriority: 2, className: 'text-center' }
+            ],
+            columns: [
+              {
+                data: null,
+                orderable: true,
+                render: row => `
+                  <div class="d-flex align-items-center gap-2" style="flex-wrap: nowrap;">
+                    <img src="${esc(row.imageUrl)}" alt="avatar"
+                         class="rounded-circle"
+                         style="width:40px;height:40px;object-fit:cover;">
+                    <div style="min-width: 110px;">
+                      <span class="fw-semibold">${esc(row.firstName)} ${esc(row.lastName)}</span><br>
+                      <small class="text-muted">${esc(row.age)}, ${esc(row.gender)}</small>
+                    </div>
+                  </div>`
+              },
+              {
+                data: 'email',
+                orderable: false,
+                render: d => `<span class="truncate-220" title="${esc(d)}">${esc(d)}</span>`
+              },
+              {
+                data: 'phoneNumber',
+                orderable: false,
+                render: d => `<span class="truncate-180" title="${esc(d)}">${esc(d)}</span>`
+              },
+              {
+                data: 'dateOfBirth',
+                orderable: true,
+                render: d => {
+                  if (!d || String(d).startsWith('0001-01-01')) return '';
+                  return new Date(d).toLocaleDateString('en-GB');
+                }
+              },
+              {
+                data: 'gender',
+                orderable: false,
+                render: d => esc(d)
+              },
+              {
+                data: 'createdDate',
+                orderable: true,
+                render: d => new Date(d).toLocaleDateString('en-GB', {
+                  day: '2-digit', month: 'short', year: 'numeric'
+                })
+              },
+              {
+                data: null,
+                orderable: false,
+                className: 'text-center',
+                render: _ => `<span>Available</span>`
+              },
+              {
+                data: null,
+                orderable: false,
+                className: 'text-center',
+                render: function (_d,_t,row) {
+                  return `
+                    <div class="dropdown d-inline-block">
+                      <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex
+                         border rounded-2 p-1" data-bs-toggle="dropdown">
+                        <i class="ti ti-dots-vertical"></i>
+                      </a>
+                      <ul class="dropdown-menu p-2 dropdown-menu-end">
+                        <li>
+                          <a href="/Patient/Upsert/${row.id}"
+                             class="dropdown-item d-flex align-items-center">
+                            <i class="ti ti-edit me-2"></i> Edit
+                          </a>
+                        </li>
+                        <li>
+                          <a href="javascript:void(0);"
+                             class="dropdown-item d-flex align-items-center js-delete delete-btn-patient"
+                             data-url="/Patient/Delete"
+                             data-table="PatientList"
+                             data-id="${row.id}"
+                             data-name="${esc(row.fullName)}">
+                            <i class="ti ti-trash me-2"></i> Delete
+                          </a>
+                        </li>
+                      </ul>
+                    </div>`;
+                }
+              }
+            ],
+            drawCallback() {
+              const api = this.api();
+              const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+              if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+              $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+              $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+              const info = api.page.info();
+              const msg = info.recordsDisplay
+                ? `Showing ${info.start+1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                : (info.recordsTotal
+                    ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
+                    : 'No entries to show');
+              $('#dt-info').text(msg);
+            },
+            language: { emptyTable: "No patients found", processing: "Loading..." }
+          });
+          $('#globalSearch').on('input', () => table.search($('#globalSearch').val()).draw());
+          $('#pageLength').on('change', function () {
+            table.page.len(parseInt(this.value,10)).draw();
+          });
+          // Delete handler (SweetAlert2)
+          $(document).on('click', '.js-delete', function () {
+            const id   = $(this).data('id');
+            const name = $(this).data('name');
+            Swal.fire({
+              title: `Delete ${name}?`,
+              text: 'You will not be able to revert this!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#aaa',
+              confirmButtonText: 'Yes, delete!'
+            }).then(res => {
+              if (!res.isConfirmed) return;
+              $.ajax({
+                url: `/Patient/Delete/${id}`,
+                type: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                success: r => {
+                  if (r.status) {
+                    Swal.fire('Deleted', r.message, 'success');
+                    table.ajax.reload(null,false);
+                  } else {
+                    Swal.fire('Error', r.message || 'Delete failed', 'error');
+                  }
+                },
+                error: () => Swal.fire('Error', 'Something went wrong', 'error')
+              });
+            });
+          });
+        });
+    </script>
+}

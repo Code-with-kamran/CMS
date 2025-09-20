@@ -1,14 +1,24 @@
 ﻿namespace CMS.Models
 {
    
-        public enum AppointmentStatus
-        {
-            Scheduled = 0,
-            Completed = 1,
-            Cancelled = 2,
-            NoShow = 3
-        }
+       
+    public enum AppointmentType
+    {
+        Inperson = 0,
+        online = 1
 
+    }
+    public enum AppointmentStatus
+    {
+        Scheduled = 0,
+        Completed = 1,
+        Cancelled = 2,
+        CheckedIn = 3,
+        CheckedOut = 4,
+        Confirmed = 5,
+
+    }
+    
         public enum InvoiceStatus
         {
             Draft = 0,

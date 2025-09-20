@@ -1,0 +1,80 @@
+﻿@* // File: Views/Payroll/Payslip.cshtml *@
+@model CMS.Models.PayrollItem
+
+@{
+    ViewData["Title"] = $"Payslip for {Model.Employee.FullName}";
+}
+
+<div class="content py-3">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <h4 class="mb-0">@ViewData["Title"]</h4>
+        <div class="d-flex gap-2">
+            <a asp-action="RunDetails" asp-route-id="@Model.PayrollRunId" class="btn btn-outline-secondary btn-sm">Back to Payroll Details</a>
+            <button class="btn btn-primary btn-sm" onclick="window.print()">
+                <i class="ti ti-printer me-1"></i>Print Payslip
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Employee Details</h5>
+                    <p><strong>Name:</strong> @Model.Employee.FullName</p>
+                    <p><strong>Employee Code:</strong> @Model.Employee.Code</p>
+                    <p><strong>Designation:</strong> @Model.Employee.Designation</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5>Payroll Period</h5>
+                    <p><strong>Month:</strong> @(new DateTime(Model.PayrollRun.Year, Model.PayrollRun.Month, 1).ToString("MMMM yyyy"))</p>
+
+                    <p><strong>Run Date:</strong> @Model.PayrollRun.RunAt.ToString("dd MMM yyyy HH:mm")</p>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Earnings</h5>
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>Base Salary:</td>
+                                <td class="text-end">£@Model.BaseSalary.ToString("N2")</td>
+                            </tr>
+                            <tr>
+                                <td>Allowances:</td>
+                                <td class="text-end">£@Model.Allowances.ToString("N2")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h5>Deductions</h5>
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>Deductions:</td>
+                                <td class="text-end">£@Model.Deductions.ToString("N2")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-12 text-end">
+                    <h4>Net Pay: <span class="text-primary">£@Model.NetPay.ToString("N2")</span></h4>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-12">
+                    <h5>Notes</h5>
+                    <p>@(!string.IsNullOrEmpty(Model.PayrollRun.Notes) ? Model.PayrollRun.Notes : "No specific notes for this payroll run.")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

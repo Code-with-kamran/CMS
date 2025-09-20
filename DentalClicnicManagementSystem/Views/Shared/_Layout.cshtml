@@ -1,50 +1,68 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <!-- Meta Tags -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Admin Dashboard - Medical & Hospital - Bootstrap 5 Admin Template</title>
+    <title>Admin Dashboard - Medical & Hospital</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Dreams Technologies">
-
     <!-- Favicon -->
     <link rel="shortcut icon" href="~/assets/img/CABINET-DENTAIRE-CORVIL.png">
-
     <!-- Apple Icon -->
     <link rel="apple-touch-icon" href="~/assets/img/apple-icon.png">
-
-   
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
-
     <!-- Datetimepicker CSS -->
     <link rel="stylesheet" href="~/assets/css/bootstrap-datetimepicker.min.css">
-
+    <link rel="stylesheet" href="~/assets/css/">
     <!-- Daterangepikcer CSS -->
     <link rel="stylesheet" href="~/assets/plugins/daterangepicker/daterangepicker.css">
-
-    <!-- Fontawesome CSS -->
+    <!-- Fontawesome CSS 
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
-
-    <!-- Tabler Icon CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.34.1/tabler-icons.min.css" integrity="sha512-s0zOeW/zxh8f817uykbgBqmx1dwmdvWwQYamh+lU9NzP8jeQ/ikNPE9dBK+C55A5WUtOetZAI09tLxKIj0r9WQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Simplebar CSS -->
     <link rel="stylesheet" href="~/assets/plugins/simplebar/simplebar.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/tabler-icons/tabler-icons.min.css">
+    <!-- Datatable CSS -->
+    <link rel="stylesheet" href="~/assets/css/dataTables.bootstrap5.min.css">
+    <link href="~/assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
 
     <!-- Main CSS -->
+    <link href="~/assets/plugins/toastr/toastr .min.css" rel="stylesheet" />
+    
     <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
 
 </head>
-<form id="__af" method="post" style="display:none;">
-    @Html.AntiForgeryToken()
-</form>
-<body>
+<style>
+    .bootstrap-datetimepicker-widget .prev .fas::before,
+    .bootstrap-datetimepicker-widget .next .fas::before {
+        /* Use the Tabler Icons font */
+        font-family: 'tabler-icons' !important;
+        font-style: normal;
+        font-weight: normal !important;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 
+    /* Set the specific icon for the 'previous' button */
+    .bootstrap-datetimepicker-widget .prev .fas::before {
+        content: "\ea60"; /* Unicode for ti-chevron-left */
+    }
+
+    /* Set the specific icon for the 'next' button */
+    .bootstrap-datetimepicker-widget .next .fas::before {
+        content: "\ea61"; /* Unicode for ti-chevron-right */
+    }
+</style>
+
+<body>
+    @* <form id="__af" method="post" style="display:none;">
+        @Html.AntiForgeryToken()
+    </form> *@
     <!-- Begin Wrapper -->
     <div class="main-wrapper">
 
@@ -52,6 +70,12 @@
         <header class="navbar-header">
             <div class="page-container topbar-menu">
                 <div class="d-flex align-items-center gap-2">
+                    <!-- Add this to your header or sidebar -->
+                    <!-- Show current defaults in header -->
+                    <div class="user-info">
+                        @await Component.InvokeAsync("DefaultSettings", new { displayType = "compact" })
+                    </div>
+
 
                     <!-- Logo -->
                     <a href="index.html" class="logo">
@@ -311,7 +335,7 @@
 
                 </div>
             </div>
-        </header>f
+        </header>
         <!-- Topbar End -->
         <!-- Search Modal -->
         <div class="modal fade" id="searchModal">
@@ -392,7 +416,7 @@
                                         <span class="menu-arrow"></span>
                                     </a>
                                     <ul>
-                                        <li><a href="/Identity/Account/Login">Login</a></li>
+                                        <li><a href="#">Login</a></li>
                                     </ul>
                                     
                                 </li>
@@ -415,6 +439,85 @@
 
                             </ul>
                         </li>
+                        <li>
+                            <ul>
+                                <li class="submenu">
+                                    <a href="javascript:void(0);">
+                                        <i class="ti ti-login"></i><span>Patient</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <ul>
+                                        <li><a asp-controller="Patient" asp-action="Index">Patient</a></li>
+                                        <li><a asp-controller="Patient" asp-action="Upsert">Add Patient</a></li>
+                                    </ul>
+
+                                </li>
+
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>
+                                <li class="submenu">
+                                    <a href="javascript:void(0);">
+                                        <i class="ti ti-login"></i><span>Appointment</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <ul>
+                                        <li><a asp-controller="Appointment" asp-action="Index">Appointment</a></li>
+                                        <li><a asp-controller="Appointment" asp-action="Upsert">Add Appointment</a></li>
+                                    </ul>
+
+                                </li>
+
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>
+                                <li class="submenu">
+                                    <a href="javascript:void(0);">
+                                        <i class="ti ti-login"></i><span>Invoices</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <ul>
+                                        <li><a asp-controller="Invoice" asp-action="Index">Invoice</a></li>
+                                        <li><a asp-controller="Invoice" asp-action="Upsert">Add Invoice</a></li>
+                                    </ul>
+
+                                </li>
+
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>
+                                <li class="submenu">
+                                    <a href="javascript:void(0);">
+                                        <i class="ti ti-login"></i><span>Inventory</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <ul>
+                                        <li><a asp-controller="Inventory" asp-action="Index">Inventory</a></li>
+                                        <li><a asp-controller="Inventory" asp-action="Upsert">Add Inventory</a></li>
+                                    </ul>
+
+                                </li>
+
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>
+                                <li class="submenu">
+                                    <a href="javascript:void(0);">
+                                        <i class="ti ti-login"></i><span>Settings</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <ul>
+                                        <li><a asp-controller="Currency" asp-action="Index">Finance & Account</a></li>
+                                    </ul>
+
+                                </li>
+
+                            </ul>
+                        </li>
                         
                        
                     </ul>
@@ -425,34 +528,211 @@
       
 
         <div class="page-wrapper">
-
             @RenderBody()
-           
-           
+        
+
+            @await Html.PartialAsync("_Notification") 
         </div>
     </div>
-      
-        <script src="~/assets/js/jquery-3.7.1.min.js"></script>
-        <script src="~/assets/js/jquery.validate.min.js"></script>
-        <script src="~/assets/js/jquery.validate.unobtrusive.min.js"></script>
 
-    <script src="~/assets/js/bootstrap.bundle.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
 
-    <script src="~/assets/plugins/simplebar/simplebar.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-
-    <script src="~/assets/plugins/apexchart/apexcharts.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-    <script src="~/assets/plugins/apexchart/chart-data.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-
-    <script src="~/assets/js/moment.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-    <script src="~/assets/plugins/daterangepicker/daterangepicker.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-    <script src="~/assets/js/bootstrap-datetimepicker.min.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-    <script src="~/assets/js/theme-script.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-
-    <script src="~/assets/js/script.js" type="cde9b608597c8cbfc0df63a6-text/javascript"></script>
-    @* <----------SweetAlert_--------------></> *@
+    <!-- 1. ONLY ONE copy of jQuery (use the full build, not the slim one) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/assets/js/jquery.slimscroll.min.js"></script>
+    <script src="~/js/delete.js"></script>
+    <script src="~/js/hr.common.js"></script>
+    <!-- 2. jQuery-dependent plugins -->
+    <script data-cfasync="false" src="~/assets/js/jquery.dataTables.min.js"></script>
+    <script  src="~/assets/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/assets/plugins/toastr/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="~/assets/js/rocket-loader.min.js" data-cf-settings="cde9b608597c8cbfc0df63a6-|49" defer></script>
-       @RenderSection("Scripts", required: false)
+    <!-- Select2 JS -->
+    <script src="~/assets/plugins/select2/js/select2.min.js"></script>
+
+    <!-- 3. Bootstrap (do NOT use the bundle that contains slim jQuery) -->
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 4. Everything else -->
+    <script src="~/assets/plugins/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
+    @* <script src="~/assets/plugins/apexchart/chart-data.js"></script> *@
+    <script src="~/assets/js/moment.min.js"></script>
+    <script src="~/assets/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="~/assets/js/bootstrap-datetimepicker.min.js"></script>
+    @* <script src="~/assets/js/theme-script.js"></script> *@
+    <script src="~/assets/js/script.js"></script>
+    @* <script src="~/assets/js/rocket-loader.min.js" data-cf-settings="..." defer></script> *@
+
+
+    
+    <script src="~/lib/signalr/signalR.min.js"></script>
+    <script>
+        // Global settings connection
+        const settingsConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/settingsHub")
+            .build();
+
+                
+
+        settingsConnection.start().then(() => {
+            console.log("SignalR Connected.");
+            settingsConnection.invoke("JoinSettingsGroup");
+        });
+
+        // Listen for settings updates globally
+        settingsConnection.on("SettingsUpdated", function (settings) {
+            // Update all displays with class names
+            $('.current-currency, .currency-display').text(settings.defaultCurrency);
+            $('.current-payment, .payment-display').text(settings.defaultPaymentMethod);
+            $('.current-hours, .hours-display').text(settings.workingHours);
+
+            // Refresh all DataTables
+            $('.dataTable').each(function() {
+                if ($.fn.DataTable.isDataTable(this)) {
+                    $(this).DataTable().ajax.reload();
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // Reusable DataTables initialization function
+        function myCodeDataTable(tableId, ajaxUrl, columns, order = [[0, 'asc']], columnDefs = [], dom = 'rtip') {
+            const token = $('form#__af input[name="__RequestVerificationToken"]').val();
+
+            if ($.fn.DataTable.isDataTable(`#${tableId}`)) {
+                $(`#${tableId}`).DataTable().destroy();
+            }
+
+            const table = $(`#${tableId}`).DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: ajaxUrl,
+                    type: 'GET',
+                    data: function (d) {
+                        // Add global search value to request
+                        d.search.value = $('#globalSearch').val();
+                        // Add page length to request
+                        d.length = $('#pageLength').val();
+                    }
+                },
+                dom: dom, // 'rtip' for no default search/length, custom controls
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: order,
+                autoWidth: false,
+                responsive: {
+                    details: { type: 'inline', target: 'tr' }
+                },
+                columnDefs: columnDefs,
+                columns: columns,
+                drawCallback: function () {
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $(`#dt-pager`).empty().append(pagerEl);
+
+                    $(`#dt-pager .paginate_button.previous .page-link`).html('&lsaquo;');
+                    $(`#dt-pager .paginate_button.next .page-link`).html('&rsaquo;');
+
+                    const info = api.page.info();
+                    const msg = info.recordsDisplay
+                        ? `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                        : (info.recordsTotal
+                            ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
+                            : 'No entries to show');
+                    $(`#dt-info`).text(msg);
+                },
+                language: { emptyTable: "No records found", processing: "Loading..." }
+            });
+
+            // Attach global search and page length handlers if elements exist
+            $('#globalSearch').off('input').on('input', function () {
+                table.search(this.value).draw();
+            });
+            $('#pageLength').off('change').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            return table;
+        }
+
+        // Helper function for SweetAlert2 delete confirmation
+        $(document).on('click', '.js-delete', function () {
+            const id = $(this).data('id');
+            const name = $(this).data('name') || 'this item';
+            const deleteUrl = $(this).data('url');
+            const tableId = $(this).data('table'); // Get the ID of the DataTable to reload
+
+            Swal.fire({
+                title: `Delete ${name}?`,
+                text: 'You will not be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Yes, delete!'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    const token = $('form#__af input[name="__RequestVerificationToken"]').val();
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'POST',
+                        headers: { 'RequestVerificationToken': token },
+                        success: r => {
+                            if (r.status) {
+                                Swal.fire('Deleted', r.message, 'success');
+                                if (tableId && $.fn.DataTable.isDataTable(`#${tableId}`)) {
+                                    $(`#${tableId}`).DataTable().ajax.reload(null, false);
+                                }
+                            } else {
+                                Swal.fire('Error', r.message || 'Delete failed', 'error');
+                            }
+                        },
+                        error: () => Swal.fire('Error', 'Something went wrong', 'error')
+                    });
+                }
+            });
+        });
+
+        // Helper function for escaping HTML for DataTables rendering
+        const esc = (s) => (s == null ? '' : String(s));
+
+        // Function to export DataTable to CSV
+        function exportTableToCsv(tableId, filename = 'export.csv') {
+            const table = $(`#${tableId}`).DataTable();
+            const data = table.rows({ search: 'applied' }).data().toArray(); // Get filtered data
+            const headers = table.columns().header().toArray().map(th => $(th).text().trim());
+
+            let csvContent = headers.join(',') + '\n';
+
+            data.forEach(row => {
+                let rowData = [];
+                table.columns().every(function () {
+                    const colIdx = this.index();
+                    const cellData = table.cell(row, colIdx).render('display'); // Get rendered data
+                    // Remove HTML tags and escape double quotes
+                    let cleanedData = $(`<div/>`).html(cellData).text().replace(/"/g, '""');
+                    rowData.push(`"${cleanedData}"`);
+                });
+                csvContent += rowData.join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
 </body>
 
 </html>

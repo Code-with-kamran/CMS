@@ -1,0 +1,25 @@
+﻿@model DefaultSettings
+
+<div class="card border-0 bg-light">
+    <div class="card-body py-2">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <i class="fas fa-cog text-muted"></i>
+            </div>
+            <div class="col">
+                <small class="text-muted d-block mb-1">Current Defaults</small>
+                <div class="d-flex flex-wrap gap-3">
+                    <span class="badge bg-soft-primary text-primary">
+                        <i class="fas fa-money-bill-wave me-1"></i>@Model.DefaultCurrency
+                    </span>
+                    <span class="badge bg-soft-success text-success">
+                        <i class="ti ti-credit-card me-1"></i>@Model.DefaultPaymentMethod
+                    </span>
+                    <span class="badge bg-soft-info text-info">
+                        <i class="ti ti-clock me-1"></i>@Model.WorkingHours
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

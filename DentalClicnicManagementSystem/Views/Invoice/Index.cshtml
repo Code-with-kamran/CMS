@@ -1,0 +1,862 @@
+﻿@*
+    This file is based on the provided 'invoice.html' template
+    and integrated with DataTables for dynamic invoice listing.
+
+@{
+    ViewData["Title"] = "Invoices";
+    // Get the currency symbol and name from settings
+
+}
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- Page Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fs-18 fw-semibold mb-0">Invoices</h4>
+                </div>
+                <div class="text-end">
+                    <ol class="breadcrumb m-0 py-0">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Invoices</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Page Header -->
+            <!-- start row - Invoice Summary Cards -->
+            <div class="row">
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center overflow-hidden mb-2">
+                                <div>
+                                    <p class="mb-1 text-truncate">Total Invoice</p>
+                                    <h6 id="totalInvoiceAmount">$0.00</h6>
+                                </div>
+                            </div>
+                            <p class="d-flex align-items-center text-truncate">
+                                <span id="totalInvoiceChange" class="fs-12 d-flex align-items-center me-1 text-muted">
+                                    <i id="totalInvoiceIcon" class="ti me-1"></i>0%
+                                </span>
+                                from last month
+                            </p>
+                            <div class="progress" role="progressbar" aria-label="Total Invoice Progress" aria-valuemin="0" aria-valuemax="100" style="height: 5px;">
+                                <div class="progress-bar bg-pink" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center overflow-hidden mb-2">
+                                <div>
+                                    <p class="mb-1 text-truncate">Outstanding</p>
+                                    <h6 id="outstandingAmount">$0.00</h6>
+                                </div>
+                            </div>
+                            <p class="d-flex align-items-center text-truncate">
+                                <span id="outstandingChange" class="fs-12 d-flex align-items-center me-1 text-muted">
+                                    <i id="outstandingIcon" class="ti me-1"></i>0%
+                                </span>
+                                from last month
+                            </p>
+                            <div class="progress" role="progressbar" aria-label="Outstanding Progress" aria-valuemin="0" aria-valuemax="100" style="height: 5px;">
+                                <div class="progress-bar bg-purple" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center overflow-hidden mb-2">
+                                <div>
+                                    <p class="mb-1 text-truncate">Draft</p>
+                                    <h6 id="draftAmount">$0.00</h6>
+                                </div>
+                            </div>
+                            <p class="d-flex align-items-center text-truncate">
+                                <span id="draftChange" class="fs-12 d-flex align-items-center me-1 text-muted">
+                                    <i id="draftIcon" class="ti me-1"></i>0%
+                                </span>
+                                from last month
+                            </p>
+                            <div class="progress" role="progressbar" aria-label="Draft Progress" aria-valuemin="0" aria-valuemax="100" style="height: 5px;">
+                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center overflow-hidden mb-2">
+                                <div>
+                                    <p class="mb-1 text-truncate">Total Overdue</p>
+                                    <h6 id="overdueAmount">$0.00</h6>
+                                </div>
+                            </div>
+                            <p class="d-flex align-items-center text-truncate">
+                                <span id="overdueChange" class="fs-12 d-flex align-items-center me-1 text-muted">
+                                    <i id="overdueIcon" class="ti me-1"></i>0%
+                                </span>
+                                from last month
+                            </p>
+                            <div class="progress" role="progressbar" aria-label="Overdue Progress" aria-valuemin="0" aria-valuemax="100" style="height: 5px;">
+                                <div class="progress-bar bg-danger" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row - Invoice Summary Cards -->
+            <!-- start row - Invoice List -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
+                            <h5 class="d-flex align-items-center mb-0">
+                                Invoices
+                                <span id="invoiceCountBadge" class="badge bg-soft-dark ms-2 text-dark fs-12">0 Invoices</span>
+                            </h5>
+                            <a asp-controller="Invoice" asp-action="Upsert" class="btn btn-md btn-primary d-flex align-items-center">
+                                <i class="ti ti-circle-plus me-2"></i>Add Invoices
+                            </a>
+                        </div>
+                        <div class="card-body p-0">
+                            <!-- External controls -->
+                            <div class="row g-2 mb-3 align-items-center">
+                                <div class="col-auto d-none d-sm-flex align-items-center">
+                                    <label class="me-2 mb-0">Show</label>
+                                    <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                        <option value="10" selected>10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                    <span class="ms-2">entries</span>
+                                </div>
+                                <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                                    <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                                </div>
+                            </div>
+                            <div class="table-responsive table-nowrap">
+                                <table id="invoiceList" class="table table-hover align-middle w-100">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Issue Date</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Total</th>
+                                            <th>Currency</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Footer: info + pager -->
+                            <div class="row align-items-center g-2 mt-2">
+                                <div class="col-12 col-sm-6">
+                                    <div class="small text-muted" id="dt-info"></div>
+                                </div>
+                                <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                                    <div id="dt-pager"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end row - Invoice List -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+
+    <script>
+        $(function () {
+
+            function formatCurrency(value) {
+                return '$' + value.toFixed(2).toLocaleString();
+            }
+
+            // Load invoice summary dynamically and update UI
+            function loadInvoiceSummary() {
+                $.ajax({
+                    url: '@Url.Action("GetInvoiceSummary", "Invoice")',
+                    type: 'GET',
+                    success: function (data) {
+                        $('#totalInvoiceAmount').text(formatCurrency(data.totalInvoice ?? 0));
+                        $('#outstandingAmount').text(formatCurrency(data.outstanding ?? 0));
+                        $('#draftAmount').text(formatCurrency(data.draft ?? 0));
+                        $('#overdueAmount').text(formatCurrency(data.totalOverdue ?? 0));
+                        $('#invoiceCountBadge').text(data.totalCount + ' Invoices');
+
+                        $('.progress-bar.bg-pink').css('width', data.progressTotalInvoice + '%');
+                        $('.progress-bar.bg-purple').css('width', data.progressOutstanding + '%');
+                        $('.progress-bar.bg-warning').css('width', data.progressDraft + '%');
+                        $('.progress-bar.bg-danger').css('width', data.progressOverdue + '%');
+
+                        function updateChange(elementId, iconId, value) {
+                            const el = $('#' + elementId);
+                            const icon = $('#' + iconId);
+                            const absValue = Math.abs(value).toFixed(2) + '%';
+                            el.text(absValue);
+                            if (value > 0) {
+                                el.removeClass('text-danger').addClass('text-success');
+                                icon.removeClass('ti-arrow-wave-right-down').addClass('ti-arrow-wave-right-up');
+                            } else if (value < 0) {
+                                el.removeClass('text-success').addClass('text-danger');
+                                icon.removeClass('ti-arrow-wave-right-up').addClass('ti-arrow-wave-right-down');
+                            } else {
+                                el.removeClass('text-success text-danger');
+                                icon.removeClass('ti-arrow-wave-right-up ti-arrow-wave-right-down');
+                            }
+                        }
+
+                        updateChange('totalInvoiceChange', 'totalInvoiceIcon', data.changeTotalInvoice);
+                        updateChange('outstandingChange', 'outstandingIcon', data.changeOutstanding);
+                        updateChange('draftChange', 'draftIcon', data.changeDraft);
+                        updateChange('overdueChange', 'overdueIcon', data.changeOverdue);
+                    },
+                    error: function () {
+                        console.error('Failed to load invoice summary data.');
+                    }
+                });
+            }
+
+            loadInvoiceSummary();
+
+            const safeToLowerCase = (s) => (s ? s.toLowerCase() : '');
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+
+            if ($.fn.DataTable.isDataTable('#invoiceList')) {
+                $('#invoiceList').DataTable().destroy();
+            }
+            const esc = (s) => (s == null ? '' : String(s));
+            const table = $('#invoiceList').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: { url: '@Url.Action("GetInvoicesList", "Invoice")', type: 'GET' },
+                dom: 'rtip', // r: processing, t: table, i: info, p: pagination
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[1, 'desc']], // Default sort by Issue Date descending
+                autoWidth: false,
+                responsive: {
+                    details: { type: 'inline', target: 'tr' },
+                    breakpoints: [
+                        { name: 'desktop', width: Infinity },
+                        { name: 'laptop', width: 1200 },
+                        { name: 'tablet', width: 992 },
+                        { name: 'phablet', width: 768 },
+                        { name: 'phone', width: 576 },
+                        { name: 'tiny', width: 0 }
+                    ]
+                },
+                columnDefs: [
+                    { targets: 0, responsivePriority: 1 }, // Customer Name
+                    { targets: 6, responsivePriority: 2, className: 'text-center' }, // Actions
+                    { targets: [1, 2, 3, 4, 5], responsivePriority: 3 } // Other columns
+                ],
+                columns: [
+                    { data: 'customerName', orderable: true, defaultContent: '' },
+                    { data: 'issueDate', orderable: true , defaultContent: ''},
+                    { data: 'dueDate', orderable: true , defaultContent: ''},
+                    {
+                        data: 'status',
+                        orderable: true,
+                        render: function (data, type, row) {
+                            let badgeClass = '';
+                            switch (safeToLowerCase(data)) {
+                                case 'paid':
+                                    badgeClass = 'badge-soft-success';
+                                    break;
+                                case 'overdue':
+                                    badgeClass = 'badge-soft-danger';
+                                    break;
+                                case 'pending':
+                                    badgeClass = 'badge-soft-primary';
+                                    break;
+                                case 'draft':
+                                    badgeClass = 'badge-soft-warning';
+                                    break;
+                                default:
+                                    badgeClass = 'badge-soft-secondary';
+                                    break;
+                            }
+                            return `<span class="badge ${badgeClass} d-inline-flex align-items-center">
+                                        <i class="ti ti-point-filled me-1"></i>${esc(data)}
+                                    </span>`;
+                        }
+                    },
+                    { data: 'total', orderable: true, defaultContent: '' },
+                    { data: 'currencyCode', orderable: true , defaultContent: ''},
+                    {
+                        data: null,
+                        orderable: false,
+                        className: 'text-center',
+                        render: function (_data, _type, row) {
+                             console.log(row);
+                            return `
+                                <div class="dropdown d-inline-block">
+                                    <a href="javascript:void(0);"
+                                       class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                        <li>
+                                            <a href="/Invoice/Upsert/${row.id}" class="dropdown-item d-flex align-items-center">
+                                                <i class="ti ti-edit me-2"></i> Edit
+                                            </a>
+
+                                        </li>
+                                        <li>
+                                            <a href="/Invoice/Receipt/${row.Id}" target="_blank" class="dropdown-item d-flex align-items-center">
+                                                <i class="ti ti-file-text me-2"></i> Receipt
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);"
+                                               class="dropdown-item d-flex align-items-center js-delete delete-btn-invoice"
+                                               data-url="/Invoice/Delete"
+                                               data-table="invoiceList"
+                                               data-id="${row.id}"
+                                               data-name="${esc(row.CustomerName)}">
+                                                <i class="ti ti-trash me-2"></i> Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    }
+                ],
+                drawCallback: function () {
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+                    const info = api.page.info();
+                    const msg = info.recordsDisplay
+                        ? `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                        : (info.recordsTotal
+                            ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
+                            : 'No entries to show');
+                    $('#dt-info').text(msg);
+                },
+                language: {
+                    emptyTable: "No invoices found",
+                    processing: "Loading..."
+                }
+            });
+
+            $('#globalSearch').on('input', function () {
+                table.search(this.value).draw();
+            });
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Delete handler
+            $(document).on('click', '.js-delete.delete-btn-invoice', function () {
+                const url = $(this).data('url');
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const tableId = $(this).data('table');
+                Swal.fire({
+                    title: `Delete invoice for "${name}"?`,
+                    text: "This action cannot be undone.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            data: { id: id },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', response.message, 'success');
+                                    $('#' + tableId).DataTable().ajax.reload(null, false);
+                                    loadInvoiceSummary(); // refresh summary after delete
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'An error occurred while deleting.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}
+*@
+
+
+@* <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> *@
+@{
+    ViewData["Title"] = "Invoices";
+}
+
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- Page Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fs-18 fw-semibold mb-0">Invoices</h4>
+                </div>
+                <div class="text-end">
+                    <ol class="breadcrumb m-0 py-0">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Invoices</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Invoice Summary Cards -->
+            <div class="row">
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center overflow-hidden mb-2">
+                                <div>
+                                    <p class="mb-1 text-truncate">Total Invoice</p>
+                                    <h6 id="totalInvoiceAmount" class="currency-amount">$0.00</h6>
+                                </div>
+                            </div>
+                            <p class="d-flex align-items-center text-truncate">
+                                <span id="totalInvoiceChange" class="fs-12 d-flex align-items-center me-1 text-muted">
+                                    <i id="totalInvoiceIcon" class="ti me-1"></i>0%
+                                </span>
+                                from last month
+                            </p>
+                            <div class="progress" role="progressbar" style="height: 5px;">
+                                <div class="progress-bar bg-pink" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center overflow-hidden mb-2">
+                                <div>
+                                    <p class="mb-1 text-truncate">Outstanding</p>
+                                    <h6 id="outstandingAmount" class="currency-amount">$0.00</h6>
+                                </div>
+                            </div>
+                            <p class="d-flex align-items-center text-truncate">
+                                <span id="outstandingChange" class="fs-12 d-flex align-items-center me-1 text-muted">
+                                    <i id="outstandingIcon" class="ti me-1"></i>0%
+                                </span>
+                                from last month
+                            </p>
+                            <div class="progress" role="progressbar" style="height: 5px;">
+                                <div class="progress-bar bg-purple" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center overflow-hidden mb-2">
+                                <div>
+                                    <p class="mb-1 text-truncate">Draft</p>
+                                    <h6 id="draftAmount" class="currency-amount">$0.00</h6>
+                                </div>
+                            </div>
+                            <p class="d-flex align-items-center text-truncate">
+                                <span id="draftChange" class="fs-12 d-flex align-items-center me-1 text-muted">
+                                    <i id="draftIcon" class="ti me-1"></i>0%
+                                </span>
+                                from last month
+                            </p>
+                            <div class="progress" role="progressbar" style="height: 5px;">
+                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center overflow-hidden mb-2">
+                                <div>
+                                    <p class="mb-1 text-truncate">Total Overdue</p>
+                                    <h6 id="overdueAmount" class="currency-amount">$0.00</h6>
+                                </div>
+                            </div>
+                            <p class="d-flex align-items-center text-truncate">
+                                <span id="overdueChange" class="fs-12 d-flex align-items-center me-1 text-muted">
+                                    <i id="overdueIcon" class="ti me-1"></i>0%
+                                </span>
+                                from last month
+                            </p>
+                            <div class="progress" role="progressbar" style="height: 5px;">
+                                <div class="progress-bar bg-danger" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice List -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
+                            <h5 class="d-flex align-items-center mb-0">
+                                Invoices
+                                <span id="invoiceCountBadge" class="badge bg-soft-dark ms-2 text-dark fs-12">0 Invoices</span>
+                            </h5>
+                            <a asp-controller="Invoice" asp-action="Upsert" class="btn btn-md btn-primary d-flex align-items-center">
+                                <i class="ti ti-circle-plus me-2"></i>Add Invoices
+                            </a>
+                        </div>
+                        <div class="card-body p-0">
+                            <!-- External controls -->
+                            <div class="row g-2 mb-3 align-items-center">
+                                <div class="col-auto d-none d-sm-flex align-items-center">
+                                    <label class="me-2 mb-0">Show</label>
+                                    <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                        <option value="10" selected>10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                    <span class="ms-2">entries</span>
+                                </div>
+                                <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                                    <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                                </div>
+                            </div>
+                            <div class="table-responsive table-nowrap">
+                                <table id="invoiceList" class="table table-hover align-middle w-100">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Issue Date</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Total</th>
+                                            <th>Currency</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!-- Footer -->
+                            <div class="row align-items-center g-2 mt-2">
+                                <div class="col-12 col-sm-6">
+                                    <div class="small text-muted" id="dt-info"></div>
+                                </div>
+                                <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                                    <div id="dt-pager"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            let currentCurrencySymbol = '$'; // Default symbol
+
+            // Load current currency symbol
+            function loadCurrentCurrency() {
+                $.get('/Invoice/GetCurrentCurrency', function(currency) {
+                    currentCurrencySymbol = currency.symbol;
+                    updateAllCurrencyDisplays();
+                });
+            }
+
+            // Format currency with current symbol
+            function formatCurrency(value) {
+                return currentCurrencySymbol + value.toFixed(2).toLocaleString();
+            }
+
+            // Update all currency displays
+            function updateAllCurrencyDisplays() {
+                $('.currency-amount').each(function() {
+                    const value = parseFloat($(this).text().replace(/[^\d.-]/g, '')) || 0;
+                    $(this).text(formatCurrency(value));
+                });
+            }
+
+            // SignalR connection for real-time currency updates
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/settingsHub")
+                .build();
+
+            connection.start().then(() => {
+                connection.invoke("JoinSettingsGroup");
+            }).catch(err => console.error('SignalR connection failed:', err));
+
+            // Listen for currency updates
+            connection.on("SettingsUpdated", function (settings) {
+                // Get new currency symbol
+                $.get('/Invoice/GetCurrentCurrency', function(currency) {
+                    currentCurrencySymbol = currency.symbol;
+                    updateAllCurrencyDisplays();
+
+                    // Refresh the invoice table
+                    if ($.fn.DataTable.isDataTable('#invoiceList')) {
+                        $('#invoiceList').DataTable().ajax.reload();
+                    }
+
+                    // Reload summary with new currency
+                    loadInvoiceSummary();
+                });
+            });
+
+            // Load invoice summary with currency formatting
+            function loadInvoiceSummary() {
+                $.ajax({
+                    url: '@Url.Action("GetInvoiceSummary", "Invoice")',
+                    type: 'GET',
+                    success: function (data) {
+                        $('#totalInvoiceAmount').text(formatCurrency(data.totalInvoice ?? 0));
+                        $('#outstandingAmount').text(formatCurrency(data.outstanding ?? 0));
+                        $('#draftAmount').text(formatCurrency(data.draft ?? 0));
+                        $('#overdueAmount').text(formatCurrency(data.totalOverdue ?? 0));
+                        $('#invoiceCountBadge').text(data.totalCount + ' Invoices');
+
+                        $('.progress-bar.bg-pink').css('width', data.progressTotalInvoice + '%');
+                        $('.progress-bar.bg-purple').css('width', data.progressOutstanding + '%');
+                        $('.progress-bar.bg-warning').css('width', data.progressDraft + '%');
+                        $('.progress-bar.bg-danger').css('width', data.progressOverdue + '%');
+
+                        function updateChange(elementId, iconId, value) {
+                            const el = $('#' + elementId);
+                            const icon = $('#' + iconId);
+                            const absValue = Math.abs(value).toFixed(2) + '%';
+                            el.text(absValue);
+                            if (value > 0) {
+                                el.removeClass('text-danger').addClass('text-success');
+                                icon.removeClass('ti-arrow-wave-right-down').addClass('ti-arrow-wave-right-up');
+                            } else if (value < 0) {
+                                el.removeClass('text-success').addClass('text-danger');
+                                icon.removeClass('ti-arrow-wave-right-up').addClass('ti-arrow-wave-right-down');
+                            } else {
+                                el.removeClass('text-success text-danger');
+                                icon.removeClass('ti-arrow-wave-right-up ti-arrow-wave-right-down');
+                            }
+                        }
+
+                        updateChange('totalInvoiceChange', 'totalInvoiceIcon', data.changeTotalInvoice);
+                        updateChange('outstandingChange', 'outstandingIcon', data.changeOutstanding);
+                        updateChange('draftChange', 'draftIcon', data.changeDraft);
+                        updateChange('overdueChange', 'overdueIcon', data.changeOverdue);
+                    },
+                    error: function () {
+                        console.error('Failed to load invoice summary data.');
+                    }
+                });
+            }
+
+            // Initialize
+            loadCurrentCurrency();
+            loadInvoiceSummary();
+
+            const safeToLowerCase = (s) => (s ? s.toLowerCase() : '');
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+
+            if ($.fn.DataTable.isDataTable('#invoiceList')) {
+                $('#invoiceList').DataTable().destroy();
+            }
+
+            const esc = (s) => (s == null ? '' : String(s));
+            const table = $('#invoiceList').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: { url: '@Url.Action("GetInvoicesList", "Invoice")', type: 'GET' },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[1, 'desc']],
+                autoWidth: false,
+                responsive: true,
+                columnDefs: [
+                    { targets: 0, responsivePriority: 1 },
+                    { targets: 6, responsivePriority: 2, className: 'text-center' },
+                    { targets: [1, 2, 3, 4, 5], responsivePriority: 3 }
+                ],
+                columns: [
+                    { data: 'customerName', orderable: true, defaultContent: '' },
+                    { data: 'issueDate', orderable: true, defaultContent: '' },
+                    { data: 'dueDate', orderable: true, defaultContent: '' },
+                    {
+                        data: 'status',
+                        orderable: true,
+                        render: function (data, type, row) {
+                            let badgeClass = '';
+                            switch (safeToLowerCase(data)) {
+                                case 'paid': badgeClass = 'badge-soft-success'; break;
+                                case 'overdue': badgeClass = 'badge-soft-danger'; break;
+                                case 'pending': badgeClass = 'badge-soft-primary'; break;
+                                case 'draft': badgeClass = 'badge-soft-warning'; break;
+                                default: badgeClass = 'badge-soft-secondary'; break;
+                            }
+                            return `<span class="badge ${badgeClass} d-inline-flex align-items-center">
+                                        <i class="ti ti-point-filled me-1"></i>${esc(data)}
+                                    </span>`;
+                        }
+                    },
+                    {
+                        data: 'total',
+                        orderable: true,
+                        defaultContent: '',
+                        render: function(data, type, row) {
+                            return formatCurrency(parseFloat(data) || 0);
+                        }
+                    },
+                    {
+                        data: 'currencyCode',
+                        orderable: true,
+                        defaultContent: '',
+                        render: function(data, type, row) {
+                            // Show currency symbol + code
+                            return `<span class="currency-display">${currentCurrencySymbol} ${esc(data)}</span>`;
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        className: 'text-center',
+                        render: function (_data, _type, row) {
+                            return `
+                                <div class="dropdown d-inline-block">
+                                    <a href="javascript:void(0);"
+                                       class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                        <li>
+                                            <a href="/Invoice/Upsert/${row.id}" class="dropdown-item d-flex align-items-center">
+                                                <i class="ti ti-edit me-2"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/Invoice/Receipt/${row.id}" target="_blank" class="dropdown-item d-flex align-items-center">
+                                                <i class="ti ti-file-text me-2"></i> Receipt
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);"
+                                               class="dropdown-item d-flex align-items-center js-delete delete-btn-invoice"
+                                               data-url="/Invoice/Delete"
+                                               data-table="invoiceList"
+                                               data-id="${row.id}"
+                                               data-name="${esc(row.customerName)}">
+                                                <i class="ti ti-trash me-2"></i> Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    }
+                ],
+                drawCallback: function () {
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+                    const info = api.page.info();
+                    const msg = info.recordsDisplay
+                        ? `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                        : (info.recordsTotal
+                            ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
+                            : 'No entries to show');
+                    $('#dt-info').text(msg);
+                },
+                language: {
+                    emptyTable: "No invoices found",
+                    processing: "Loading..."
+                }
+            });
+
+            $('#globalSearch').on('input', function () {
+                table.search(this.value).draw();
+            });
+
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Delete handler
+            $(document).on('click', '.js-delete.delete-btn-invoice', function () {
+                const url = $(this).data('url');
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const tableId = $(this).data('table');
+
+                Swal.fire({
+                    title: `Delete invoice for "${name}"?`,
+                    text: "This action cannot be undone.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            data: { id: id },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', response.message, 'success');
+                                    $('#' + tableId).DataTable().ajax.reload(null, false);
+                                    loadInvoiceSummary();
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'An error occurred while deleting.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

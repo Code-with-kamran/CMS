@@ -6,41 +6,29 @@ namespace CMS.Data
 {
     public static class DbInitializer
     {
-        public static async Task SeedRolesAndAdminAsync(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public static async Task SeedAdminUser(ApplicationDbContext context)
         {
-            // Default roles
-            string[] roles = { "Admin", "Dentist", "Receptionist", "HR" };
-
-            foreach (var role in roles)
+            if (!context.Users.Any())
             {
-                if (!await roleManager.RoleExistsAsync(role))
+                var adminUser = new User
                 {
-                    await roleManager.CreateAsync(new IdentityRole(role));
-                }
-            }
-
-            // Create a default Admin user
-            string adminEmail = "admin@clinic.com";
-            string adminPassword = "Admin@123";
-
-            var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
-            if (existingAdmin == null)
-            {
-                var adminUser = new ApplicationUser
-                {
-                    UserName = adminEmail,
-                    Email = adminEmail,
-                    Name = "System Admin",
-                    EmailConfirmed = true
+                    Username = "admin",
+                    Email = "admin@admin.com",
+                    FullName = "Admin User",
+                    Role = "Admin",  // Directly assign the role
+                    IsActive = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    PasswordHash = new PasswordHasher<User>().HashPassword(null, "Admin@123")
                 };
 
-                var result = await userManager.CreateAsync(adminUser, adminPassword);
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
-                }
+                await context.Users.AddAsync(adminUser);
+                await context.SaveChangesAsync();
             }
         }
+
+
+
         public static async Task SeedDoctorsAsync(ApplicationDbContext context)
         {
             // Apply any pending migrations
@@ -50,36 +38,35 @@ namespace CMS.Data
             if (!await context.Doctors.AnyAsync())
             {
                 var doctors = new List<Doctor>
-                {
-                    new Doctor
-                    {
-                        FullName = "Dr. Sarah Johnson",
-                        Email = "sarah.johnson@example.com",
-                        Phone = "03001234567",
-                        Specialty = "Cardiology",
-                        Address = "Lahore",
-                        ProfileImageUrl = "/images/doctors/doc1.jpg",
-                        About = "Expert in cardiac surgery.",
-                        Passward="12345",
-                        ConfirmPassward="12345",
-                    },
-                    new Doctor
-                    {
-                        FullName = "Dr. Usman Ali",
-                        Email = "usman.ali@example.com",
-                        Phone = "03211234567",
-                        Specialty = "Neurology",
-                        Address = "Karachi",
-                        ProfileImageUrl = "/images/doctors/doc2.jpg",
-                        About = "Brain and nervous system specialist.",
-                        Passward="12345",
-                        ConfirmPassward="12345",
-                    }
-                };
+    {
+        new Doctor
+        {
+            Id = 1,
+            Password = "12345",
+            ConfirmPassword = "12345",
+            FullName = "Dr. Sarah Miller",
+            Specialty = "Cardiology",
+            Degrees = "MD, PhD",
+            About = "Dr. Miller is a board-certified cardiologist with over 15 years of experience specializing in preventive heart care and non-invasive procedures.",
+            Email = "sarah.miller@example.com",
+            Phone = "555-123-4567",
+            Address = "123 Heartbeat Lane, Anytown, USA",
+            ProfileImageUrl = "https://example.com/images/sarah-miller.jpg",
+            ConsultationCharge = 150,
+            ConsultationDurationInMinutes = 30,
+            MedicalLicenseNumber = "CM123456",
+            BloodGroup = "A+",
+            YearOfExperience =" 15",
+            AvailabilityStatus = "Available",
+            
+           
+        },
+       };
 
                 context.Doctors.AddRange(doctors);
                 await context.SaveChangesAsync();
             }
         }
+        
     }
 }

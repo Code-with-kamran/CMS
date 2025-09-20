@@ -1,0 +1,27 @@
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+
+# Other
+*.dbmdl
+*.dbproj.schemaview
+*.pdb
+*.log
+*.cache
+*.config
+*.vsidx
+
+# User uploads (if not needed in repo)
+wwwroot/uploads/

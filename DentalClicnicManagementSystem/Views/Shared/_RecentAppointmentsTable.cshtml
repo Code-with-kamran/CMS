@@ -1,0 +1,41 @@
+﻿@* THE FIX: Changed IEnumerable to List to match the type from the controller *@
+@model (List<CMS.Models.Appointment> Appointments, string CurrencySymbol)
+
+@foreach (var appt in Model.Appointments)
+{
+    <tr id="appointment-row-@appt.AppointmentId">
+        <td>
+            <div class="d-flex align-items-center">
+                <a href="#" class="avatar me-2"><img src="~/@(appt.Patient?.ProfileImageUrl ?? "assets/img/profiles/avatar-02.jpg")" alt="patient" class="rounded-circle"></a>
+                <div>
+                    <h6 class="fs-14 mb-1"><a href="#" class="fw-medium">@appt.Patient?.FirstName</a></h6>
+                    <p class="mb-0 fs-13">@appt.Patient?.PhoneNumber</p>
+                </div>
+            </div>
+        </td>
+        <td>@appt.AppointmentDate.ToString("dd MMM yyyy - hh:mm tt")</td>
+        <td>@appt.AppointmentType</td>
+        <td>
+            @{
+                var statusClass = appt.Status switch
+                {
+                    "Checked Out" => "bg-success",
+                    "Checked In" => "bg-warning",
+                    "Cancelled" => "bg-danger",
+                    _ => "bg-info"
+                };
+            }
+            <span class="badge @statusClass fw-medium">@appt.Status</span>
+        </td>
+        <td class="fw-semibold text-dark">@Model.CurrencySymbol@appt.Fee.ToString("F2")</td>
+        <td>
+            <a href="javascript:void(0);" data-bs-toggle="dropdown" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1">
+                <i class="ti ti-dots-vertical"></i>
+            </a>
+            <ul class="dropdown-menu p-2">
+                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-appointment-btn" data-id="@appt.AppointmentId"><i class="ti ti-edit me-2"></i>Edit</a></li>
+                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center delete-appointment-btn" data-id="@appt.AppointmentId"><i class="ti ti-trash me-2"></i>Delete</a></li>
+            </ul>
+        </td>
+    </tr>
+}

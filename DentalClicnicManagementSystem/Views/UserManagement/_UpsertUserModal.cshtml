@@ -1,0 +1,57 @@
+﻿@model CMS.ViewModels.UpsertUserViewModel
+
+<form id="user-upsert-form" asp-action="Upsert" asp-antiforgery="false">
+    <div class="modal-header">
+        <h5 class="modal-title">@(string.IsNullOrEmpty(@Model.Id.ToString()) ? "Create User" : "Edit User")</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" asp-for="Id" />
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" data-val-remote="true" data-val-remote-url="@Url.Action("CheckEmail")" data-val-remote-additionalfields="*.Id" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Role" class="form-label"></label>
+            <select asp-for="Role" asp-items="Model.RoleList" class="form-select">
+                <option value="">-- Select Role --</option>
+            </select>
+            <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" asp-for="IsActive">
+            <label class="form-check-label" asp-for="IsActive"></label>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $(function () {
+            $.validator.unobtrusive.parse("#user-upsert-form");
+        });
+    </script>
+}
+
+
+@* Add this to re-parse validators for the dynamically loaded content *@
+@* <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+
+
+    $.validator.unobtrusive.parse("#user-upsert-form");
+</script> *@

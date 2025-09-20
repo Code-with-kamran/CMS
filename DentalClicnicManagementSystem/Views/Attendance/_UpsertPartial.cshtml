@@ -1,0 +1,72 @@
+﻿@model CMS.Models.AttendanceRecord
+@using Microsoft.AspNetCore.Mvc.Rendering // Required for SelectList
+
+<form id="attendanceFormModal" asp-action="Upsert" asp-controller="Attendance" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+    <div class="row g-3">
+        <div class="col-md-12">
+            <label asp-for="EmployeeId" class="form-label"></label>
+            <select asp-for="EmployeeId" class="form-select" asp-items="@(ViewData["EmployeeList"] as SelectList)" required>
+                <option value="">-- Select Employee --</option>
+            </select>
+            <span asp-validation-for="EmployeeId" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Date" class="form-label"></label>
+            <input asp-for="Date" type="date" class="form-control" required />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status" class="form-select" required>
+                <option value="">-- Select Status --</option>
+                @foreach (var status in Enum.GetValues(typeof(CMS.Models.AttendanceStatus)))
+                {
+                    <option value="@status">@status.ToString()</option>
+                }
+            </select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="CheckIn" class="form-label"></label>
+            <input asp-for="CheckIn" type="time" class="form-control" />
+            <span asp-validation-for="CheckIn" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="CheckOut" class="form-label"></label>
+            <input asp-for="CheckOut" type="time" class="form-control" />
+            <span asp-validation-for="CheckOut" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="Note" class="form-label"></label>
+            <textarea asp-for="Note" class="form-control" rows="2"></textarea>
+            <span asp-validation-for="Note" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="modal-footer mt-4">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+</form>
+
+<script>
+    // Re-initialize client-side validation for the modal form
+    (() => {
+        'use strict';
+        const form = document.getElementById('attendanceFormModal');
+        if (form) {
+            form.addEventListener('submit', e => {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        }
+    })();
+</script>

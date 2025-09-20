@@ -1,0 +1,85 @@
+﻿@* @model CMS.ViewModels.LoginViewModel
+
+<form asp-action="Login" method="post" class="d-flex justify-content-center align-items-center">
+    <div class="d-flex flex-column justify-content-lg-center p-4 p-lg-0 pb-0 flex-fill">
+        <div class=" mx-auto mb-4 text-center">
+            <img src="~/assets/img/logo.svg" class="img-fluid" alt="Logo">
+        </div>
+        <div class="card border-1 p-lg-3 shadow-md rounded-3 mb-4">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h5 class="mb-1 fs-20 fw-bold">Sign In</h5>
+                    <p class="mb-0">Please enter below details to access the dashboard</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="text" asp-for="Email" class="form-control" placeholder="Enter Email Address" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" asp-for="Password" class="form-control" placeholder="Enter Password" required>
+                </div>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="form-check form-check-md mb-0">
+                        <input class="form-check-input" asp-for="RememberMe" type="checkbox">
+                        <label for="remember_me" class="form-check-label mt-0 text-dark">Remember Me</label>
+                    </div>
+                    <div class="text-end">
+                        <a href="forgot-password.html" class="text-danger">Forgot Password?</a>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <button type="submit" class="btn bg-primary text-white w-100">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form> *@
+
+
+@model CMS.ViewModels.LoginViewModel
+
+<form asp-action="Login" method="post" class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="d-flex flex-column justify-content-lg-center p-4 p-lg-0 pb-0 flex-fill" style="max-width: 400px; width: 100%;">
+        <div class="mx-auto mb-4 text-center">
+            <img src="~/assets/img/logo.svg" class="img-fluid" alt="Logo">
+        </div>
+        <div class="card border-1 p-lg-3 shadow-md rounded-3 mb-4">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h5 class="mb-1 fs-20 fw-bold">Sign In</h5>
+                    <p class="mb-0">Please enter below details to access the dashboard</p>
+                </div>
+                @* Validation summary for errors *@
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter Email Address" required autocomplete="username" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" placeholder="Enter Password" required autocomplete="current-password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="form-check form-check-md mb-0">
+                        <input class="form-check-input" asp-for="RememberMe" type="checkbox" id="remember_me">
+                        <label for="remember_me" class="form-check-label mt-0 text-dark">Remember Me</label>
+                    </div>
+                    <div class="text-end">
+                        <a asp-controller="Account" asp-action="ForgotPassword" class="text-danger">Forgot Password?</a>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <button type="submit" class="btn bg-primary text-white w-100">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

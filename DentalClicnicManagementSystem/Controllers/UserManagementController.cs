@@ -1,0 +1,250 @@
+﻿using CMS.Data;
+using CMS.Models;
+using CMS.Services;
+using CMS.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+//[Authorize(Roles = "Admin")] // Protect the entire controller
+public class UserManagementController : Controller
+{
+    private readonly ApplicationDbContext _context;
+    private readonly IEmailSender _emailSender;
+
+    public UserManagementController(ApplicationDbContext context, IEmailSender emailSender)
+    {
+        _context = context;
+        _emailSender = emailSender;
+    }
+
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    // In Controllers/UserManagementController.cs
+
+    [HttpGet]
+    public async Task<IActionResult> GetUserList()
+    {
+        try
+        {
+            // Get request parameters for pagination, sorting, and search
+            var draw = Request.Query["draw"].FirstOrDefault();
+            var start = Request.Query["start"].FirstOrDefault();
+            var length = Request.Query["length"].FirstOrDefault();
+            var sortColumn = Request.Query["columns[" + Request.Query["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+            var sortColumnDirection = Request.Query["order[0][dir]"].FirstOrDefault();
+            var searchValue = Request.Query["search[value]"].FirstOrDefault();
+
+            // Set default page size and skip value
+            int pageSize = length != null ? Convert.ToInt32(length) : 10;
+            int skip = start != null ? Convert.ToInt32(start) : 0;
+
+            // Start with the base query to get user data
+            var userData = _context.Users.AsQueryable();
+
+            // --- Step 1: Filtering based on search value ---
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                userData = userData.Where(u => u.FullName.Contains(searchValue) || u.Email.Contains(searchValue));
+            }
+
+            // --- Step 2: Sorting ---
+            if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDirection))
+            {
+                switch (sortColumn.ToLower())
+                {
+                    case "username":
+                        userData = sortColumnDirection.ToLower() == "asc"
+                            ? userData.OrderBy(u => u.Username)
+                            : userData.OrderByDescending(u => u.Username);
+                        break;
+                    case "email":
+                        userData = sortColumnDirection.ToLower() == "asc"
+                            ? userData.OrderBy(u => u.Email)
+                            : userData.OrderByDescending(u => u.Email);
+                        break;
+                    case "fullname":
+                        userData = sortColumnDirection.ToLower() == "asc"
+                            ? userData.OrderBy(u => u.FullName)
+                            : userData.OrderByDescending(u => u.FullName);
+                        break;
+                    case "createdat":
+                        userData = sortColumnDirection.ToLower() == "asc"
+                            ? userData.OrderBy(u => u.CreatedAt)
+                            : userData.OrderByDescending(u => u.CreatedAt);
+                        break;
+                    default:
+                        userData = userData.OrderBy(u => u.Username); // Default sorting
+                        break;
+                }
+            }
+
+            // --- Step 3: Get total records before filtering ---
+            int recordsTotal = await _context.Users.CountAsync();
+
+            // --- Step 4: Apply pagination ---
+            var data = await userData.Skip(skip).Take(pageSize)
+                .Select(u => new UserViewModel
+                {
+                    Id = u.Id,
+                    FullName = u.FullName,
+                    Email = u.Email,
+                    Role = u.Role,
+                    IsActive = u.IsActive,
+                    CreatedAt = u.CreatedAt
+                })
+                .ToListAsync();
+
+            // --- Step 5: Get filtered records count ---
+            int recordsFiltered = await userData.CountAsync();
+
+            // --- Step 6: Return the correct data in the JSON response ---
+            var jsonData = new
+            {
+                draw = draw,
+                recordsFiltered = recordsFiltered,
+                recordsTotal = recordsTotal,
+                data = data
+            };
+
+            return Ok(jsonData);
+        }
+        catch (Exception ex)
+        {
+            Response.StatusCode = StatusCodes.Status500InternalServerError;
+            return Json(new { error = "Server error: " + ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Upsert(int id = 0)
+    {
+        var roles = new List<string> { "Admin", "Doctor", "Receptionist", "Accountant" };
+        var model = new UpsertUserViewModel
+        {
+            RoleList = roles.Select(r => new SelectListItem { Text = r, Value = r })
+        };
+
+        if (id == 0) // Create
+        {
+            return PartialView("_UpsertUserModal", model);
+        }
+        else // Edit
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound();
+
+            model.Id = user.Id;
+            model.FullName = user.FullName;
+            model.Email = user.Email;
+            model.Role = user.Role;
+            model.IsActive = user.IsActive;
+
+            return PartialView("_UpsertUserModal", model);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Upsert(UpsertUserViewModel model)
+    {
+        if (!ModelState.IsValid) return Json(new { success = false, message = "Invalid data submitted." });
+
+        if (model.Id == 0) // Create
+        {
+            var user = new User
+            {
+                Username = model.Email,
+                Email = model.Email,
+                FullName = model.FullName,
+                Role = model.Role,
+                IsActive = model.IsActive,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var tempPassword = GenerateRandomPassword();
+            // WARNING: Storing plain text password as requested. This is NOT secure.
+            // In a real application, you would use a hashing library like BCrypt.Net.
+            user.PasswordHash = tempPassword;
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            await _emailSender.SendAsync(user.Email, "Your New Account",
+                $"Welcome! Your temporary password is: <strong>{tempPassword}</strong><br/>Please change it after your first login.");
+
+            return Json(new { success = true, message = "User created successfully! Temporary password sent." });
+        }
+        else // Edit
+        {
+            var user = await _context.Users.FindAsync(model.Id);
+            if (user == null) return NotFound();
+
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.Username = model.Email;
+            user.IsActive = model.IsActive;
+            user.Role = model.Role;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "User updated successfully!" });
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleStatus(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return NotFound();
+
+        user.IsActive = !user.IsActive;
+        await _context.SaveChangesAsync();
+        return Json(new { success = true, message = $"User has been {(user.IsActive ? "activated" : "deactivated")}." });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return Json(new { success = false, message = "User not found." });
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+        return Json(new { success = true, message = "User deleted successfully." });
+    }
+
+    [AcceptVerbs("GET", "POST")]
+    public async Task<IActionResult> CheckEmail(string email, int id = 0)
+    {
+        var userExists = await _context.Users.AnyAsync(u => u.Email == email && u.Id != id);
+        if (userExists)
+        {
+            return Json($"Email '{email}' is already in use.");
+        }
+        return Json(true);
+    }
+
+    private string GenerateRandomPassword(int length = 8)
+    {
+        const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        var random = new Random();
+        var password = new StringBuilder();
+        for (int i = 0; i < length; i++)
+        {
+            password.Append(validChars[random.Next(validChars.Length)]);
+        }
+        return password.ToString();
+    }
+}

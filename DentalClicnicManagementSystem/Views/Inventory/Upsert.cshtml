@@ -1,0 +1,137 @@
+﻿
+@model CMS.Models.InventoryItem
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add Inventory Item" : "Edit Inventory Item";
+}
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+
+            <!-- Start Page Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-0 d-flex align-items-center"><a asp-action="Index" class=""><i class="ti ti-chevron-left me-1 fs-14"></i>Inventory Items</a></h6>
+                </div>
+            </div>
+            <!-- End Page Header -->
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="fw-bold m-0"> @ViewData["Title"] </h5>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Upsert" method="post" id="inventoryForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label mb-1 text-dark fs-14 fw-medium">Item Name <span class="text-danger">*</span></label>
+                                    <input asp-for="Name" type="text" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="SKU" class="form-label mb-1 text-dark fs-14 fw-medium">SKU</label>
+                                    <input asp-for="SKU" type="text" class="form-control" />
+                                    <span asp-validation-for="SKU" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Stock" class="form-label mb-1 text-dark fs-14 fw-medium">Stock Quantity <span class="text-danger">*</span></label>
+                                    <input asp-for="Stock" type="number" class="form-control" />
+                                    <span asp-validation-for="Stock" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="UnitPrice" class="form-label mb-1 text-dark fs-14 fw-medium">Unit Price <span class="text-danger">*</span></label>
+                                    <input asp-for="UnitPrice" type="number" step="0.01" class="form-control" />
+                                    <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Category" class="form-label mb-1 text-dark fs-14 fw-medium">Category</label>
+                                    <input asp-for="Category" type="text" class="form-control" />
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="IsActive" class="form-label mb-1 text-dark fs-14 fw-medium">Is Active</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsActive">
+                                        <label class="form-check-label" for="IsActive">Item is currently active in inventory</label>
+                                    </div>
+                                    <span asp-validation-for="IsActive" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 col-md-12">
+                                <div class="mb-3">
+                                    <label asp-for="Description" class="form-label mb-1 text-dark fs-14 fw-medium">Description</label>
+                                    <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            @*
+                                The 'Price' and 'Quantity' fields from your model are included here,
+                                but consider if they are truly needed for a basic inventory item.
+                                If they are for specific transaction line items, they might belong elsewhere.
+                                For now, they are added as simple inputs.
+                            *@
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Price" class="form-label mb-1 text-dark fs-14 fw-medium">Price (Redundant?)</label>
+                                    <input asp-for="Price" type="number" step="0.01" class="form-control" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Quantity" class="form-label mb-1 text-dark fs-14 fw-medium">Quantity (Redundant?)</label>
+                                    <input asp-for="Quantity" type="number" class="form-control" />
+                                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex gap-2 align-items-center justify-content-end mb-0">
+                        <a asp-action="Index" class="btn btn-md bg-light text-dark fs-13 fw-medium rounded"> Cancel </a>
+                        <button type="submit" form="inventoryForm" class="btn btn-md btn-primary fs-13 fw-medium rounded">Save Item</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Any specific JS for Upsert form can go here.
+            // For example, if you had dynamic fields or complex validations.
+        });
+    </script>
+}

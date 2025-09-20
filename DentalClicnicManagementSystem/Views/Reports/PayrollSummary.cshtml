@@ -1,0 +1,167 @@
+﻿@* // File: Views/Reports/PayrollSummary.cshtml *@
+@{
+    ViewData["Title"] = "Payroll Summary Report";
+}
+
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+
+            <!-- Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Payroll Summary Report</h4>
+                </div>
+                <div class="text-end">
+                    <a asp-action="Index" class="btn btn-outline-secondary ms-2 fs-13 btn-md">
+                        Back to Reports
+                    </a>
+                    <button id="exportCsvBtn" class="btn btn-info ms-2 fs-13 btn-md">
+                        <i class="ti ti-download me-1"></i>Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card -->
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- Filters -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-md-3">
+                            <label for="yearFilter" class="form-label">Year</label>
+                            <select id="yearFilter" class="form-select form-select-sm">
+                                <option value="">All</option>
+                                @for (int i = DateTime.Now.Year; i >= DateTime.Now.Year - 5; i--)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="monthFilter" class="form-label">Month</label>
+                            <select id="monthFilter" class="form-select form-select-sm">
+                                <option value="">All</option>
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <option value="@i"> @(new DateTime(1, i, 1).ToString("MMMM")) </option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button id="applyFiltersBtn" class="btn btn-primary btn-sm me-2">Apply Filters</button>
+                            <button id="clearFiltersBtn" class="btn btn-secondary btn-sm">Clear Filters</button>
+                        </div>
+                    </div>
+
+                    <!-- External controls -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <!-- page-length -->
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Show</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entries</span>
+                        </div>
+
+                        <!-- search -->
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="payrollSummaryList" class="table table-hover align-middle w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Month</th>
+                                    <th>Run At</th>
+                                    <th>Total Base Salary</th>
+                                    <th>Total Allowances</th>
+                                    <th>Total Deductions</th>
+                                    <th>Total Net Pay</th>
+                                    <th>Employee Count</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            function getFilterParams() {
+                return {
+                    year: $('#yearFilter').val(),
+                    month: $('#monthFilter').val()
+                };
+            }
+
+            const table = myCodeDataTable(
+                'payrollSummaryList',
+                '@Url.Action("GetPayrollSummaryData", "Reports")?' + $.param(getFilterParams()),
+                [
+                    { data: 'year', orderable: true },
+                    { data: 'month', orderable: true },
+                    { data: 'runAt', orderable: true },
+                    { data: 'totalBaseSalary', orderable: true, render: d => `£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                    { data: 'totalAllowances', orderable: true, render: d => `£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                    { data: 'totalDeductions', orderable: true, render: d => `£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                    { data: 'totalNetPay', orderable: true, render: d => `£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                    { data: 'employeeCount', orderable: true, className: 'text-center' },
+                    { data: 'notes', orderable: false, render: d => `<span class="truncate truncate-220">${esc(d)}</span>` }
+                ],
+                [[2, 'desc']], // Default sort by Run At descending
+                [], // No specific columnDefs for this report
+                'rtip' // Use custom controls
+            );
+
+            $('#applyFiltersBtn').on('click', function () {
+                table.ajax.url(
+                    '@Url.Action("GetPayrollSummaryData", "Reports")?' + $.param(getFilterParams())
+                ).load();
+            });
+
+            $('#clearFiltersBtn').on('click', function () {
+                $('#yearFilter').val('');
+                $('#monthFilter').val('');
+                table.ajax.url(
+                    '@Url.Action("GetPayrollSummaryData", "Reports")?' + $.param(getFilterParams())
+                ).load();
+            });
+
+            $('#exportCsvBtn').on('click', function () {
+                const params = getFilterParams();
+                const url = '@Url.Action("ExportPayrollSummaryCsv", "Reports")?' + $.param(params);
+                window.location.href = url;
+            });
+        });
+    </script>
+}

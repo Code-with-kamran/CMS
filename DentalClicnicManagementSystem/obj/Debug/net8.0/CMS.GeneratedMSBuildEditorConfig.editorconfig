@@ -17,213 +17,437 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = CMS
 build_property.RootNamespace = CMS
-build_property.ProjectDir = C:\DentalClicnicManagementSystem\DentalClicnicManagementSystem\
+build_property.ProjectDir = D:\SirwalaDental\DentalClicnicManagementSystem\DentalClicnicManagementSystem\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\DentalClicnicManagementSystem\DentalClicnicManagementSystem
+build_property.MSBuildProjectDirectory = D:\SirwalaDental\DentalClicnicManagementSystem\DentalClicnicManagementSystem
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/AccessDenied.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/AccessDenied.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ConfirmEmail.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ConfirmEmail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxDb25maXJtRW1haWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ConfirmEmailChange.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ConfirmEmailChange.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxDb25maXJtRW1haWxDaGFuZ2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ExternalLogin.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ExternalLogin.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxFeHRlcm5hbExvZ2luLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ForgotPassword.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ForgotPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxGb3Jnb3RQYXNzd29yZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxGb3Jnb3RQYXNzd29yZENvbmZpcm1hdGlvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Lockout.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Lockout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxMb2Nrb3V0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Login.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/LoginWith2fa.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/LoginWith2fa.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxMb2dpbldpdGgyZmEuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/LoginWithRecoveryCode.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/LoginWithRecoveryCode.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxMb2dpbldpdGhSZWNvdmVyeUNvZGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Logout.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Logout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxMb2dvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/ChangePassword.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/ChangePassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcQ2hhbmdlUGFzc3dvcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/DeletePersonalData.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/DeletePersonalData.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcRGVsZXRlUGVyc29uYWxEYXRhLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/Disable2fa.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/Disable2fa.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcRGlzYWJsZTJmYS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/DownloadPersonalData.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/DownloadPersonalData.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcRG93bmxvYWRQZXJzb25hbERhdGEuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/Email.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/Email.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcRW1haWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/EnableAuthenticator.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/EnableAuthenticator.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcRW5hYmxlQXV0aGVudGljYXRvci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/ExternalLogins.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/ExternalLogins.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcRXh0ZXJuYWxMb2dpbnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/GenerateRecoveryCodes.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/GenerateRecoveryCodes.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcR2VuZXJhdGVSZWNvdmVyeUNvZGVzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/Index.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/PersonalData.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/PersonalData.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcUGVyc29uYWxEYXRhLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/ResetAuthenticator.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/ResetAuthenticator.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcUmVzZXRBdXRoZW50aWNhdG9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/SetPassword.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/SetPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcU2V0UGFzc3dvcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/ShowRecoveryCodes.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/ShowRecoveryCodes.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcU2hvd1JlY292ZXJ5Q29kZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/TwoFactorAuthentication.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/TwoFactorAuthentication.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcVHdvRmFjdG9yQXV0aGVudGljYXRpb24uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/_Layout.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcX0xheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/_ManageNav.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/_ManageNav.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcX01hbmFnZU5hdi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/_StatusMessage.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/_StatusMessage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcX1N0YXR1c01lc3NhZ2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/_ViewImports.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Manage/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxNYW5hZ2VcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Register.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/RegisterConfirmation.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/RegisterConfirmation.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxSZWdpc3RlckNvbmZpcm1hdGlvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ResendEmailConfirmation.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ResendEmailConfirmation.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxSZXNlbmRFbWFpbENvbmZpcm1hdGlvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ResetPassword.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ResetPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxSZXNldFBhc3N3b3JkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ResetPasswordConfirmation.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/ResetPasswordConfirmation.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxSZXNldFBhc3N3b3JkQ29uZmlybWF0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/_StatusMessage.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/_StatusMessage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxfU3RhdHVzTWVzc2FnZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/_ViewImports.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Account/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxfVmlld0ltcG9ydHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Error.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/_ValidationScriptsPartial.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZhbGlkYXRpb25TY3JpcHRzUGFydGlhbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/_ViewImports.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/_ViewStart.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Areas/Identity/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Doctor/Index.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Appointment/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Appointment/Upsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRcVXBzZXJ0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Appointment/_Upsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRcX1Vwc2VydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Attendance/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Attendance/_UpsertPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVxfVXBzZXJ0UGFydGlhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Auth/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Auth/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Compact.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tcGFjdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Currency/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VycmVuY3lcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Currency/_CurrencyModelPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VycmVuY3lcX0N1cnJlbmN5TW9kZWxQYXJ0aWFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/DoctorDashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Doctor/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Doctor/Upsert.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Doctor/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXFByb2ZpbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Doctor/Upsert.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXFVwc2VydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Home/Index.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Employees/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Employees/Upsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVzXFVwc2VydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Full.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnVsbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Home/Privacy.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Error.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Inline.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5saW5lLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Inventory/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Inventory/Upsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XFVwc2VydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Invoice/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52b2ljZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Invoice/Upsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52b2ljZVxVcHNlcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Invoice/_InvoiceItemRow.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52b2ljZVxfSW52b2ljZUl0ZW1Sb3cuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Invoice/_InVoiceUpsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52b2ljZVxfSW5Wb2ljZVVwc2VydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/LeaveRequests/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVSZXF1ZXN0c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/LeaveRequests/_CreatePartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVSZXF1ZXN0c1xfQ3JlYXRlUGFydGlhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Patient/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF0aWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Patient/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF0aWVudFxQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Patient/Upsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF0aWVudFxVcHNlcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/PaymentMethod/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudE1ldGhvZFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/PaymentMethod/_PaymentMethodModalPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudE1ldGhvZFxfUGF5bWVudE1ldGhvZE1vZGFsUGFydGlhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Payroll/CreateRun.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxDcmVhdGVSdW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Payroll/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Payroll/Payslip.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxQYXlzbGlwLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Payroll/RunDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxSdW5EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/PerformanceReviews/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyZm9ybWFuY2VSZXZpZXdzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/PerformanceReviews/_UpsertPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyZm9ybWFuY2VSZXZpZXdzXF9VcHNlcnRQYXJ0aWFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/PublicAppointments/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljQXBwb2ludG1lbnRzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/PublicAppointments/Select.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljQXBwb2ludG1lbnRzXFNlbGVjdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/PublicAppointments/ThankYou.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljQXBwb2ludG1lbnRzXFRoYW5rWW91LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Reports/AttendanceReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xBdHRlbmRhbmNlUmVwb3J0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Reports/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Reports/LeaveReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xMZWF2ZVJlcG9ydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Reports/PayrollSummary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xQYXlyb2xsU3VtbWFyeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Settings/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2V0dGluZ3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Components/AllAppointmentsTable/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcQWxsQXBwb2ludG1lbnRzVGFibGVcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Components/AppointmentsCard/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcQXBwb2ludG1lbnRzQ2FyZFxEZWZhdWx0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Components/DefaultSettings/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcRGVmYXVsdFNldHRpbmdzXERlZmF1bHQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Components/LowStock/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcTG93U3RvY2tcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Components/PopularDoctors/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcUG9wdWxhckRvY3RvcnNcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Components/UnpaidInvoices/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcVW5wYWlkSW52b2ljZXNcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/_LoginPartial.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Partials/_AppointmentList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9BcHBvaW50bWVudExpc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/Partials/_PopularDoctorsList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9Qb3B1bGFyRG9jdG9yc0xpc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/_LoginPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Mb2dpblBhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/_Notification.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Ob3RpZmljYXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/_RecentAppointmentsTable.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9SZWNlbnRBcHBvaW50bWVudHNUYWJsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/_ViewImports.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/UserManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck1hbmFnZW1lbnRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/UserManagement/_UpsertUserModal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlck1hbmFnZW1lbnRcX1Vwc2VydFVzZXJNb2RhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/_ViewStart.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/_Layout.cshtml]
+[D:/SirwalaDental/DentalClicnicManagementSystem/DentalClicnicManagementSystem/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-71ficycxyo

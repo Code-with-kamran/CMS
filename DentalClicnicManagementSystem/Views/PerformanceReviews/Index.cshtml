@@ -1,0 +1,203 @@
+﻿@* // File: Views/PerformanceReviews/Index.cshtml *@
+@{
+    ViewData["Title"] = "Performance Reviews";
+}
+
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+
+            <!-- Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Performance Reviews</h4>
+                </div>
+                <div class="text-end">
+                    <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="modal" data-bs-target="#performanceReviewModal" data-url="@Url.Action("Upsert", "PerformanceReviews")">
+                        <i class="ti ti-plus me-1"></i>New Review
+                    </a>
+                </div>
+            </div>
+
+            <!-- Card -->
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- External controls -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <!-- page-length -->
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Show</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entries</span>
+                        </div>
+
+                        <!-- search -->
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="performanceReviewList" class="table table-hover align-middle w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Employee Code</th>
+                                    <th>Employee Name</th>
+                                    <th>Review Date</th>
+                                    <th>Reviewer</th>
+                                    <th>Rating</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Upsert -->
+<div class="modal fade" id="performanceReviewModal" tabindex="-1" aria-labelledby="performanceReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="performanceReviewModalLabel">Performance Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Partial view content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            const table = myCodeDataTable(
+                'performanceReviewList',
+                '@Url.Action("GetPerformanceReviews", "PerformanceReviews")',
+                [
+                    { data: 'employeeCode', orderable: true },
+                    { data: 'employeeName', orderable: true },
+                    { data: 'reviewDate', orderable: true },
+                    { data: 'reviewer', orderable: true },
+                    { data: 'rating', orderable: true, className: 'text-center' },
+                    { data: 'notes', orderable: false, render: d => `<span class="truncate truncate-220">${esc(d)}</span>` },
+                    {
+                        data: null,
+                        orderable: false,
+                        className: 'text-center',
+                        render: function (_data, _type, row) {
+                            return `
+                                <div class="dropdown d-inline-block">
+                                    <a href="javascript:void(0);"
+                                       class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
+                                       data-bs-toggle="dropdown">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                        <li>
+                                            <a href="javascript:void(0);"
+                                               class="dropdown-item d-flex align-items-center"
+                                               data-bs-toggle="modal" data-bs-target="#performanceReviewModal"
+                                               data-url="@Url.Action("Upsert", "PerformanceReviews")/${row.id}">
+                                                <i class="ti ti-edit me-2"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);"
+                                               class="dropdown-item d-flex align-items-center js-delete"
+                                               data-url="/PerformanceReviews/Delete/${row.id}"
+                                               data-table="performanceReviewList"
+                                               data-id="${row.id}"
+                                               data-name="review for ${esc(row.employeeName)} on ${esc(row.reviewDate)}">
+                                                <i class="ti ti-trash me-2"></i> Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    }
+                ],
+                [[2, 'desc']] // Default sort by Review Date descending
+            );
+
+            // Handle modal loading
+            $('#performanceReviewModal').on('show.bs.modal', function (event) {
+                const button = $(event.relatedTarget); // Button that triggered the modal
+                const url = button.data('url'); // Extract info from data-* attributes
+                const modal = $(this);
+
+                modal.find('.modal-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+
+                $.get(url, function (data) {
+                    modal.find('.modal-body').html(data);
+                    // Re-apply unobtrusive validation after content is loaded
+                    $.validator.unobtrusive.parse(modal.find('form'));
+                }).fail(function () {
+                    modal.find('.modal-body').html('<div class="alert alert-danger">Error loading content.</div>');
+                });
+            });
+
+            // Handle form submission within the modal
+            $(document).on('submit', '#performanceReviewFormModal', function (e) {
+                e.preventDefault();
+                const form = $(this);
+                if (!form.valid()) { // Check client-side validation
+                    return;
+                }
+
+                const formData = new FormData(form[0]);
+                const token = $('form#__af input[name="__RequestVerificationToken"]').val();
+                formData.append('__RequestVerificationToken', token);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: form.attr('method'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire('Success', response.message, 'success');
+                            $('#performanceReviewModal').modal('hide');
+                            table.ajax.reload(null, false);
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire('Error', 'An error occurred while saving the record.', 'error');
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}

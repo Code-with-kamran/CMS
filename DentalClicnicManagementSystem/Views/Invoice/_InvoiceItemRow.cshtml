@@ -1,0 +1,78 @@
+﻿@model CMS.Models.InvoiceItem
+@{
+    var index = (int)ViewData["Index"];
+}
+
+<tr class="invoices-list-item">
+    <td>
+        @using Microsoft.AspNetCore.Mvc.Rendering
+
+        <select asp-for="InventoryItemId"
+                name="Invoice.Items[@index].InventoryItemId"
+                asp-items="@(new SelectList((IEnumerable<CMS.Models.InventoryItem>)ViewData["InventoryItems"], "Id", "Name", Model.InventoryItemId))"
+                class="form-control select2 item-name"
+                data-toggle="select2">
+        </select>
+        @* <select name="Invoice.Items[@index].InventoryItemId"
+        class="form-control select2 item-name"
+        data-toggle="select2">
+    <option value="">Select Item</option>
+    @foreach (var item in (IEnumerable<CMS.Models.InventoryItem>)ViewData["InventoryItems"])
+    {
+        if (Model.InventoryItemId == item.Id)
+        {
+            <option value="@item.Id"
+                    data-price="@item.UnitPrice"
+                    data-description="@item.Description"
+                    data-stock="@item.Stock"
+                    selected="selected">
+                @item.Name (Stock: @item.Stock)
+            </option>
+        }
+        else
+        {
+            <option value="@item.Id"
+                    data-price="@item.UnitPrice"
+                    data-description="@item.Description"
+                    data-stock="@item.Stock">
+                @item.Name (Stock: @item.Stock)
+            </option>
+        }
+    }
+</select>
+*@
+
+    </td>
+    <td>
+        <input type="text"
+               name="Invoice.Items[@index].Description"
+               value="@Model.Description"
+               class="form-control item-description" />
+    </td>
+    <td>
+        <input type="number"
+               name="Invoice.Items[@index].UnitPrice"
+               value="@Model.UnitPrice"
+               step="0.01"
+               class="form-control item-unit-price"
+               readonly />
+    </td>
+    <td>
+        <input type="number"
+               name="Invoice.Items[@index].Quantity"
+               value="@Model.Quantity"
+               class="form-control item-quantity" />
+    </td>
+    <td>
+        <input type="text"
+               class="form-control item-line-total"
+               readonly
+               value="@(Model.Quantity * Model.UnitPrice)" />
+    </td>
+    <td>
+        <button type="button"
+                class="btn remove-invoices btn-sm border shadow-sm">
+            <i class="ti ti-trash"></i>
+        </button>
+    </td>
+</tr>

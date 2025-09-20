@@ -1,0 +1,703 @@
+﻿@{
+    ViewData["Title"] = "Inventory Items";
+}
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Inventory Grid</h4>
+                </div>
+                <div class="text-end">
+                    <a asp-controller="Inventory" asp-action="Upsert" class="btn btn-primary ms-2 fs-13 btn-md">
+                        <i class="ti ti-plus me-1"></i>New Item
+                    </a>
+                </div>
+                @* CSV button *@
+                <button id="exportCsvBtn" class="btn btn-secondary ms-2 fs-13 btn-md">
+                    <i class="ti ti-download me-1"></i> Export CSV
+                </button>
+            </div>
+
+            <!-- Card -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- External controls -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <!-- page-length: hidden on mobile -->
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Show</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entries</span>
+                        </div>
+
+                        <!-- search: full width on mobile -->
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="inventoryList" class="table table-hover align-middle w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item Name &amp; SKU</th>
+                                    <th>Category</th>
+                                    <th>Stock</th>
+                                    <th>Unit Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer: info + pager -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ===== Truncation helpers ===== */
+    .truncate {
+        display: inline-block;
+        vertical-align: middle;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Compact, stable headers */
+    #inventoryList thead th {
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(function () {
+            let currentCurrencySymbol = '$'; // Default symbol
+
+            // Load current currency symbol
+            function loadCurrentCurrency() {
+                $.get('/Invoice/GetCurrentCurrency', function(currency) {
+                    currentCurrencySymbol = currency.symbol || '$'; // Default to '$' if no symbol provided
+                    updateAllCurrencyDisplays();
+                });
+            }
+
+            // Format currency with current symbol
+            function formatCurrency(value) {
+                const numValue = parseFloat(value) || 0;
+                return currentCurrencySymbol + numValue.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,' );
+            }
+
+            // Update all currency displays in the table
+            function updateAllCurrencyDisplays() {
+                $('.currency-amount').each(function () {
+                    const value = parseFloat($(this).text().replace(/[^\d.-]/g, '')) || 0;
+                    $(this).text(formatCurrency(value)); // Update the text with formatted currency
+                });
+            }
+
+            // SignalR connection for real-time currency updates
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/settingsHub")
+                .build();
+
+            connection.start().then(() => {
+                connection.invoke("JoinSettingsGroup");
+            }).catch(err => console.error('SignalR connection failed:', err));
+
+            // Listen for currency updates
+            connection.on("SettingsUpdated", function (settings) {
+                // Get new currency symbol
+                $.get('/Invoice/GetCurrentCurrency', function(currency) {
+                    currentCurrencySymbol = currency.symbol || '$'; // Update symbol
+                    updateAllCurrencyDisplays(); // Update all currency displays with new symbol
+
+                    // Refresh the inventory table
+                    if ($.fn.DataTable.isDataTable('#inventoryList')) {
+                        $('#inventoryList').DataTable().ajax.reload();
+                    }
+                });
+            });
+
+            // Initialize currency symbol and update displays
+            loadCurrentCurrency();
+
+            // DataTable setup
+            const table = $('#inventoryList').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: { url: '@Url.Action("GetData", "Inventory")', type: 'GET' },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[0, 'asc']],  // Default sort by Item Name
+                autoWidth: false,
+                responsive: {
+                    details: { type: 'inline', target: 'tr' },
+                    breakpoints: [
+                        { name: 'desktop', width: Infinity },
+                        { name: 'laptop',  width: 1200 },
+                        { name: 'tablet',  width: 992  },
+                        { name: 'phablet', width: 768  },
+                        { name: 'phone',   width: 576  },
+                        { name: 'tiny',    width: 0    }
+                    ]
+                },
+
+                columnDefs: [
+                    { targets: 0, responsivePriority: 1 },
+                    { targets: 5, responsivePriority: 2, className: 'text-center' },
+                    { targets: [1,2,3], responsivePriority: 3 },
+                    { targets: [4], responsivePriority: 4 }
+                ],
+
+                columns: [
+                    { data: 'name', orderable: true },
+                    { data: 'category', orderable: true },
+                    { data: 'stock', orderable: true },
+                    { data: 'unitPrice', orderable: true, render: function (data) { return formatCurrency(data); } },
+                    { data: 'status', orderable: true, render: function (data) { return data ? 'Active' : 'Inactive'; } },
+                    { data: null, orderable: false, className: 'text-center', render: function (data) {
+                        return `
+                            <div class="dropdown d-inline-block">
+                                <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1" data-bs-toggle="dropdown">
+                                    <i class="ti ti-dots-vertical"></i>
+                                </a>
+                                <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                    <li>
+                                        <a href="/Inventory/Upsert/${data.id}" class="dropdown-item d-flex align-items-center">
+                                            <i class="ti ti-edit me-2"></i> Edit
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-delete" data-url="/Inventory/Delete" data-id="${data.id}" data-name="${data.name}">
+                                            <i class="ti ti-trash me-2"></i> Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        `;
+                    }}
+                ],
+
+                drawCallback: function () {
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+                    const info = api.page.info();
+                    const msg = info.recordsDisplay
+                        ? `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                        : (info.recordsTotal ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries` : 'No entries to show');
+                    $('#dt-info').text(msg);
+                },
+
+                language: {
+                    emptyTable: "No inventory items found",
+                    processing: "Loading..."
+                }
+            });
+
+            $('#globalSearch').on('input', function () {
+                table.search(this.value).draw();
+            });
+
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Delete functionality
+            $(document).on('click', '.js-delete', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const deleteUrl = $(this).data('url');
+
+                Swal.fire({
+                    title: `Delete ${name}?`,
+                    text: 'This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: deleteUrl,
+                            type: 'POST',
+                            data: { id: id },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', response.message, 'success');
+                                    table.ajax.reload(null, false);
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'Something went wrong.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}
+
+
+@* @{
+    ViewData["Title"] = "Inventory Items";
+}
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+
+            <!-- Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Inventory Grid</h4>
+                </div>
+                <div class="text-end">
+                    <a asp-controller="Inventory" asp-action="Upsert" class="btn btn-primary ms-2 fs-13 btn-md">
+                        <i class="ti ti-plus me-1"></i>New Item
+                    </a>
+                </div>
+              
+                <button id="exportCsvBtn" class="btn btn-secondary ms-2 fs-13 btn-md">
+                    <i class="ti ti-download me-1"></i> Export CSV
+                </button>
+
+            </div>
+
+            <!-- Card -->
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- External controls -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <!-- page-length: hidden on mobile -->
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Show</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entries</span>
+                        </div>
+
+                        <!-- search: full width on mobile -->
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="inventoryList" class="table table-hover align-middle w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item Name &amp; SKU</th>
+                                    <th>Category</th>
+                                    <th>Stock</th>
+                                    <th>Unit Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer: info + pager -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ===== Truncation helpers ===== */
+    .truncate {
+        display: inline-block;
+        vertical-align: middle;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .truncate-180 {
+        max-width: 180px;
+    }
+
+    .truncate-220 {
+        max-width: 220px;
+    }
+
+    .truncate-260 {
+        max-width: 260px;
+    }
+
+    /* Compact, stable headers */
+    #inventoryList thead th {
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+    }
+
+    /* Mobile tweaks */
+    @@media (max-width:576px) {
+        #inventoryList td, #inventoryList th
+
+    {
+        font-size: .92rem;
+    }
+
+    .avatar img {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    }
+
+    /* Hide built-in DT controls (we use our own) */
+    .dataTables_length, .dataTables_filter {
+        display: none !important;
+    }
+
+    /* Pager cosmetics (Bootstrap 5 renderer) */
+    #dt-pager .pagination {
+        margin: 0;
+        gap: .25rem;
+        flex-wrap: wrap;
+    }
+
+    #dt-pager .page-item .page-link {
+        border-radius: .6rem;
+        padding: .4rem .65rem;
+        line-height: 1;
+        border-color: var(--bs-gray-300);
+    }
+
+        #dt-pager .page-item .page-link:focus {
+            box-shadow: none;
+        }
+
+    #dt-pager .page-item.active .page-link {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+        box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb,13,110,253), .15);
+    }
+
+    #dt-pager .page-item.disabled .page-link {
+        opacity: .6;
+    }
+</style>
+
+@section Scripts {
+ 
+
+    <script>
+        $(function () {
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+
+            // Tear down if already bound
+            if ($.fn.DataTable.isDataTable('#inventoryList')) {
+                $('#inventoryList').DataTable().destroy();
+            }
+
+            const esc = (s) => (s == null ? '' : String(s));
+
+            const table = $('#inventoryList').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: { url: '@Url.Action("GetData", "Inventory")', type: 'GET' },
+
+                // Build table + info + pager (we will move them)
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',     // cleaner: Prev 1 2 3 Next (no First/Last)
+                info: true,
+                order: [[0, 'asc']],
+                autoWidth: false,
+
+                responsive: {
+                    details: { type: 'inline', target: 'tr' },
+                    breakpoints: [
+                        { name: 'desktop', width: Infinity },
+                        { name: 'laptop',  width: 1200 },
+                        { name: 'tablet',  width: 992  },
+                        { name: 'phablet', width: 768  },
+                        { name: 'phone',   width: 576  },
+                        { name: 'tiny',    width: 0    }
+                    ]
+                },
+
+                columnDefs: [
+                    { targets: 0, responsivePriority: 1 },
+                    { targets: 5, responsivePriority: 2, className: 'text-center' },
+                    { targets: [2,3], responsivePriority: 3 },
+                    { targets: [1,4], responsivePriority: 4 }
+                ],
+
+                columns: [
+                    /* 0 Item Name & SKU */
+                    {
+                        data: 'name',
+                        orderable: true,
+                        render: function (data, type, row) {
+                            return `
+                              <div class="d-flex align-items-center min-w-0">
+                                <div class="avatar me-2">
+                                  <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+                                    <i class="ti ti-package"></i>
+                                  </div>
+                                </div>
+                                <div class="min-w-0">
+                                  <div class="fw-semibold text-truncate d-block">
+                                    <span class="text-primary">${esc(row.name)}</span>
+                                  </div>
+                                  <small class="text-muted small text-truncate d-block">${esc(row.sku || 'No SKU')}</small>
+                                </div>
+                              </div>`;
+                        }
+                    },
+                    /* 1 Category */
+                    {
+                        data: 'category',
+                        orderable: true,
+                        render: d => `<span class="text-truncate" title="${esc(d)}">${esc(d)}</span>`
+                    },
+                    /* 2 Stock */
+                    {
+                        data: 'stock',
+                        orderable: true,
+                        render: function(data) {
+                            const stockClass = data <= 10 ? 'text-danger' : data <= 50 ? 'text-warning' : 'text-success';
+                            return `<span class="${stockClass} fw-semibold">${esc(data)}</span>`;
+                        }
+                    },
+                    /* 3 Unit Price */
+                    {
+                        data: 'unitPrice',
+                        orderable: true,
+                        render: function (data) {
+                            return `<span class="fw-semibold">$${parseFloat(data || 0).toFixed(2)}</span>`;
+                        }
+                    },
+                    /* 4 Status */
+                    {
+                        data: 'isActive',
+                        orderable: true,
+                        render: function (data) {
+                            return data
+                                ? '<span class="badge bg-success-light text-success">Active</span>'
+                                : '<span class="badge bg-danger-light text-danger">Inactive</span>';
+                        }
+                    },
+                    /* 5 Actions (dropdown) */
+                    {
+                        data: null,
+                        orderable: false,
+                        className: 'text-center',
+                        render: function (_data, _type, row) {
+                            return `
+                                <div class="dropdown d-inline-block">
+                                    <a href="javascript:void(0);"
+                                       class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
+                                       data-bs-toggle="dropdown">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                        <li>
+                                            <a href="/Inventory/Upsert/${row.id}" class="dropdown-item d-flex align-items-center">
+                                                <i class="ti ti-edit me-2"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);"
+                                               class="dropdown-item d-flex align-items-center js-delete delete-btn-inventory"
+                                               data-url="/Inventory/Delete"
+                                               data-table="inventoryList"
+                                               data-id="${row.id}"
+                                               data-name="${esc(row.name)}">
+                                                <i class="ti ti-trash me-2"></i> Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    }
+                ],
+
+                // Move pager; write our own info string so it always shows
+                drawCallback: function () {
+                    const api = this.api();
+
+                    // move DT pager to our container
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+
+                    // replace Prev/Next labels with chevrons (safer here after render)
+                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+
+                    // robust info text
+                    const info = api.page.info(); // {start,end,recordsTotal,recordsDisplay,...}
+                    const msg = info.recordsDisplay
+                      ? `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                      : (info.recordsTotal
+                          ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
+                          : 'No entries to show');
+                    $('#dt-info').text(msg);
+                },
+
+                language: {
+                    emptyTable: "No inventory items found",
+                    processing: "Loading..."
+                }
+            });
+
+            // External controls
+            $('#globalSearch').on('input', function () {
+                table.search(this.value).draw();
+            });
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+
+                    function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                const link = document.createElement("a");
+                if (link.download !== undefined) { // feature detection
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        }
+
+        function exportTableToCSV(filename) {
+            const visibleData = table.rows({ search: 'applied' }).data().toArray();
+
+            // Define CSV headers matching your columns
+            const headers = ['Item Name & SKU', 'Category', 'Stock', 'Unit Price', 'Status'];
+
+            // Construct CSV rows
+            const csvRows = [];
+            csvRows.push(headers.join(','));
+
+            visibleData.forEach(row => {
+                const rowData = [
+                    `"${row.name.replace(/"/g, '""')}"` + (row.sku ? ` (${row.sku.replace(/"/g, '""')})` : ''),
+                    `"${row.category.replace(/"/g, '""')}"`,
+                    row.stock,
+                    `$${parseFloat(row.unitPrice || 0).toFixed(2)}`,
+                    row.isActive ? 'Active' : 'Inactive'
+                ];
+                csvRows.push(rowData.join(','));
+            });
+
+            downloadCSV(csvRows.join('\n'), filename);
+        }
+
+        $('#exportCsvBtn').on('click', function () {
+            exportTableToCSV('inventory-items.csv');
+        });
+
+            // Delete functionality
+            $(document).on('click', '.js-delete', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name') || 'this item';
+                const deleteUrl = $(this).data('url');
+                const tableId = $(this).data('table');
+
+                Swal.fire({
+                    title: `Delete ${name}?`,
+                    text: 'You will not be able to revert this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, delete!'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        $.ajax({
+                            url: deleteUrl,
+                            type: 'POST',
+                            data: { id: id },
+                            headers: { 'RequestVerificationToken': token },
+                            success: r => {
+                                if (r.status) {
+                                    Swal.fire('Deleted', r.message, 'success');
+                                    if (tableId && $.fn.DataTable.isDataTable(`#${tableId}`)) {
+                                        $(`#${tableId}`).DataTable().ajax.reload(null, false);
+                                    }
+                                } else {
+                                    Swal.fire('Error', r.message || 'Delete failed', 'error');
+                                }
+                            },
+                            error: () => Swal.fire('Error', 'Something went wrong', 'error')
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+} *@

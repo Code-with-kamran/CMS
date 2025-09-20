@@ -1,0 +1,779 @@
+﻿@inject CMS.Services.ICurrencyService CurrencyService
+@model int
+
+@{
+    ViewData["Title"] = "Patient Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Ensure you have a layout
+    var currencySymbol = await CurrencyService.GetCurrentCurrencySymbolAsync();
+}
+
+<!-- Anti-forgery token for AJAX POST -->
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="content">
+
+
+<!-- Page Header -->
+<div class="page-header mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <p class="text-muted mb-1">
+                <a href="@Url.Action("Index", "Patient")" class="text-muted">Patients</a> / <span id="breadcrumb-name">...</span>
+            </p>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-light btn-sm"><i class="ti ti-printer me-1"></i> Print</a>
+            <a href="@Url.Action("Upsert", "Patient", new { id = Model })" class="btn btn-light btn-sm"><i class="ti ti-pencil me-1"></i> Edit Patient</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="row">
+    <!-- Left Column -->
+    <div class="col-lg-8">
+        <!-- Patient Info Card -->
+        <div class="card profile-card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center text-md-start">
+                        <img id="patient-avatar" src="/assets/img/loader.gif" class="rounded-circle avatar-xxl mb-3" alt="Patient">
+                        <h5 id="patient-name" class="mb-1">Loading...</h5>
+                        <p id="patient-email" class="text-muted mb-3">...</p>
+                   
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row patient-details-grid">
+                            <div class="col-6"><small class="text-muted">Gender</small><p id="patient-gender">...</p></div>
+                            <div class="col-6"><small class="text-muted">Age</small><p id="patient-dob">...</p></div>
+                            <div class="col-6"><small class="text-muted">Phone number</small><p id="patient-phone">...</p></div>
+                            <div class="col-6"><small class="text-muted">Address</small><p id="patient-address">...</p></div>
+                            <div class="col-6"><small class="text-muted">Registration date</small><p id="patient-regdate">...</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-0">
+                @* <ul class="nav nav-tabs-modern" id="appointmentTabs" role="tablist">
+                    <li class="nav-item"><a class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" href="#upcoming" role="tab">Upcoming appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" id="past-tab" data-bs-toggle="tab" href="#past" role="tab">Past appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" id="medical-tab" data-bs-toggle="tab" href="#medical" role="tab">Medical records</a></li>
+                </ul> *@
+
+                <ul class="nav nav-tabs-modern" id="appointmentTabs" role="tablist">
+                    <li class="nav-item"><a class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" href="#upcoming" role="tab">Upcoming appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" id="past-tab" data-bs-toggle="tab" href="#past" role="tab">Past appointments</a></li>
+                    <!-- ADD THIS LINE -->
+                    <li class="nav-item"><a class="nav-link" id="followups-tab" data-bs-toggle="tab" href="#followups" role="tab">Follow-ups</a></li>
+                    <li class="nav-item"><a class="nav-link" id="medical-tab" data-bs-toggle="tab" href="#medical" role="tab">Medical records</a></li>
+                </ul>
+
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addFollowUpModal">
+                    <i class="ti ti-calendar-plus me-1"></i> Add Follow-up
+                </button>
+
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="upcoming" role="tabpanel">
+                        <div id="upcoming-appointments-list" class="appointment-timeline">
+                            <!-- AJAX content here -->
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="past" role="tabpanel">
+                        <div id="past-appointments-list" class="appointment-timeline">
+                            <!-- AJAX content here -->
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="followups" role="tabpanel">
+                        <div id="follow-ups-list">
+                            <!-- AJAX content for follow-ups will be loaded here -->
+                        </div>
+                    </div>
+                        <!-- Medical Records Tab -->
+                        <div class="tab-pane fade" id="medical" role="tabpanel">
+                            <div id="medical-history-list">
+                                <!-- AJAX content for medical history will be loaded here -->
+                            </div>
+                        </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-4">
+        <!-- Notes Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-0">
+                <h6 class="mb-0">Notes</h6>
+                <a href="#" class="btn-link">See all</a>
+            </div>
+            <div class="card-body" id="notes-list">
+                <!-- AJAX content here -->
+            </div>
+        </div>
+
+        <!-- Files/Documents Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-0">
+                <h6 class="mb-0">Lab Results and Reports</h6>
+                <a href="#" class="btn-link"><i class="ti ti-plus"></i> Add files</a>
+            </div>
+            <div class="card-body" id="documents-list">
+                <!-- AJAX content here -->
+            </div>
+        </div>
+
+        <!-- Payments Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-transparent border-0">
+                <h6 class="mb-0">Payments</h6>
+            </div>
+            <div class="card-body" id="payments-list">
+                <!-- AJAX content here -->
+            </div>
+            <div class="card-footer bg-transparent border-0 d-flex justify-content-between">
+                <strong>Total amount:</strong>
+                <strong id="payments-total">...</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <!-- Add Document Modal -->
+    <div class="modal fade" id="addDocumentModal" tabindex="-1" aria-labelledby="addDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDocumentModalLabel">Add File / Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addDocumentForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="documentFile" class="form-label">Select File (X-Ray, PDF, etc.)</label>
+                            <input type="file" class="form-control" id="documentFile" name="file" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="documentDescription" class="form-label">Description (Optional)</label>
+                            <input type="text" class="form-control" id="documentDescription" name="description" placeholder="e.g., 'Left Molar X-Ray'">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="spinner-border spinner-border-sm me-2" style="display: none;"></span>
+                            Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+   
+
+<!-- Add Follow-up Modal -->
+<div class="modal fade" id="addFollowUpModal" tabindex="-1" aria-labelledby="addFollowUpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addFollowUpModalLabel">Schedule a New Follow-up</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- This is the form you provided -->
+                <form id="addFollowUpForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="followUpInterval" class="form-label">Follow-up Interval</label>
+                            <select id="followUpInterval" class="form-select">
+                                <option value="">Select Interval</option>
+                                <option value="1_week">After 1 Week</option>
+                                <option value="2_weeks">After 2 Weeks</option>
+                                <option value="1_month">After 1 Month</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3" id="customIntervalContainer" style="display: none;">
+                            <label for="followUpDate" class="form-label">Custom Follow-up Date</label>
+                            <input type="date" id="followUpDate" class="form-control">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="followUpNotes" class="form-label">Notes</label>
+                            <textarea id="followUpNotes" class="form-control" rows="4" placeholder="Add any relevant notes for the follow-up..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="addFollowUpForm" class="btn btn-primary">
+                    <span class="spinner-border spinner-border-sm me-2" style="display: none;"></span>
+                    Schedule Follow-up
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+    <style>
+        body {
+            background-color: #f4f7fa;
+        }
+
+        .profile-card .patient-details-grid p {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .nav-tabs-modern {
+            border-bottom: none;
+        }
+
+            .nav-tabs-modern .nav-link {
+                border: none;
+                color: #6c757d;
+                font-weight: 500;
+                padding: 0.5rem 1rem;
+            }
+
+                .nav-tabs-modern .nav-link.active {
+                    color: #0d6efd;
+                    background-color: transparent;
+                    border-bottom: 2px solid #0d6efd;
+                }
+
+        .appointment-timeline .appointment-item {
+            display: flex;
+            position: relative;
+            padding-left: 30px;
+            padding-bottom: 2rem;
+        }
+
+            .appointment-timeline .appointment-item:last-child {
+                padding-bottom: 0;
+            }
+
+            .appointment-timeline .appointment-item::before {
+                content: '';
+                position: absolute;
+                left: 4px;
+                top: 5px;
+                width: 2px;
+                height: 100%;
+                background-color: #dee2e6;
+            }
+
+            .appointment-timeline .appointment-item .timeline-dot {
+                position: absolute;
+                left: 0;
+                top: 5px;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: #fff;
+                border: 2px solid #0d6efd;
+            }
+
+            .appointment-timeline .appointment-item .timeline-content {
+                background-color: #f8f9fa;
+                border-radius: 0.375rem;
+                padding: 1rem;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+        .file-item, .payment-item, .note-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            .file-item:last-child, .payment-item:last-child, .note-item:last-child {
+                border-bottom: none;
+            }
+
+            .file-item .file-icon {
+                font-size: 1.5rem;
+                color: #6c757d;
+            }
+
+    
+    /* Add this inside your existing <style> block */
+    .notes-list-collapsed {
+        max-height: 200px; /* Adjust this value as needed */
+        overflow-y: hidden;
+        position: relative;
+    }
+
+    .notes-list-collapsed::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background: linear-gradient(to bottom, transparent, #fff);
+    }
+
+ 
+</style>
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const patientId = @Model;
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+
+            // --- UI POPULATION FUNCTIONS ---
+
+            function populateCombinedNotes(notes) {
+                const notesList = $('#notes-list');
+                notesList.empty();
+                notesList.removeClass('notes-list-collapsed'); // Reset state
+
+                if (notes && notes.length > 0) {
+                    // Add a class to enable collapsing if there are many notes
+                    if (notes.length > 3) { // Or whatever number you prefer
+                        notesList.addClass('notes-list-collapsed');
+                        $('.card-header a:contains("See all")').show();
+                    } else {
+                        $('.card-header a:contains("See all")').hide();
+                    }
+
+                    notes.forEach(note => {
+                        const noteHtml = `
+                            <div class="note-item">
+                                <div>
+                                    <p class="mb-1">${note.content}</p>
+                                    <small class="text-muted">${note.source} - ${formatDate(note.createdAt)}</small>
+                                </div>
+                            </div>`;
+                        notesList.append(noteHtml);
+                    });
+                } else {
+                    notesList.html('<p class="text-center text-muted">No notes found.</p>');
+                    $('.card-header a:contains("See all")').hide();
+                }
+            }
+            // FIX 1: "See all" notes functionality
+            $('.card-header a:contains("See all")').on('click', function(e) {
+                e.preventDefault();
+                const notesList = $('#notes-list');
+                notesList.toggleClass('notes-list-collapsed');
+                if (notesList.hasClass('notes-list-collapsed')) {
+                    $(this).text('See all');
+                } else {
+                    $(this).text('Show less');
+                }
+            });
+
+            // FIX 2: "Add files" functionality
+            $('.card-header a:contains("Add files")').on('click', function(e) {
+                e.preventDefault();
+                $('#addDocumentModal').modal('show');
+            });
+
+            // New handler for the document upload form
+            $('#addDocumentForm').on('submit', function(e) {
+                e.preventDefault();
+                const form = $(this);
+                const submitBtn = form.find('button[type="submit"]');
+                const spinner = submitBtn.find('.spinner-border');
+
+                spinner.show();
+                submitBtn.prop('disabled', true);
+
+                const formData = new FormData(this);
+                formData.append('patientId', patientId);
+
+                $.ajax({
+                    url: '/Patient/AddDocument',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: { 'RequestVerificationToken': token },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#addDocumentModal').modal('hide');
+                            form[0].reset();
+                            alert(response.message); // Or use SweetAlert2
+                            loadPatientData(); // Refresh the page data
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: () => alert('An unexpected error occurred during file upload.'),
+                    complete: () => {
+                        spinner.hide();
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+
+            // FIX 3: Custom date selection for follow-up
+            $('#followUpInterval').on('change', function() {
+                if ($(this).val() === 'custom') {
+                    $('#customIntervalContainer').slideDown();
+                } else {
+                    $('#customIntervalContainer').slideUp();
+                }
+            });
+
+
+
+
+            // ADD THIS ENTIRE FUNCTION
+            function populateAppointments(listId, appointments) {
+                const listElement = $(listId);
+                listElement.empty();
+                if (appointments && appointments.length > 0) {
+                    appointments.forEach(apt => {
+                        const aptHtml = `
+                            <div class="appointment-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div>
+                                        <p class="fw-bold mb-0">${formatDate(apt.appointmentDate)}</p>
+                                        <small class="text-muted">${formatTime(apt.appointmentDate)}</small>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Type</small>
+                                        <p class="fw-bold mb-0">${apt.appointmentType || 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Doctor</small>
+                                        <p class="fw-bold mb-0">${apt.doctorName || 'N/A'}</p>
+                                    </div>
+                                    <a href="#" class="btn btn-light btn-sm"><i class="ti ti-file-text"></i> Notes</a>
+                                </div>
+                            </div>`;
+                        listElement.append(aptHtml);
+                    });
+                } else {
+                    listElement.html('<p class="text-center text-muted">No appointments.</p>');
+                }
+            }
+
+            function populateFollowUps(followUps) {
+                const listElement = $('#follow-ups-list');
+                listElement.empty();
+                if (followUps && followUps.length > 0) {
+                    followUps.forEach(fu => {
+                        const fuHtml = `
+                            <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                                <div>
+                                    <p class="fw-bold mb-0">Follow-up on: ${formatDate(fu.followUpDate)}</p>
+                                    <small class="text-muted">${fu.notes || 'No notes provided.'}</small>
+                                </div>
+                                <span class="badge bg-info text-dark">${fu.status}</span>
+                            </div>`;
+                        listElement.append(fuHtml);
+                    });
+                } else {
+                    listElement.html('<p class="text-center text-muted">No scheduled follow-ups.</p>');
+                }
+            }
+
+            // This is the correct function for displaying combined notes
+            function populateCombinedNotes(notes) {
+                const notesList = $('#notes-list');
+                notesList.empty();
+                if (notes && notes.length > 0) {
+                    notes.forEach(note => {
+                        const noteHtml = `
+                            <div class="note-item">
+                                <div>
+                                    <p class="mb-1">${note.content}</p>
+                                    <small class="text-muted">${note.source} - ${formatDate(note.createdAt)}</small>
+                                </div>
+                            </div>`;
+                        notesList.append(noteHtml);
+                    });
+                } else {
+                    notesList.html('<p class="text-center text-muted">No notes found.</p>');
+                }
+            }
+
+            function populateDocuments(documents) {
+                const docsList = $('#documents-list');
+                docsList.empty();
+                if (documents && documents.length > 0) {
+                    documents.forEach(doc => {
+                        const docHtml = `
+                            <div class="file-item">
+                                <i class="ti ti-file-text file-icon me-3"></i>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 fw-bold">${doc.fileName}</p>
+                                    <small class="text-muted">${doc.fileSize}</small>
+                                </div>
+                                <a href="${doc.fileUrl}" target="_blank" class="btn btn-sm btn-light"><i class="ti ti-download"></i></a>
+                            </div>`;
+                        docsList.append(docHtml);
+                    });
+                } else {
+                    docsList.html('<p class="text-center text-muted">No documents found.</p>');
+                }
+            }
+
+            function populatePayments(payments) {
+                const paymentsList = $('#payments-list');
+                let totalPayments = 0;
+                paymentsList.empty();
+                if (payments && payments.length > 0) {
+                    payments.forEach(payment => {
+                        totalPayments += payment.amount;
+                        const paymentHtml = `
+                            <div class="payment-item">
+                                <i class="ti ti-circle-check text-success me-3"></i>
+                                <span class="flex-grow-1">${payment.transaction}</span>
+                                <strong>@currencySymbol${payment.amount.toFixed(2)}</strong>
+                            </div>`;
+                        paymentsList.append(paymentHtml);
+                    });
+                } else {
+                    paymentsList.html('<p class="text-center text-muted">No payments found.</p>');
+                }
+                $('#payments-total').text(`@currencySymbol${totalPayments.toFixed(2)}`);
+            }
+
+            // --- DATA LOADING ---
+            function loadPatientData() {
+                $.ajax({
+                    url: `/Patient/GetPatientProfile?id=${patientId}`,
+                    type: 'GET',
+                    success: function (data) {
+                        // Populate Patient Info
+                        $('#breadcrumb-name').text(data.patient.fullName || 'Patient Profile');
+                        $('#patient-avatar').attr('src', data.patient.profileImageUrl || '/assets/img/users/user-placeholder.jpg');
+                        $('#patient-name').text(data.patient.fullName || 'Name Not Provided');
+                        $('#patient-email').text(data.patient.email || 'No Email');
+
+                        // Populate Details Grid
+                        $('#patient-gender').text(data.patient.gender || 'N/A');
+                        $('#patient-dob').text(calculateAge(data.patient.dateOfBirth) + ' years');
+                        $('#patient-phone').text(data.patient.phoneNumber || 'N/A');
+                        $('#patient-address').text(data.patient.address || 'N/A');
+                        $('#patient-regdate').text(formatDate(data.patient.createdDate));
+
+                        // Populate all sections
+                        populateAppointments('#upcoming-appointments-list', data.upcomingAppointments);
+                        populateAppointments('#past-appointments-list', data.pastAppointments);
+                        populateFollowUps(data.followUps);
+                        populateDocuments(data.documents);
+                        populatePayments(data.payments);
+
+                        // FIX: Call the correct function for combined notes
+                        populateCombinedNotes(data.combinedNotes);
+                    },
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        console.error("Error fetching patient data:", textStatus, errorThrown, jqXHR.responseText);
+                        $('.content').html('<div class="alert alert-danger"><h4>Failed to Load Profile</h4><p>A server error occurred. Please check the console for details.</p></div>');
+                    }
+                });
+            }
+
+            // --- EVENT HANDLERS & UTILITY FUNCTIONS ---
+            // (Add Document, Add Follow-up, formatDate, formatTime, calculateAge, etc.)
+
+            $('.card-header a:contains("Add files")').on('click', function(e) { /* ... correct as is ... */ });
+                    $('#addDocumentForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent the default browser form submission
+            const form = $(this);
+            const submitBtn = form.find('button[type="submit"]');
+            const spinner = submitBtn.find('.spinner-border');
+
+            spinner.show();
+            submitBtn.prop('disabled', true);
+
+            // FormData is required for file uploads
+            const formData = new FormData(this);
+            formData.append('patientId', patientId); // Add the patientId to the form data
+
+            $.ajax({
+                url: '/Patient/AddDocument',
+                type: 'POST',
+                data: formData,
+                processData: false,  // Important: Do not process the data
+                contentType: false,  // Important: Let the browser set the content type
+                headers: { 'RequestVerificationToken': token },
+                success: function(response) {
+                    if (response.success) {
+                        $('#addDocumentModal').modal('hide');
+                        form[0].reset();
+                        alert(response.message); // Or use SweetAlert2
+                        loadPatientData(); // Refresh the page data to show the new document
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: () => alert('An unexpected error occurred during file upload.'),
+                complete: function() {
+                    spinner.hide();
+                    submitBtn.prop('disabled', false);
+                }
+            });
+        });
+
+                   $('#followUpInterval').on('change', function() {
+            // Check if the selected value is 'custom'
+            if ($(this).val() === 'custom') {
+                // If it is, show the container for the custom date input with a smooth animation
+                $('#customIntervalContainer').slideDown();
+            } else {
+                // Otherwise, hide it
+                $('#customIntervalContainer').slideUp();
+            }
+        });
+
+                    $('#addFollowUpForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent the default browser form submission
+            const submitBtn = $('.modal-footer button[form="addFollowUpForm"]');
+            const spinner = submitBtn.find('.spinner-border');
+
+            spinner.show();
+            submitBtn.prop('disabled', true);
+
+            let followUpDate;
+            const interval = $('#followUpInterval').val();
+
+            if (interval === 'custom') {
+                // Use the date from the date picker if 'custom' is selected
+                followUpDate = $('#followUpDate').val();
+            } else {
+                // Otherwise, calculate the date based on the selected interval
+                const now = new Date();
+                if (interval === '1_week') now.setDate(now.getDate() + 7);
+                if (interval === '2_weeks') now.setDate(now.getDate() + 14);
+                if (interval === '1_month') now.setMonth(now.getMonth() + 1);
+                // Format the date as YYYY-MM-DD for the backend
+                followUpDate = now.toISOString().split('T')[0];
+            }
+
+            // Create the data object that matches your FollowUp model
+            const followUpData = {
+                PatientId: patientId, // 'patientId' is defined at the top of your script
+                FollowUpDate: followUpDate,
+                Notes: $('#followUpNotes').val()
+            };
+
+            $.ajax({
+                url: '/Patient/AddFollowUp',
+                type: 'POST',
+                contentType: 'application/json', // Important for [FromBody] in the controller
+                headers: { 'RequestVerificationToken': token }, // 'token' is defined at the top of your script
+                data: JSON.stringify(followUpData), // Convert the JS object to a JSON string
+                success: function(response) {
+                    if (response.success) {
+                        $('#addFollowUpModal').modal('hide');
+                        $('#addFollowUpForm')[0].reset();
+                        alert(response.message); // Or use SweetAlert2
+                        loadPatientData(); // Refresh all data on the page
+                    } else {
+                        alert('Error: ' + (response.message || 'Could not schedule follow-up.'));
+                    }
+                },
+                error: () => alert('An unexpected error occurred.'),
+                complete: function() {
+                    spinner.hide();
+                    submitBtn.prop('disabled', false);
+                }
+            });
+        });
+
+
+            function calculateAge(birthDate) {
+                if (!birthDate || birthDate.startsWith('0001-01-01')) return 'N/A';
+                var birthDateObj = new Date(birthDate);
+                var today = new Date();
+                var age = today.getFullYear() - birthDateObj.getFullYear();
+                var m = today.getMonth() - birthDateObj.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDateObj.getDate())) {
+                    age--;
+                }
+                return age;
+            }
+
+            function formatDate(dateString) {
+                if (!dateString) return 'N/A';
+                const options = { year: '2-digit', month: 'short', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('en-GB', options);
+            }
+
+            function formatTime(dateString) {
+                if (!dateString) return 'N/A';
+                const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+                return new Date(dateString).toLocaleTimeString('en-US', options);
+            }
+
+
+                    // Function to populate medical history
+            function populateMedicalHistory(history) {
+                const historyList = $('#medical-history-list');
+                historyList.empty(); // Clear any existing data
+
+                if (history && history.length > 0) {
+                    history.forEach(record => {
+                        const recordHtml = `
+                            <div class="medical-history-item">
+                                <h5>${record.diagnosis}</h5>
+                                <p><strong>Date of Visit:</strong> ${formatDate(record.dateOfVisit)}</p>
+                                <p><strong>Severity:</strong> ${record.severity}</p>
+                                <p><strong>Status:</strong> ${record.status}</p>
+                                ${record.document ? `
+                                    <div><strong>Document:</strong> <a href="${record.document.fileUrl}" target="_blank">${record.document.fileName}</a></div>
+                                ` : ''}
+                            </div>
+                            <hr>
+                        `;
+                        historyList.append(recordHtml);
+                    });
+                } else {
+                    historyList.html('<p class="text-center text-muted">No medical records found.</p>');
+                }
+            }
+
+            // AJAX call to fetch medical history and follow-ups
+            $.ajax({
+                url: `/Patient/GetPatientHistory?id=${patientId}`,  // Your endpoint URL
+                type: 'GET',
+                success: function (data) {
+                    // Populate medical history
+                    populateMedicalHistory(data.medicalHistory);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("Error fetching medical history:", textStatus, errorThrown);
+                    $('#medical-history-list').html('<p class="text-center text-muted">Failed to load medical records.</p>');
+                }
+            });
+
+            // Helper function to format date
+            function formatDate(dateString) {
+                if (!dateString) return 'N/A';
+                const options = { year: '2-digit', month: 'short', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('en-GB', options);
+            }
+  
+            // --- INITIAL LOAD ---
+            loadPatientData();
+        });
+    </script>
+}

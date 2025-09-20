@@ -1,27 +1,40 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CMS.Models
 {
     public class Appointment
     {
+        [Key]
         public int AppointmentId { get; set; }
-
+        public string? AppointmentNo { get; set; } = string.Empty;
         [Required]
         public int PatientId { get; set; }
-        public Patient? Patient { get; set; }
+         [ValidateNever]
+        public Patient Patient { get; set; }
 
         [Required]
-        public int DentistId { get; set; }
-        public Dentist? Dentist { get; set; }
+        public int DoctorId { get; set; }
+        [ValidateNever]
+        public Doctor Doctor { get; set; }
 
         [Required]
-        public DateTime StartTime { get; set; }
+        public DateTime AppointmentDate { get; set; }
+        public DateTime CreatedOn { get; set; }
 
-        [Required]
-        public DateTime EndTime { get; set; }
+        // ✅ New field for Department
+        public int? DepartmentId { get; set; }
+        [ValidateNever]
+        public Department Department { get; set; }
 
-        public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;
+        
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Fee { get; set; } // <-- appointment fee
 
+        public string Status { get; set; } = "Scheduled";
+        public string AppointmentType { get; set; } = "General";
+        public string Mode { get; set; } = "In-Person"; // New field for Mode
         [StringLength(1000)]
         public string? Notes { get; set; }
 

@@ -1,0 +1,993 @@
+﻿@* 
+@model CMS.ViewModels.AppointmentUpsertVM
+
+@{
+    ViewData["Title"] = (Model?.Appointment?.AppointmentId ?? 0) == 0 ? "Create Appointment" : "Edit Appointment";
+    var existing = Model?.Appointment?.AppointmentDate ?? DateTime.Now;
+}
+
+ <form id="appointmentForm" asp-action="Upsert" asp-controller="Appointment" method="post" class="needs-validation" >
+
+    @Html.AntiForgeryToken()
+    <div class="content py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h4 class="mb-0">@ViewData["Title"]</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back</a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    @(Model?.Appointment?.AppointmentId == 0 ? "Create" : "Update")
+                </button>
+            </div>
+        </div>
+
+        <validation-summary model-only="true" class="text-danger small"></validation-summary>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Appointment Details</h6>
+
+                        <div class="row g-3">
+                            <!-- Patient -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.PatientId" class="form-label">Patient</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <select asp-for="Appointment.PatientId" asp-items="Model.Patients" class="form-select select2 flex-1" required>
+                                        <option value="">--Select Patient--</option>
+                                    </select>
+                                    <button type="button" id="btnAddPatient" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+                                        <i class="ti ti-plus"></i> Add
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Appointment.PatientId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Doctor -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.DoctorId" class="form-label">Doctor</label>
+                                <select asp-for="Appointment.DoctorId" asp-items="Model.Doctors" class="form-select select2" required>
+                                    <option value="">--Select Doctor--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.DoctorId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Appointment Type -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.AppointmentType" class="form-label">Appointment Type</label>
+                                <select asp-for="Appointment.AppointmentType" asp-items="Model.AppointmentTypes" class="form-select select2" required>
+                                    <option value="">--Select Appointment Type--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.AppointmentType" class="text-danger"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.Status" class="form-label">Status</label>
+                                <select asp-for="Appointment.Status" asp-items="Model.Statuses" class="form-select select2" required>
+                                    <option value="">--Select Status--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.Status" class="text-danger"></span>
+                            </div>
+
+                            <!-- Hidden Appointment Date (set by slot selection) -->
+                            <input asp-for="Appointment.AppointmentDate" type="hidden" id="appointmentDateHidden" />
+
+                            <div class="col-12">
+                                <div class="d-flex justify-content-center mb-3">
+                                    <input type="date" id="dateInput" class="form-control" />
+                                </div>
+                                <div id="weekGrid">
+                                    <!-- This is where the day and time slots will be rendered by JavaScript -->
+                                </div>
+
+                                <div id="gridHelp" class="form-text">
+                                    Red day = no availability. Click a time to select it.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<!-- Patient Add Modal -->
+
+<div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addPatientModalLabel">Add Patient</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <div id="patientFormContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .day-column {
+        font-weight: bold;
+        text-align: right;
+        padding-right: 15px;
+        align-self: center;
+    }
+
+    .time-button {
+        width: 30%;
+        margin-bottom: 8px;
+        white-space: nowrap;
+    }
+
+        .time-button.selected {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+                $(function () {
+            $('.select2').select2({ theme: 'bootstrap-5', width: '100%' });
+
+            const $doctor = $('select[name="Appointment.DoctorId"]');
+            const $submit = $('#appointmentForm button[type="submit"]');
+            const $hiddenDate = $('#appointmentDateHidden');
+            const $dateInput = $('#dateInput');
+
+            function fmtISO(date) {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+
+            function fmtTime12(iso) {
+                const t = iso.split('T')[1];
+                const parts = t.split(':');
+                const H = parseInt(parts[0], 10);
+                const M = parts[1];
+                const ampm = H >= 12 ? 'PM' : 'AM';
+                const h12 = ((H + 11) % 12) + 1;
+                return `${h12}:${M} ${ampm}`;
+            }
+
+            function renderWeekGrid(days) {
+                const weekContainer = $('<div class="container-fluid"></div>');
+                const slotsRow = $('<div class="row align-items-start mb-4"></div>');
+
+                days.forEach(day => {
+                    const colDay = $('<div class="col-2 day-column"></div>').text(day.day);
+                    const colSlots = $('<div class="col-10 g-5"></div>');
+                    const dayDate = new Date(day.date + 'T00:00');
+                    const today = new Date();
+                    const isPast = dayDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    const currentSelectedIso = $hiddenDate.val();
+
+                    if (day.slots.length === 0 || isPast) {
+                        colSlots.addClass('text-danger').append('<div class="p-2 border rounded">No Slots</div>');
+                    } else {
+                        day.slots.forEach(slotIso => {
+                            const isSelected = currentSelectedIso === slotIso;
+                            const btn = $(`<button type="button" class="btn mx-1 time-button  ${isSelected ? 'btn-primary selected' : 'btn-light'}">${fmtTime12(slotIso)}</button>`);
+                            btn.attr('data-iso', slotIso);
+                            btn.on('click', function() {
+                                $hiddenDate.val(slotIso);
+                                $('.time-button').removeClass('btn-primary selected').addClass('btn-light');
+                                $(this).removeClass('btn-light').addClass('btn-primary selected');
+                                $submit.prop('disabled', false); // Enable submit button when a time is selected
+                            });
+                            colSlots.append(btn);
+                        });
+                    }
+                    slotsRow.append(colDay, colSlots);
+                });
+                weekContainer.append(slotsRow);
+                $('#weekGrid').empty().append(weekContainer);
+                if (!$hiddenDate.val()) $submit.prop('disabled', true); // Disable submit if no date is selected
+            }
+
+            function loadWeek(date) {
+                const doctorId = $doctor.val();
+                if (!doctorId) {
+                    $('#weekGrid').html('<div class="text-muted">Please select a doctor to see availability.</div>');
+                    $submit.prop('disabled', true);
+                    return;
+                }
+                $.get('@Url.Action("GetWeekSlots", "Appointment")', { doctorId: doctorId, start: fmtISO(date) })
+                    .done(function (days) {
+                        if (!Array.isArray(days)) {
+                            $('#weekGrid').html('<div class="text-danger">Failed to load availability.</div>');
+                            $submit.prop('disabled', true);
+                            return;
+                        }
+                        renderWeekGrid(days);
+                    })
+                    .fail(function () {
+                        $('#weekGrid').html('<div class="text-danger">Failed to load availability.</div>');
+                        $submit.prop('disabled', true);
+                    });
+            }
+
+            // Doctor select change resets slot and loads new availability
+            $doctor.on('change', function () {
+                $hiddenDate.val('');
+                $dateInput.val(fmtISO(new Date())); // Reset to today
+                loadWeek(new Date());
+            });
+
+            // Date input change
+            $dateInput.on('change', function () {
+                $hiddenDate.val('');
+                const selectedDate = new Date($(this).val());
+                loadWeek(selectedDate);
+            });
+
+            // Ensure validation is working properly
+                   $('.needs-validation').on('submit', function (e) {
+            e.preventDefault();  // Prevent the form from submitting if validation fails
+
+            // Run validation manually
+            if (this.checkValidity() === false) {
+                e.stopPropagation();  // Prevent form submission if validation fails
+            } else {
+                // If valid, let the form submit (manually trigger submit)
+                this.submit();
+            }
+
+            // Add the validation feedback
+            $(this).addClass('was-validated');
+        });
+
+
+            // Initialize form state and load initial week
+            const initialDate = new Date(@existing.Year, @existing.Month - 1, @existing.Day);
+            $dateInput.val(fmtISO(initialDate));
+            loadWeek(initialDate);
+        });
+
+        
+    </script>
+
+ }  *@
+
+
+
+
+@* 
+
+
+
+
+
+@model CMS.ViewModels.AppointmentUpsertVM
+
+@{
+    ViewData["Title"] = (Model?.Appointment?.AppointmentId ?? 0) == 0 ? "Create Appointment" : "Edit Appointment";
+    var existing = Model?.Appointment?.AppointmentDate ?? DateTime.Now;
+}
+
+<form id="appointmentForm" asp-action="Upsert" asp-controller="Appointment" method="post" class="needs-validation">
+    @Html.AntiForgeryToken()
+    <div class="content py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h4 class="mb-0">@ViewData["Title"]</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back</a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    @(Model?.Appointment?.AppointmentId == 0 ? "Create" : "Update")
+                </button>
+            </div>
+        </div>
+
+        <validation-summary model-only="true" class="text-danger small"></validation-summary>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Appointment Details</h6>
+
+                        <div class="row g-3">
+                            <!-- Patient -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.PatientId" class="form-label">Patient</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <select asp-for="Appointment.PatientId" asp-items="Model.Patients" class="form-select select2 flex-1" required>
+                                        <option value="">--Select Patient--</option>
+                                    </select>
+                                    <button type="button" id="btnAddPatient" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+                                        <i class="ti ti-plus"></i> Add
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Appointment.PatientId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Doctor -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.DoctorId" class="form-label">Doctor</label>
+                                <select asp-for="Appointment.DoctorId" asp-items="Model.Doctors" class="form-select select2" required>
+                                    <option value="">--Select Doctor--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.DoctorId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Appointment Type -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.AppointmentType" class="form-label">Appointment Type</label>
+                                <select asp-for="Appointment.AppointmentType" asp-items="Model.AppointmentTypes" class="form-select select2" required>
+                                    <option value="">--Select Appointment Type--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.AppointmentType" class="text-danger"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.Status" class="form-label">Status</label>
+                                <select asp-for="Appointment.Status" asp-items="Model.Statuses" class="form-select select2" required>
+                                    <option value="">--Select Status--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.Status" class="text-danger"></span>
+                            </div>
+
+                            <!-- Hidden Appointment Date (set by slot selection) -->
+                            <input asp-for="Appointment.AppointmentDate" type="hidden" id="appointmentDateHidden" />
+
+                            <div class="col-12">
+                                <div class="d-flex justify-content-center mb-3">
+                                    <input type="date" id="dateInput" class="form-control" />
+                                </div>
+
+                                <div id="dayAvailabilityCard">
+                                    <!-- Single day availability will be rendered here -->
+                                    <div class="text-muted text-center">Please select a doctor and date to see availability.</div>
+                                </div>
+
+                                <div id="gridHelp" class="form-text mt-2">
+                                    Red text = no availability. Click a time to select it.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<!-- Patient Add Modal -->
+<div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addPatientModalLabel">Add Patient</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <div id="patientFormContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .day-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .time-button {
+        width: auto;
+        margin: 4px;
+        white-space: nowrap;
+    }
+
+        .time-button.selected {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+    .no-slots {
+        color: #dc3545; /* bootstrap danger */
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            // Initialize select2 (keeps your existing setup)
+            $('.select2').select2({ theme: 'bootstrap-5', width: '100%' });
+
+            const $doctor = $('select[name="Appointment.DoctorId"]');
+            const $submit = $('#appointmentForm button[type="submit"]');
+            const $hiddenDate = $('#appointmentDateHidden');
+            const $dateInput = $('#dateInput');
+            const $dayCard = $('#dayAvailabilityCard');
+
+            // Helper to format Date -> yyyy-MM-dd
+            function fmtISO(date) {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+
+            // Format time part from full ISO slot: "YYYY-MM-DDTHH:mm[:ss]" -> "h:mm AM/PM"
+            function fmtTime12(iso) {
+                if (!iso) return '';
+                const parts = iso.split('T');
+                if (parts.length < 2) return iso;
+                const t = parts[1];
+                const timeParts = t.split(':');
+                const H = parseInt(timeParts[0], 10);
+                const M = timeParts[1] || '00';
+                const ampm = H >= 12 ? 'PM' : 'AM';
+                const h12 = ((H + 11) % 12) + 1;
+                return `${h12}:${String(M).padStart(2,'0')} ${ampm}`;
+            }
+
+            // Render a single day's availability (day object contains: date, day (label), slots: [iso,...])
+            function renderDaySlots(dayObj) {
+                $dayCard.empty();
+
+                const dayHeader = $('<div class="day-title text-center"></div>').text(`${dayObj.day} — ${dayObj.date}`);
+                const container = $('<div class="d-flex flex-column align-items-center"></div>');
+
+                if (!Array.isArray(dayObj.slots) || dayObj.slots.length === 0) {
+                    const noSlots = $('<div class="p-3 border rounded no-slots">No Slots</div>');
+                    container.append(noSlots);
+                    $submit.prop('disabled', true);
+                } else {
+                    const slotsWrap = $('<div class="d-flex flex-wrap justify-content-center p-2"></div>');
+                    const currentSelected = $hiddenDate.val();
+
+                    dayObj.slots.forEach(slotIso => {
+                        const isSelected = currentSelected === slotIso;
+                        const btnClass = isSelected ? 'btn btn-primary time-button selected' : 'btn btn-light time-button';
+                        const btn = $(`<button type="button" class="${btnClass}">${fmtTime12(slotIso)}</button>`);
+                        btn.attr('data-iso', slotIso);
+                        btn.on('click', function () {
+                            // set hidden field, toggle classes
+                            $hiddenDate.val(slotIso);
+                            $('.time-button').removeClass('btn-primary selected').addClass('btn-light');
+                            $(this).removeClass('btn-light').addClass('btn-primary selected');
+                            $submit.prop('disabled', false);
+                        });
+                        slotsWrap.append(btn);
+                    });
+
+                    container.append(slotsWrap);
+                    // if no selection yet, disable submit
+                    if (!$hiddenDate.val()) $submit.prop('disabled', true);
+                }
+
+                $dayCard.append(dayHeader, container);
+            }
+
+            // Load availability for a single day: calls GetWeekSlots (your existing endpoint) with start = date, then selects the matching day
+            function loadDay(date) {
+                const doctorId = $doctor.val();
+                if (!doctorId) {
+                    $dayCard.html('<div class="text-muted text-center">Please select a doctor to see availability.</div>');
+                    $submit.prop('disabled', true);
+                    return;
+                }
+
+                const startIso = fmtISO(date);
+                $dayCard.html('<div class="text-muted text-center">Loading availability...</div>');
+
+                $.get('@Url.Action("GetWeekSlots", "Appointment")', { doctorId: doctorId, start: startIso })
+                    .done(function (days) {
+                        if (!Array.isArray(days)) {
+                            $dayCard.html('<div class="text-danger text-center">Failed to load availability.</div>');
+                            $submit.prop('disabled', true);
+                            return;
+                        }
+
+                        // Find the day entry matching the selected date (the server should return day.date in yyyy-MM-dd)
+                        const targetDate = fmtISO(date);
+                        let found = null;
+                        for (let i = 0; i < days.length; i++) {
+                            if (String(days[i].date) === targetDate) { found = days[i]; break; }
+                        }
+
+                        if (!found) {
+                            // Server didn't include the day (maybe it's outside week range) — show not available
+                            $dayCard.html('<div class="p-3 border rounded text-center no-slots">Not Available</div>');
+                            $submit.prop('disabled', true);
+                        } else {
+                            // expected structure: found = { date: 'yyyy-MM-dd', day: 'Monday', slots: ['yyyy-MM-ddTHH:mm', ...] }
+                            renderDaySlots(found);
+                        }
+                    })
+                    .fail(function () {
+                        $dayCard.html('<div class="text-danger text-center">Failed to load availability.</div>');
+                        $submit.prop('disabled', true);
+                    });
+            }
+
+            // Doctor change handler: reset selection and load availability for currently selected date
+            $doctor.on('change', function () {
+                $hiddenDate.val('');
+                const today = new Date($dateInput.val() ? $dateInput.val() : new Date());
+                $dateInput.val(fmtISO(today));
+                loadDay(new Date($dateInput.val()));
+            });
+
+            // Date input change: reset slot selection and load for new date
+            $dateInput.on('change', function () {
+                $hiddenDate.val('');
+                const selected = new Date($(this).val());
+                if (isNaN(selected.getTime())) {
+                    $dayCard.html('<div class="text-muted text-center">Please pick a valid date.</div>');
+                    $submit.prop('disabled', true);
+                    return;
+                }
+                loadDay(selected);
+            });
+
+            // Form validation + submit handling (keeps your behavior)
+            $('.needs-validation').on('submit', function (e) {
+                e.preventDefault();
+
+                if (this.checkValidity() === false) {
+                    e.stopPropagation();
+                } else {
+                    // allow actual submit
+                    this.submit();
+                }
+                $(this).addClass('was-validated');
+            });
+
+            // Initialize with server-supplied existing date (keeps your existing initialization)
+            const initialDate = new Date(@existing.Year, @existing.Month - 1, @existing.Day);
+            $dateInput.val(fmtISO(initialDate));
+
+            // If there is an existing appointment datetime in the model, set it
+            @if (Model?.Appointment?.AppointmentDate != null)
+            {
+                    <text>
+                        $hiddenDate.val('@(Model.Appointment.AppointmentDate.ToString("s"))'); // ISO without timezone
+                    </text>
+            }
+
+            // initial load
+            loadDay(initialDate);
+        });
+    </script>
+} *@
+@model CMS.ViewModels.AppointmentUpsertVM
+
+@{
+    ViewData["Title"] = (Model?.Appointment?.AppointmentId ?? 0) == 0 ? "Create Appointment" : "Edit Appointment";
+    var existing = Model?.Appointment?.AppointmentDate ?? DateTime.Now;
+}
+
+<form id="appointmentForm" asp-action="Upsert" asp-controller="Appointment" method="post" class="needs-validation">
+    @Html.AntiForgeryToken()
+    <div class="content py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h4 class="mb-0">@ViewData["Title"]</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back</a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    @(Model?.Appointment?.AppointmentId == 0 ? "Create" : "Update")
+                </button>
+            </div>
+        </div>
+
+        <validation-summary model-only="true" class="text-danger small"></validation-summary>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Appointment Details</h6>
+
+                        <div class="row g-3">
+                            <!-- Patient -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.PatientId" class="form-label">Patient</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <select asp-for="Appointment.PatientId" asp-items="Model.Patients" class="form-select select2 flex-1" required>
+                                        <option value="">--Select Patient--</option>
+                                    </select>
+                                    <button type="button" id="btnAddPatient" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+                                        <i class="ti ti-plus"></i> Add
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Appointment.PatientId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Doctor -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.DoctorId" class="form-label">Doctor</label>
+                                <select asp-for="Appointment.DoctorId" asp-items="Model.Doctors" class="form-select select2" required>
+                                    <option value="">--Select Doctor--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.DoctorId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Appointment Type -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.AppointmentType" class="form-label">Appointment Type</label>
+                                <select asp-for="Appointment.AppointmentType" asp-items="Model.AppointmentTypes" class="form-select select2" required>
+                                    <option value="">--Select Appointment Type--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.AppointmentType" class="text-danger"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Appointment.Status" class="form-label">Status</label>
+                                <select asp-for="Appointment.Status" asp-items="Model.Statuses" class="form-select select2" required>
+                                    <option value="">--Select Status--</option>
+                                </select>
+                                <span asp-validation-for="Appointment.Status" class="text-danger"></span>
+                            </div>
+
+                            <!-- Hidden Appointment Date (set by slot selection) -->
+                            <input asp-for="Appointment.AppointmentDate" type="hidden" id="appointmentDateHidden" />
+
+                            <div class="col-12">
+                                <div class="d-flex justify-content-center mb-3">
+                                    <input type="date" id="dateInput" class="form-control" />
+                                </div>
+
+                                <div id="dayAvailabilityCard">
+                                    <!-- Single day availability will be rendered here -->
+                                    <div class="text-muted text-center">Please select a doctor and date to see availability.</div>
+                                </div>
+
+                                <div id="gridHelp" class="form-text mt-2">
+                                    Red text = no availability. Click a time to select it.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<!-- Patient Add Modal -->
+<div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addPatientModalLabel">Add Patient</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <div id="patientFormContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .day-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .time-button {
+        width: auto;
+        margin: 4px;
+        white-space: nowrap;
+    }
+
+        .time-button.selected {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+    .no-slots {
+        color: #dc3545; /* bootstrap danger */
+    }
+</style>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            $('.select2').select2({ theme: 'bootstrap-5', width: '100%' });
+
+            const $doctor      = $('select[name="Appointment.DoctorId"]');
+            const $submit      = $('#appointmentForm button[type="submit"]');
+            const $hiddenDate  = $('#appointmentDateHidden');
+            const $dateInput   = $('#dateInput');
+            const $dayCard     = $('#dayAvailabilityCard');
+
+            // ---------- utilities ----------
+            function fmtISO(date) {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+
+            // ---------- render one day ----------
+            function renderDaySlots(dayObj) {
+                $dayCard.empty();
+
+                const dayHeader = $('<div class="day-title text-center"></div>').text(dayObj.day);
+                const container = $('<div class="d-flex flex-column align-items-center"></div>');
+
+                if (!Array.isArray(dayObj.slots) || dayObj.slots.length === 0) {
+                    container.append('<div class="p-3 border rounded no-slots">No Slots</div>');
+                    $submit.prop('disabled', true);
+                } else {
+                    const $wrap = $('<div class="d-flex flex-wrap justify-content-center p-2"></div>');
+                    const currentIso = $hiddenDate.val();
+
+                    dayObj.slots.forEach(slot => {
+                        const selected = currentIso === slot.iso;
+                        const btnClass = selected
+                            ? 'btn btn-primary time-button selected'
+                            : 'btn btn-light time-button';
+
+                        const $btn = $(`<button type="button" class="${btnClass}">${slot.label}</button>`);
+                        $btn.attr('data-iso', slot.iso);
+
+                        $btn.on('click', function () {
+                            $hiddenDate.val(slot.iso);
+                            $('.time-button').removeClass('btn-primary selected').addClass('btn-light');
+                            $(this).removeClass('btn-light').addClass('btn-primary selected');
+                            $submit.prop('disabled', false);
+                        });
+
+                        $wrap.append($btn);
+                    });
+
+                    container.append($wrap);
+                    if (!currentIso) $submit.prop('disabled', true);
+                }
+
+                $dayCard.append(dayHeader, container);
+            }
+
+            // ---------- load availability ----------
+            async function loadDay(date) {
+                const doctorId = $doctor.val();
+                if (!doctorId) {
+                    $dayCard.html('<div class="text-muted text-center">Please select a doctor to see availability.</div>');
+                    $submit.prop('disabled', true);
+                    return;
+                }
+
+                $dayCard.html('<div class="text-muted text-center">Loading availability…</div>');
+
+                try {
+                    const days = await $.get('@Url.Action("GetWeekSlots", "Appointment")', { doctorId, start: fmtISO(date) });
+                    if (!Array.isArray(days)) throw new Error('Bad response');
+
+                    const target = fmtISO(date);
+                    const found  = days.find(d => d.date === target);
+
+                    if (!found) {
+                        $dayCard.html('<div class="p-3 border rounded text-center no-slots">Not Available</div>');
+                        $submit.prop('disabled', true);
+                    } else {
+                        renderDaySlots(found);
+                    }
+                } catch {
+                    $dayCard.html('<div class="text-danger text-center">Failed to load availability.</div>');
+                    $submit.prop('disabled', true);
+                }
+            }
+
+            // ---------- events ----------
+            $doctor.on('change', () => loadDay(new Date($dateInput.val() || new Date())));
+            $dateInput.on('change', function () {
+                $hiddenDate.val('');
+                const d = new Date(this.value);
+                if (isNaN(d)) {
+                    $dayCard.html('<div class="text-muted text-center">Please pick a valid date.</div>');
+                    $submit.prop('disabled', true);
+                    return;
+                }
+                loadDay(d);
+            });
+
+            // ---------- form validation ----------
+            $('.needs-validation').on('submit', function (e) {
+                e.preventDefault();
+                if (this.checkValidity() === false) {
+                    e.stopPropagation();
+                } else {
+                    this.submit();
+                }
+                $(this).addClass('was-validated');
+            });
+
+            // ---------- initial load ----------
+            const initialDate = new Date(@existing.Year, @existing.Month - 1, @existing.Day);
+            $dateInput.val(fmtISO(initialDate));
+            @if (Model?.Appointment?.AppointmentDate != null)
+            {
+                    <text>$hiddenDate.val('@(Model.Appointment.AppointmentDate.ToString("s"))');</text>
+            }
+            loadDay(initialDate);
+        });
+    </script>
+}
+
+@* 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            // Initialize select2 (keeps your existing setup)
+            $('.select2').select2({ theme: 'bootstrap-5', width: '100%' });
+
+            const $doctor = $('select[name="Appointment.DoctorId"]');
+            const $submit = $('#appointmentForm button[type="submit"]');
+            const $hiddenDate = $('#appointmentDateHidden');
+            const $dateInput = $('#dateInput');
+            const $dayCard = $('#dayAvailabilityCard');
+
+            // Helper to format Date -> yyyy-MM-dd
+            function fmtISO(date) {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+
+            // Format time part from full ISO slot: "YYYY-MM-DDTHH:mm[:ss]" -> "h:mm AM/PM"
+            function fmtTime12(iso) {
+                if (!iso) return '';
+                const parts = iso.split('T');
+                if (parts.length < 2) return iso;
+                const t = parts[1];
+                const timeParts = t.split(':');
+                const H = parseInt(timeParts[0], 10);
+                const M = timeParts[1] || '00';
+                const ampm = H >= 12 ? 'PM' : 'AM';
+                const h12 = ((H + 11) % 12) + 1;
+                return `${h12}:${String(M).padStart(2,'0')} ${ampm}`;
+            }
+
+            // Render a single day's availability (day object contains: date, day (label), slots: [iso,...])
+            function renderDaySlots(dayObj) {
+                $dayCard.empty();
+
+                // const dayHeader = $('<div class="day-title text-center"></div>').text(`${dayObj.day} — ${dayObj.date}`);
+                const dayHeader = $('<div class="day-title text-center"></div>')
+                  .text(dayObj.day);   // already contains the full label
+                const container = $('<div class="d-flex flex-column align-items-center"></div>');
+
+                if (!Array.isArray(dayObj.slots) || dayObj.slots.length === 0) {
+                    const noSlots = $('<div class="p-3 border rounded no-slots">No Slots</div>');
+                    container.append(noSlots);
+                    $submit.prop('disabled', true);
+                } else {
+                    const slotsWrap = $('<div class="d-flex flex-wrap justify-content-center p-2"></div>');
+                    const currentSelected = $hiddenDate.val();
+
+                    dayObj.slots.forEach(slotIso => {
+                        const isSelected = currentSelected === slotIso;
+                        const btnClass = isSelected ? 'btn btn-primary time-button selected' : 'btn btn-light time-button';
+                        const btn = $(`<button type="button" class="${btnClass}">${fmtTime12(slotIso)}</button>`);
+                        btn.attr('data-iso', slotIso);
+                        btn.on('click', function () {
+                            // set hidden field, toggle classes
+                            $hiddenDate.val(slotIso);
+                            $('.time-button').removeClass('btn-primary selected').addClass('btn-light');
+                            $(this).removeClass('btn-light').addClass('btn-primary selected');
+                            $submit.prop('disabled', false);
+                        });
+                        slotsWrap.append(btn);
+                    });
+
+                    container.append(slotsWrap);
+                    // if no selection yet, disable submit
+                    if (!$hiddenDate.val()) $submit.prop('disabled', true);
+                }
+
+                $dayCard.append(dayHeader, container);
+            }
+
+            // Load availability for a single day: calls GetWeekSlots (your existing endpoint) with start = date, then selects the matching day
+            function loadDay(date) {
+                const doctorId = $doctor.val();
+                if (!doctorId) {
+                    $dayCard.html('<div class="text-muted text-center">Please select a doctor to see availability.</div>');
+                    $submit.prop('disabled', true);
+                    return;
+                }
+
+                const startIso = fmtISO(date);
+                $dayCard.html('<div class="text-muted text-center">Loading availability...</div>');
+
+                $.get('@Url.Action("GetWeekSlots", "Appointment")', { doctorId: doctorId, start: startIso })
+                    .done(function (days) {
+                        if (!Array.isArray(days)) {
+                            $dayCard.html('<div class="text-danger text-center">Failed to load availability.</div>');
+                            $submit.prop('disabled', true);
+                            return;
+                        }
+
+                        // Find the day entry matching the selected date (the server should return day.date in yyyy-MM-dd)
+                        const targetDate = fmtISO(date);
+                        let found = null;
+                        for (let i = 0; i < days.length; i++) {
+                            if (String(days[i].date) === targetDate) { found = days[i]; break; }
+                        }
+
+                        if (!found) {
+                            // Server didn't include the day (maybe it's outside week range) — show not available
+                            $dayCard.html('<div class="p-3 border rounded text-center no-slots">Not Available</div>');
+                            $submit.prop('disabled', true);
+                        } else {
+                            // expected structure: found = { date: 'yyyy-MM-dd', day: 'Monday', slots: ['yyyy-MM-ddTHH:mm', ...] }
+                            renderDaySlots(found);
+                        }
+                    })
+                    .fail(function () {
+                        $dayCard.html('<div class="text-danger text-center">Failed to load availability.</div>');
+                        $submit.prop('disabled', true);
+                    });
+            }
+
+            // Doctor change handler: reset selection and load availability for currently selected date
+            $doctor.on('change', function () {
+                $hiddenDate.val('');
+                const today = new Date($dateInput.val() ? $dateInput.val() : new Date());
+                $dateInput.val(fmtISO(today));
+                loadDay(new Date($dateInput.val()));
+            });
+
+            // Date input change: reset slot selection and load for new date
+            $dateInput.on('change', function () {
+                $hiddenDate.val('');
+                const selected = new Date($(this).val());
+                if (isNaN(selected.getTime())) {
+                    $dayCard.html('<div class="text-muted text-center">Please pick a valid date.</div>');
+                    $submit.prop('disabled', true);
+                    return;
+                }
+                loadDay(selected);
+            });
+
+            // Form validation + submit handling (keeps your behavior)
+            $('.needs-validation').on('submit', function (e) {
+                e.preventDefault();
+
+                if (this.checkValidity() === false) {
+                    e.stopPropagation();
+                } else {
+                    // allow actual submit
+                    this.submit();
+                }
+                $(this).addClass('was-validated');
+            });
+
+            // Initialize with server-supplied existing date (keeps your existing initialization)
+            const initialDate = new Date(@existing.Year, @existing.Month - 1, @existing.Day);
+            $dateInput.val(fmtISO(initialDate));
+
+            // If there is an existing appointment datetime in the model, set it
+            @if (Model?.Appointment?.AppointmentDate != null)
+            {
+                    <text>
+                        $hiddenDate.val('@(Model.Appointment.AppointmentDate.ToString("s"))'); // ISO without timezone
+                    </text>
+            }
+
+            // initial load
+            loadDay(initialDate);
+        });
+    </script>
+} *@

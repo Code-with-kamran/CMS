@@ -1,0 +1,390 @@
+﻿@{
+    // Layout = null; // Or your site layout
+    var doctorId = (int)ViewData["DoctorId"];
+}
+
+<!-- Copy the HTML from doctor-details.html up to the main content area -->
+
+<div class="main-wrapper">
+    <!-- ... header/sidebar ... -->
+
+    <div>
+        <div class="content pb-0">
+            <!-- Breadcrumb -->
+            <div class="mb-3">
+                <h6 class="fw-semibold fs-14 mb-0"><a href="/Doctors"><i class="ti ti-chevron-left me-1"></i>Doctors @doctorId</a></h6>
+            </div>
+
+            <!-- Doctor Card (dynamic) -->
+            <div id="doctor-profile-card"></div>
+
+            <div class="row">
+                <div class="col-lg-8" id="doctor-main-left"></div>
+                <div class="col-xl-4 theiaStickySidebar" id="doctor-main-right"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+   
+
+
+    <script>
+    console.log(@doctorId)
+        $(function() {
+                 // const doctorId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(doctorId));
+                const doctorId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(doctorId));
+;
+          
+            // Fetch doctor data via AJAX
+            $.get('/Doctor/GetDoctorProfile/' + doctorId, function(doctor) {
+                // 1. Profile Card
+                $('#doctor-profile-card').html(`
+                    <div class="card">
+                        <div class="card-body d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+                            <div class="d-flex align-items-center flex-sm-nowrap flex-wrap row-gap-3">
+                                <div class="me-3 doctor-profile-img">
+                                    <img src="${doctor.profileImageUrl || '/assets/img/doctors/doctor-06.jpg'}" class="rounded" alt="">
+                                </div>
+                                <div class="flex-fill">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <h6 class="mb-0 fw-semibold">Dr. ${doctor.fullName}</h6>
+                                        <span class="badge border bg-white text-dark fw-medium ms-2">
+                                            <i class="ti ti-point-filled me-1 text-info"></i>${doctor.specialty}
+                                        </span>
+                                    </div>
+                                    <span class="d-block mb-3 fs-13">${doctor.degrees}</span>
+                                    <div class="d-flex align-items-center">
+                                        <p class="mb-0 fs-13"><i class="ti ti-building-hospital me-1"></i>Clinic : ${doctor.clinic}</p>
+                                        <span class="badge badge-soft-success fw-medium ms-2">
+                                            <i class="ti ti-point-filled me-1 text-success"></i>${doctor.availabilityStatus}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="mb-2">Consultation Charge</p>
+                                <h6 class="fs-18 fw-bold mb-3">$${doctor.consultationCharge} <span class="fw-normal text-body fs-14"> / ${doctor.consultationDurationInMinutes} Min</span></h6>
+                                <a href="/Appointment/Book/${doctor.id}" class="btn btn-primary">
+                                    <i class="ti ti-calendar-event me-1"></i>Book Appointment
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+
+              // === CONFIG ===
+        const CHUNK_MINUTES = 30; // chunk length (change to 60 for 1-hour chunks)
+        const MAX_COLUMNS_PER_ROW = 3; // controls visual wrapping (flex still handles small screens)
+
+        // days array used for tabs (keeps UI identical)
+        let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+        // Helper: safe parse of time strings into minutes since midnight
+        function parseTimeToMinutes(timeStr) {
+            if (!timeStr) return null;
+            timeStr = timeStr.trim();
+
+            // If format like "13:30:00" or "13:30"
+            const hhmm24 = /^(\d{1,2}):(\d{2})(?::\d{2})?$/;
+            const m24 = hhmm24.exec(timeStr);
+            if (m24) {
+                let h = parseInt(m24[1], 10);
+                let m = parseInt(m24[2], 10);
+                if (isNaN(h) || isNaN(m)) return null;
+                return h * 60 + m;
+            }
+
+            // If format like "01:30 PM" or "1:30am"
+            const ampm = /^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$/;
+            const mampm = ampm.exec(timeStr);
+            if (mampm) {
+                let h = parseInt(mampm[1], 10);
+                let m = parseInt(mampm[2], 10);
+                const period = mampm[3].toUpperCase();
+                if (period === 'PM' && h !== 12) h += 12;
+                if (period === 'AM' && h === 12) h = 0;
+                return h * 60 + m;
+            }
+
+            // Last resort: try Date parsing (may be locale dependent)
+            const d = new Date('1970-01-01T' + timeStr);
+            if (!isNaN(d.getTime())) {
+                return d.getUTCHours() * 60 + d.getUTCMinutes();
+            }
+
+            return null;
+        }
+
+        // Helper: format minutes -> "hh:mm AM/PM"
+        function formatMinutesToAmPm(mins) {
+            if (typeof mins !== 'number' || isNaN(mins)) return '';
+            mins = ((mins % (24*60)) + (24*60)) % (24*60); // normalize
+            let h = Math.floor(mins / 60);
+            let m = mins % 60;
+            const period = h >= 12 ? 'PM' : 'AM';
+            let hh = h % 12;
+            if (hh === 0) hh = 12;
+            return `${String(hh).padStart(2,'0')}:${String(m).padStart(2,'0')} ${period}`;
+        }
+
+        // Split a single availability slot into fixed-size chunks (no overlap)
+        function splitSlotIntoChunks(startTimeStr, endTimeStr, chunkMinutes) {
+            const start = parseTimeToMinutes(startTimeStr);
+            const end = parseTimeToMinutes(endTimeStr);
+            if (start === null || end === null || end <= start) return []; // invalid
+            const chunks = [];
+            let cursor = start;
+            while (cursor + chunkMinutes <= end) {
+                const chunkStart = cursor;
+                const chunkEnd = cursor + chunkMinutes;
+                chunks.push({
+                    startM: chunkStart,
+                    endM: chunkEnd,
+                    display: `${formatMinutesToAmPm(chunkStart)} - ${formatMinutesToAmPm(chunkEnd)}`
+                });
+                cursor += chunkMinutes;
+            }
+            // Optionally include final smaller chunk if you want leftover shorter than chunkMinutes:
+            // if (cursor < end) { chunks.push({startM: cursor, endM: end, display: `${formatMinutesToAmPm(cursor)} - ${formatMinutesToAmPm(end)}`}); }
+            return chunks;
+        }
+
+        // Build availability per day, splitting into chunks
+        function buildChunksForDay(weeklyAvailabilities, dayIndex, chunkMinutes) {
+            // weeklyAvailabilities: array of objects from server.
+            // dayIndex: 0..4 for Monday..Friday (our days[])
+        // NOTE: server-side doctor.weeklyAvailabilities.dayOfWeek could be 0=Sunday..6=Saturday (C# DayOfWeek)
+            const chunks = [];
+
+            weeklyAvailabilities
+                .filter(a => {
+                    // If server sends dayOfWeek as number, it may be 0=Sunday. Our days array: Monday->index 0 => DayOfWeek.Monday == 1
+                    // Compute expected numeric day value for C# DayOfWeek: Monday=1, Tuesday=2, ...
+                    const expectedDayOfWeek = dayIndex + 1; // Monday->1
+                    // a.dayOfWeek may already be number or string; coerce to number
+                    const dow = (typeof a.dayOfWeek === 'number') ? a.dayOfWeek : parseInt(a.dayOfWeek, 10);
+                    // if a.isWorkingDay false => skip
+                    return a && a.isWorkingDay && !isNaN(dow) && dow === expectedDayOfWeek;
+                })
+                .forEach(a => {
+                    // a.startTime / a.endTime may be "08:30:00" or "08:30" or "08:30 AM"
+                    const slotChunks = splitSlotIntoChunks(a.startTime, a.endTime, chunkMinutes);
+                    // annotate source if needed
+                    slotChunks.forEach(c => c.source = a);
+                    chunks.push(...slotChunks);
+                });
+
+            // sort and dedupe by startM
+            chunks.sort((x,y) => x.startM - y.startM);
+            const unique = [];
+            const seen = new Set();
+            chunks.forEach(c => {
+                const key = `${c.startM}-${c.endM}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    unique.push(c);
+                }
+            });
+            return unique;
+        }
+
+        // Now render tabs and panes using the chunk builder
+        let availTabs = '';
+        for (let i = 0; i < days.length; i++) {
+            const day = days[i];
+            const tabId = `available-tab-${i+1}`;
+            const active = i === 0 ? 'active show' : '';
+
+            const dayChunks = buildChunksForDay(doctor.weeklyAvailabilities || [], i, CHUNK_MINUTES);
+
+            let slotsHtml = '';
+            if (dayChunks.length) {
+                // Render chunks in rows of MAX_COLUMNS_PER_ROW columns (Bootstrap grid)
+                for (let r = 0; r < dayChunks.length; r += MAX_COLUMNS_PER_ROW) {
+                    const rowChunks = dayChunks.slice(r, r + MAX_COLUMNS_PER_ROW);
+                    slotsHtml += `<div class="row mb-2 gx-2">`;
+                    rowChunks.forEach(chunk => {
+                        slotsHtml += `
+                            <div class="col">
+                                <a href="javascript:void(0);" class="d-inline-flex align-items-center bg-light rounded w-100 text-center justify-content-center p-1 text-body">${chunk.display}</a>
+                            </div>
+                        `;
+                    });
+                    slotsHtml += `</div>`;
+                }
+            } else {
+                slotsHtml = `<div class="text-center"><span class="text-danger">Not Available</span></div>`;
+            }
+
+            availTabs += `
+                <div class="tab-pane fade ${active}" id="${tabId}" role="tabpanel">
+                    <div class="p-2">${slotsHtml}</div>
+                </div>
+            `;
+        }
+
+        // Create nav tabs (same as before)
+        let navTabs = days.map((d,i) =>
+            `<li class="nav-item flex-fill"><a class="nav-link text-center fw-semibold ${i === 0 ? 'active' : ''}" data-bs-toggle="tab" data-bs-target="#available-tab-${i+1}">${d}</a></li>`
+        ).join('');
+
+        // Inject into DOM (replace existing availability card inner HTML area)
+        $('#doctor-main-left').find('.card:has(.card-body:contains("Availability")) .card-body').first().html(`
+            <h5 class="fw-bold mb-3">Availability</h5>
+            <ul class="nav nav-tabs nav-bordered nav-border-bottom mb-3">${navTabs}</ul>
+            <div class="tab-content" id="pills-tabContent">${availTabs}</div>
+        `);
+
+
+
+                // 2. Main Left: Availability, Short Bio, Education, Awards, Certifications
+                // let availTabs = '';
+                // let days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+                // for (let i = 0; i < days.length; i++) {
+                //     let day = days[i];
+                //     let tabId = `available-tab-${i+1}`;
+                //     let active = i === 0 ? 'active show' : '';
+                //     let slots = '';
+                //     let dayAvail = doctor.weeklyAvailabilities.filter(a => a.dayOfWeek === i && a.isWorkingDay);
+                //     if (dayAvail.length) {
+                //         slots = dayAvail.map(a => {
+                //             let st = a.startTime.substring(0,5), et = a.endTime.substring(0,5);
+                //             return `<a href="#" class="d-inline-flex align-items-center bg-light rounded flex-fill text-center justify-content-center p-1 text-body">${st} - ${et}</a>`;
+                //         }).join('');
+                //     } else {
+                //         slots = `<span class="text-danger text-center">Not Available</span>`;
+                //     }
+                //     availTabs += `
+                //         <div class="tab-pane fade ${active}" id="${tabId}" role="tabpanel">
+                //             <div class="d-flex align-items-center flex-wrap gap-2">${slots}</div>
+                //         </div>
+                //     `;
+                // }
+                // let navTabs = days.map((d,i) =>
+                //     `<li class="nav-item flex-fill"><a class="nav-link text-center fw-semibold ${i===0?'active':''}" data-bs-toggle="tab" data-bs-target="#available-tab-${i+1}">${d}</a></li>`
+                // ).join('');
+
+                let educations = doctor.educations.map(e =>
+                    `<li class="feed-item timeline-item">
+                        <h6 class="fw-bold mb-2">${e.institution} - ${e.degree}</h6>
+                        <p>${e.year ? e.year : ''}</p>
+                    </li>`
+                ).join('');
+
+                let awards = doctor.awards.map(a =>
+                    `<div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="me-2"><i class="ti ti-award"></i></span>
+                            <h6 class="mb-0 fw-bold">${a.title} (${a.year || ''})</h6>
+                        </div>
+                        <p>${a.issuer || ''}</p>
+                    </div>`
+                ).join('');
+
+                let certs = doctor.certifications.map(c =>
+                    `<div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="me-2"><i class="ti ti-award"></i></span>
+                            <h6 class="mb-0 fw-bold">${c.title}${c.issuedOn ? ', ' + new Date(c.issuedOn).getFullYear() : ''}</h6>
+                        </div>
+                        <p>${c.authority || ''}</p>
+                    </div>`
+                ).join('');
+
+                $('#doctor-main-left').html(`
+                    <div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="fw-bold mb-3">Availability</h5>
+                                <ul class="nav nav-tabs nav-bordered nav-border-bottom mb-3">${navTabs}</ul>
+                                <div class="tab-content" id="pills-tabContent">${availTabs}</div>
+                            </div>
+                        </div>
+                        <div class="card"><div class="card-body">
+                            <h5 class="fw-bold mb-3">Short Bio</h5>
+                            <p>${doctor.about || ''}</p>
+                        </div></div>
+                        <div class="card"><div class="card-body">
+                            <h5 class="fw-bold mb-3">Education Information</h5>
+                            <ul class="activity-feed rounded">${educations}</ul>
+                        </div></div>
+                        <div class="card"><div class="card-body">
+                            <h5 class="fw-bold mb-3">Awards & Recognition</h5>${awards}
+                        </div></div>
+                        <div class="card"><div class="card-body">
+                            <h5 class="fw-bold mb-3">Certifications</h5>${certs}
+                        </div></div>
+                    </div>
+                `);
+
+                // 3. Main Right: About
+                $('#doctor-main-right').html(`
+                    <div class="card"><div class="card-body">
+                        <h6 class="fw-bold mb-3">About</h6>
+                        <div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark fs-16 flex-shrink-0 me-2"><i class="ti ti-file text-body"></i></span>
+                                <div>
+                                    <h6 class="fw-semibold fs-13 mb-1">Medical Liscence Number</h6>
+                                    <p>${doctor.medicalLicenseNumber || '-'}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark fs-16 flex-shrink-0 me-2"><i class="ti ti-phone text-body"></i></span>
+                                <div>
+                                    <h6 class="fw-semibold fs-13 mb-1">Phone Number</h6>
+                                    <p>${doctor.phone || '-'}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark fs-16 flex-shrink-0 me-2"><i class="ti ti-mail text-body"></i></span>
+                                <div>
+                                    <h6 class="fw-semibold fs-13 mb-1">Email Address</h6>
+                                    <p>${doctor.email || '-'}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark fs-16 flex-shrink-0 me-2"><i class="ti ti-map-pin-check text-body"></i></span>
+                                <div>
+                                    <h6 class="fw-semibold fs-13 mb-1">Location</h6>
+                                    <p>${doctor.address || '-'}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark fs-16 flex-shrink-0 me-2"><i class="ti ti-calendar-event text-body"></i></span>
+                                <div>
+                                    <h6 class="fw-semibold fs-13 mb-1">DOB</h6>
+                                    <p>${doctor.dateOfBirth ? new Date(doctor.dateOfBirth).toLocaleDateString() : '-'}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark fs-16 flex-shrink-0 me-2"><i class="ti ti-droplet text-body"></i></span>
+                                <div>
+                                    <h6 class="fw-semibold fs-13 mb-1">Blood Group</h6>
+                                    <p>${doctor.bloodGroup || '-'}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark fs-16 flex-shrink-0 me-2"><i class="ti ti-user-check text-body"></i></span>
+                                <div>
+                                    <h6 class="fw-semibold fs-13 mb-1">Year of Experience</h6>
+                                    <p>${doctor.yearOfExperience || '-'}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="avatar rounded-circle bg-light text-dark fs-16 flex-shrink-0 me-2"><i class="ti ti-gender-male"></i></span>
+                                <div>
+                                    <h6 class="fw-semibold fs-13 mb-1">Gender</h6>
+                                    <p>${doctor.gender || '-'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div></div>
+                `);
+            });
+        });
+    </script>
+}

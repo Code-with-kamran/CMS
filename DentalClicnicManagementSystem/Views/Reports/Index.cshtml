@@ -1,0 +1,43 @@
+﻿@* // File: Views/Reports/Index.cshtml *@
+@{
+    ViewData["Title"] = "HR Reports";
+}
+
+<div class="content py-3">
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">HR Reports</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Attendance Report</h5>
+                    <p class="card-text">Generate a detailed report of employee attendance records with date and status filters.</p>
+                    <a asp-action="AttendanceReport" class="btn btn-primary">View Report</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Leave Report</h5>
+                    <p class="card-text">Generate a report of all leave requests, filterable by status, type, and date range.</p>
+                    <a asp-action="LeaveReport" class="btn btn-primary">View Report</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Payroll Summary Report</h5>
+                    <p class="card-text">View a summary of payroll runs, including total salaries, allowances, and deductions.</p>
+                    <a asp-action="PayrollSummary" class="btn btn-primary">View Report</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

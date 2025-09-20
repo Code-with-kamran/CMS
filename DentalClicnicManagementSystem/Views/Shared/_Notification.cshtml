@@ -1,0 +1,28 @@
+﻿@if (TempData["Success"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "5000"
+            };
+            toastr.success(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Success"])));
+        });
+    </script>
+}
+@if (TempData["Error"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "5000"
+            };
+            toastr.error(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Error"])));
+        });
+    </script>
+}

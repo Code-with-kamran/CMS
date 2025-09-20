@@ -1,145 +1,523 @@
-﻿@model CMS.Models.Doctor
-
+﻿@model ViewModels.DoctorUpsertVM
 @{
-    // Safely compute isEdit from ViewBag or fallback to Model.Id > 0
-    bool isEdit = (ViewBag?.IsEdit as bool?) ?? (Model?.Id > 0);
+    ViewData["Title"] = Model.Doctor.Id == 0 ? "Add Doctor" : "Edit Doctor";
+    var currentImage = string.IsNullOrEmpty(Model?.Doctor.ProfileImageUrl) ? "/uploads/doctors/default.jpg" : Model.Doctor.ProfileImageUrl;
 
-    ViewData["Title"] = isEdit ? "Edit Doctor" : "Create Doctor";
 }
 
+<form asp-action="Upsert" asp-controller="Doctor" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Doctor.Id" />
 
-    <div class="content">
-        <div class="row">
-            <div class="col-lg-12 mx-auto">
-                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
-                    <div class="flex-grow-1">
-                        <h4 class="fw-bold mb-0">
-                            Add Doctor 
-                        </h4>
+    <div class="content py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h4 class="mb-0">@ViewData["Title"]</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back</a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    @(Model.Doctor.Id == 0 ? "Create" : "Update")
+                </button>
+            </div>
+        </div>
+
+        <validation-summary model-only="true" class="text-danger small"></validation-summary>
+
+        <div class="row g-3">
+            <!-- Left column -->
+            <div class="col-12 col-lg-7">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Personal & Professional</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.FullName" class="form-label"></label>
+                                <input asp-for="Doctor.FullName" class="form-control" />
+                                <span asp-validation-for="Doctor.FullName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.Specialty" class="form-label"></label>
+                                <input asp-for="Doctor.Specialty" class="form-control" />
+                                <span asp-validation-for="Doctor.Specialty" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.DepartmentId" class="form-label"></label>
+                                <select asp-for="Doctor.DepartmentId" class="form-select select2"
+                                        asp-items="@Model.Departments">
+                                    <option disabled selected value="">-- Select Department --</option>
+                                </select>
+                            </div>
+                            
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.Degrees" class="form-label"></label>
+                                <input asp-for="Doctor.Degrees" class="form-control" />
+                                <span asp-validation-for="Doctor.Degrees" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Doctor.About" class="form-label"></label>
+                                <textarea asp-for="Doctor.About" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Doctor.About" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+                        <h6 class="text-muted mb-3">Contact</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.Email" class="form-label"></label>
+                                <input asp-for="Doctor.Email" class="form-control" />
+                                <span asp-validation-for="Doctor.Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.Phone" class="form-label"></label>
+                                <input asp-for="Doctor.Phone" class="form-control" />
+                                <span asp-validation-for="Doctor.Phone" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Doctor.Address" class="form-label"></label>
+                                <input asp-for="Doctor.Address" class="form-control" />
+                                <span asp-validation-for="Doctor.Address" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image</label>
+                                <input type="file" name="ProfileImage" id="ProfileImage" class="form-control" accept="image/*" />
+                                <div class="mt-3">
+                                    <img id="imagePreview"
+                                         src="@currentImage"
+                                         alt="Image Preview"
+                                         class="img-thumbnail"
+                                         style="max-height: 200px;" />
+                                </div>
+                                <div class="subtle mt-1">PNG/JPG up to 1 MB recommended. A default image shows until you choose a file.</div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+                        <h6 class="text-muted mb-3">Administrative</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.ConsultationCharge" class="form-label"></label>
+                                <input asp-for="Doctor.ConsultationCharge" type="number" step="0.01" class="form-control" />
+                                <span asp-validation-for="Doctor.ConsultationCharge" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.ConsultationDurationInMinutes" class="form-label"></label>
+                                <input asp-for="Doctor.ConsultationDurationInMinutes" type="number" class="form-control" />
+                                <span asp-validation-for="Doctor.ConsultationDurationInMinutes" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.MedicalLicenseNumber" class="form-label"></label>
+                                <input asp-for="Doctor.MedicalLicenseNumber" class="form-control" />
+                                <span asp-validation-for="Doctor.MedicalLicenseNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.Clinic" class="form-label"></label>
+                                <input asp-for="Doctor.Clinic" class="form-control" />
+                                <span asp-validation-for="Doctor.Clinic" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+                        <h6 class="text-muted mb-3">General</h6>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label asp-for="Doctor.BloodGroup" class="form-label"></label>
+                                <input asp-for="Doctor.BloodGroup" class="form-control" placeholder="A+, O- ..." />
+                                <span asp-validation-for="Doctor.BloodGroup" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Doctor.YearOfExperience" class="form-label"></label>
+                                <input asp-for="Doctor.YearOfExperience" class="form-control" />
+                                <span asp-validation-for="Doctor.YearOfExperience" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Doctor.AvailabilityStatus" class="form-label"></label>
+                                <select asp-for="Doctor.AvailabilityStatus" class="form-select">
+                                    <option>Available</option>
+                                    <option>Busy</option>
+                                    <option>On Leave</option>
+                                </select>
+                                <span asp-validation-for="Doctor.AvailabilityStatus" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+                        <h6 class="text-muted mb-3">Authentication</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.Password" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Doctor.Password" class="form-control" type="password"
+                                           placeholder="@(Model.Doctor.Id == 0 ? "Required" : "Leave blank to keep current")" />
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePw('Doctor_Password')">Show</button>
+                                </div>
+                                <span asp-validation-for="Doctor.Password" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Doctor.ConfirmPassword" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Doctor.ConfirmPassword" class="form-control" type="password" />
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePw('Doctor_ConfirmPassword')">Show</button>
+                                </div>
+                                <span asp-validation-for="Doctor.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="text-end">
-                        <h6 class="fw-bold mb-0 d-flex align-items-center">
-                            <a asp-action="Index"><i class="ti ti-chevron-left me-1 fs-14"></i>Doctor</a>
-                        </h6>
+                </div>
+            </div>
+
+            <!-- Right column: Repeaters -->
+            <div class="col-12 col-lg-5">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-muted mb-0">Weekly Availability</h6>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Upsert" asp-route-prefill5="true" class="btn btn-outline-primary">Prefill 5 days</a>
+                                <a asp-action="Upsert" asp-route-prefill7="true" class="btn btn-outline-primary">Prefill 7 days</a>
+                            </div>
+                        </div>
+                        <div id="weeklyContainer" class="mt-3">
+                            @for (int i = 0; i < (Model.WeeklyAvailabilities?.Count ?? 0); i++)
+                            {
+                                <div class="row g-2 align-items-end mb-2 weekly-row">
+                                    <div class="col-5">
+                                        <label class="form-label">Day</label>
+                                        <select class="form-select"
+                                                asp-for="WeeklyAvailabilities[@i].DayOfWeek"
+                                                asp-items="Html.GetEnumSelectList<System.DayOfWeek>()">
+                                        </select>
+                                        <span asp-validation-for="WeeklyAvailabilities[@i].DayOfWeek" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label">Start</label>
+                                        <input class="form-control" type="time" step="1" asp-for="WeeklyAvailabilities[@i].StartTime" />
+                                        <span asp-validation-for="WeeklyAvailabilities[@i].StartTime" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label">End</label>
+                                        <input class="form-control" type="time" step="1" asp-for="WeeklyAvailabilities[@i].EndTime" />
+                                        <span asp-validation-for="WeeklyAvailabilities[@i].EndTime" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-1 text-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
+                                    </div>
+                                    <input type="hidden" asp-for="WeeklyAvailabilities[@i].IsWorkingDay" />
+                                </div>
+                            }
+                        </div>
+
+
+                        <button type="button" class="btn btn-light btn-sm mt-2" onclick="addWeekly()">+ Add day</button>
+
+                        <div class="form-group">
+                            <label for="RepeatAvailability">Repeat Availability for:</label>
+                            <select id="RepeatAvailability" name="repeatAvailabilityFor" class="form-control">
+                                <option value="1 Year">1 Year</option>
+                                <option value="6 Months">6 Months</option>
+                                <option value="3 Months">3 Months</option>
+                                <option value="1 Month">1 Month</option>
+                                <option value="1 Week">1 Week</option>
+                            </select>
+                        </div>
+
                     </div>
                 </div>
 
-               
-
-                <div class="card mb-0">
+                <div class="card shadow-sm mb-3">
                     <div class="card-body">
-                        <div class="border-bottom d-flex align-items-center justify-content-between pb-3 mb-3">
-                            <h5 class="offcanvas-title fs-18 fw-bold">
-                                @(isEdit ? "Edit Doctor" : "New Doctor")
-                            </h5>
+                        <h6 class="text-muted mb-2">Date-specific Availability (Overrides)</h6>
+                        <div id="dateContainer">
+                            @for (int i = 0; i < (Model.DateAvailabilities?.Count ?? 0); i++)
+                            {
+                                <div class="row g-2 align-items-end mb-2 date-row">
+                                    <div class="col-5">
+                                        <label class="form-label">Date</label>
+                                        <input class="form-control" type="date" asp-for="DateAvailabilities[@i].Date" />
+                                        <span asp-validation-for="DateAvailabilities[@i].Date" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label">Start</label>
+                                        <input class="form-control" type="time" step="60" asp-for="DateAvailabilities[@i].StartTime" />
+                                        <span asp-validation-for="DateAvailabilities[@i].StartTime" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label">End</label>
+                                        <input class="form-control" type="time" step="60" asp-for="DateAvailabilities[@i].EndTime" />
+                                        <span asp-validation-for="DateAvailabilities[@i].EndTime" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-1 text-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
+                                    </div>
+                                    <input type="hidden" asp-for="DateAvailabilities[@i].IsAvailable" />
+                                </div>
+                            }
                         </div>
+                        <button type="button" class="btn btn-light btn-sm mt-2" onclick="addDate()">+ Add date</button>
+                    </div>
+                </div>
 
-                        <form asp-action="Upsert" method="post" enctype="multipart/form-data">
-                            <input type="hidden" asp-for="Id" />
-
-                            <!-- Add validation summary -->
-                            <div asp-validation-summary="All" class="text-danger"></div>
-
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label asp-for="FullName" class="form-label">Full Name</label>
-                                        <input asp-for="FullName" class="form-control" />
-                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Education</h6>
+                        <div id="eduContainer">
+                            @for (int i = 0; i < (Model.Educations?.Count ?? 0); i++)
+                            {
+                                <div class="row g-2 align-items-end mb-2 edu-row">
+                                    <div class="col-5">
+                                        <label class="form-label">Degree</label>
+                                        <input class="form-control" asp-for="Educations[@i].Degree" />
+                                        <span asp-validation-for="Educations[@i].Degree" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label">Institution</label>
+                                        <input class="form-control" asp-for="Educations[@i].Institution" />
+                                        <span asp-validation-for="Educations[@i].Institution" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-2">
+                                        <label class="form-label">Year</label>
+                                        <input class="form-control" type="number" asp-for="Educations[@i].Year" />
+                                        <span asp-validation-for="Educations[@i].Year" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-1 text-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
                                     </div>
                                 </div>
+                            }
+                        </div>
+                        <button type="button" class="btn btn-light btn-sm mt-2" onclick="addEdu()">+ Add education</button>
+                    </div>
+                </div>
 
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label asp-for="Email" class="form-label">Email</label>
-                                        <input asp-for="Email" class="form-control" />
-                                        <span asp-validation-for="Email" class="text-danger"></span>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Awards</h6>
+                        <div id="awardContainer">
+                            @for (int i = 0; i < (Model.Awards?.Count ?? 0); i++)
+                            {
+                                <div class="row g-2 align-items-end mb-2 award-row">
+                                    <div class="col-6">
+                                        <label class="form-label">Title</label>
+                                        <input class="form-control" asp-for="Awards[@i].Title" />
+                                        <span asp-validation-for="Awards[@i].Title" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label">Issuer</label>
+                                        <input class="form-control" asp-for="Awards[@i].Issuer" />
+                                    </div>
+                                    <div class="col-1">
+                                        <label class="form-label">Year</label>
+                                        <input class="form-control" type="number" asp-for="Awards[@i].Year" />
+                                    </div>
+                                    <div class="col-1 text-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
                                     </div>
                                 </div>
+                            }
+                        </div>
+                        <button type="button" class="btn btn-light btn-sm mt-2" onclick="addAward()">+ Add award</button>
+                    </div>
+                </div>
 
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label asp-for="Phone" class="form-label">Phone</label>
-                                        <input asp-for="Phone" class="form-control" />
-                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Certifications</h6>
+                        <div id="certContainer">
+                            @for (int i = 0; i < (Model.Certifications?.Count ?? 0); i++)
+                            {
+                                <div class="row g-2 align-items-end mb-2 cert-row">
+                                    <div class="col-4">
+                                        <label class="form-label">Title</label>
+                                        <input class="form-control" asp-for="Certifications[@i].Title" />
+                                        <span asp-validation-for="Certifications[@i].Title" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label">Authority</label>
+                                        <input class="form-control" asp-for="Certifications[@i].Authority" />
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label">License #</label>
+                                        <input class="form-control" asp-for="Certifications[@i].LicenseNumber" />
+                                    </div>
+                                    <div class="col-1">
+                                        <label class="form-label">Issued</label>
+                                        <input class="form-control" type="date" asp-for="Certifications[@i].IssuedOn" />
+                                    </div>
+                                    <div class="col-1">
+                                        <label class="form-label">Expiry</label>
+                                        <input class="form-control" type="date" asp-for="Certifications[@i].ExpiresOn" />
+                                    </div>
+                                    <div class="col-0 text-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                    <label asp-for="Passward" class="form-label">Passward</label>
-                                    <input asp-for="Passward" class="form-control" />
-                                    <span asp-validation-for="Passward" class="text-danger"></span>
-                                    </div>
-                            </div><div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label asp-for="ConfirmPassward" class="form-label">ConfirmPassward</label>
-                                    <input asp-for="ConfirmPassward" class="form-control" />
-                                    <span asp-validation-for="ConfirmPassward" class="text-danger"></span>
-                                </div>
-                            </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label asp-for="Specialty" class="form-label">Specialty</label>
-                                        <input asp-for="Specialty" class="form-control" />
-                                        <span asp-validation-for="Specialty" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label asp-for="Address" class="form-label">Address</label>
-                                    <input asp-for="Address" class="form-control" />
-                                    <span asp-validation-for="Address" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Profile Image</label>
-                                        <input type="file" name="ProfileImage" class="form-control" onchange="previewImage(event)" />
-                                    @if (Model != null)
-                                    {
-                                        <div class="mt-3">
-                                            <img id="imagePreview" src="@(Model.ProfileImageUrl ?? "/images/no-image.png")" alt="Image Preview" class="img-thumbnail" style="max-height: 200px;" />
-                                        </div>
-                                    }
-                                </div>
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label asp-for="About" class="form-label">Bio</label>
-                                        <textarea asp-for="About" class="form-control" rows="3"></textarea>
-                                        <span asp-validation-for="About" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <button type="submit" class="btn btn-primary">
-                                        @(isEdit ? "Update" : "Save")
-                                    </button>
-                                    <a asp-action="Index" class="btn btn-outline-secondary ms-2">Cancel</a>
-                                </div>
-                            </div>
-                        </form>
-
+                            }
+                        </div>
+                        <button type="button" class="btn btn-light btn-sm mt-2" onclick="addCert()">+ Add certification</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        function previewImage(event) {
-            var reader = new FileReader();
-            reader.onload = function () {
-                var output = document.getElementById('imagePreview');
-                output.src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
+        // -------------------Image Preview-----------------------
+        const currentImage = '@currentImage';
+        document.getElementById('ProfileImage')?.addEventListener('change', function () {
+            const output = document.getElementById('imagePreview');
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (evt) => output.src = evt.target.result;
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                output.src = currentImage || defaultImage;
+            }
+        });
+        // Bootstrap validation
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', e => {
+                    if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+
+        function togglePw(id){ const el = document.getElementById(id); if (el) el.type = el.type === 'password' ? 'text' : 'password'; }
+        function removeRow(btn){ const row = btn.closest('.row'); if (row) row.remove(); }
+
+        // Add rows (use plain names so model binder maps)
+                function addWeekly(){
+          const c = document.getElementById('weeklyContainer');
+          const i = c.querySelectorAll('.weekly-row').length;
+          c.insertAdjacentHTML('beforeend', `
+          <div class="row g-2 align-items-end mb-2 weekly-row">
+            <div class="col-5">
+              <label class="form-label">Day</label>
+              <select class="form-select" name="WeeklyAvailabilities[${i}].DayOfWeek">
+                ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(d=>`<option value="${d}">${d}</option>`).join('')}
+              </select>
+            </div>
+            <div class="col-3">
+              <label class="form-label">Start</label>
+              <input class="form-control" type="time" step="1" name="WeeklyAvailabilities[${i}].StartTime" value="09:00:00" />
+            </div>
+            <div class="col-3">
+              <label class="form-label">End</label>
+              <input class="form-control" type="time" step="1" name="WeeklyAvailabilities[${i}].EndTime" value="17:00:00" />
+            </div>
+            <div class="col-1 text-end">
+              <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
+            </div>
+            <input type="hidden" name="WeeklyAvailabilities[${i}].IsWorkingDay" value="true" />
+          </div>`);
+        }
+
+        function addDate(){
+          const c = document.getElementById('dateContainer');
+          const i = c.querySelectorAll('.date-row').length;
+          const today = new Date().toISOString().slice(0,10);
+          c.insertAdjacentHTML('beforeend', `
+          <div class="row g-2 align-items-end mb-2 date-row">
+            <div class="col-5">
+              <label class="form-label">Date</label>
+              <input class="form-control" type="date" name="DateAvailabilities[${i}].Date" value="${today}" />
+            </div>
+            <div class="col-3">
+              <label class="form-label">Start</label>
+              <input class="form-control" type="time" step="1" name="DateAvailabilities[${i}].StartTime" value="09:00:00" />
+            </div>
+            <div class="col-3">
+              <label class="form-label">End</label>
+              <input class="form-control" type="time" step="1" name="DateAvailabilities[${i}].EndTime" value="17:00:00" />
+            </div>
+            <div class="col-1 text-end">
+              <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
+            </div>
+            <input type="hidden" name="DateAvailabilities[${i}].IsAvailable" value="true" />
+          </div>`);
+        }
+
+        function addEdu(){
+            const c = document.getElementById('eduContainer');
+            const i = c.querySelectorAll('.edu-row').length;
+            c.insertAdjacentHTML('beforeend', `
+            <div class="row g-2 align-items-end mb-2 edu-row">
+              <div class="col-5">
+                <label class="form-label">Degree</label>
+                <input class="form-control" name="Educations[${i}].Degree" />
+              </div>
+              <div class="col-4">
+                <label class="form-label">Institution</label>
+                <input class="form-control" name="Educations[${i}].Institution" />
+              </div>
+              <div class="col-2">
+                <label class="form-label">Year</label>
+                <input class="form-control" type="number" name="Educations[${i}].Year" />
+              </div>
+              <div class="col-1 text-end">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
+              </div>
+            </div>`);
+        }
+
+        function addAward(){
+            const c = document.getElementById('awardContainer');
+            const i = c.querySelectorAll('.award-row').length;
+            c.insertAdjacentHTML('beforeend', `
+            <div class="row g-2 align-items-end mb-2 award-row">
+              <div class="col-6">
+                <label class="form-label">Title</label>
+                <input class="form-control" name="Awards[${i}].Title" />
+              </div>
+              <div class="col-4">
+                <label class="form-label">Issuer</label>
+                <input class="form-control" name="Awards[${i}].Issuer" />
+              </div>
+              <div class="col-1">
+                <label class="form-label">Year</label>
+                <input class="form-control" type="number" name="Awards[${i}].Year" />
+              </div>
+              <div class="col-1 text-end">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
+              </div>
+            </div>`);
+        }
+
+        function addCert(){
+            const c = document.getElementById('certContainer');
+            const i = c.querySelectorAll('.cert-row').length;
+            c.insertAdjacentHTML('beforeend', `
+            <div class="row g-2 align-items-end mb-2 cert-row">
+              <div class="col-4">
+                <label class="form-label">Title</label>
+                <input class="form-control" name="Certifications[${i}].Title" />
+              </div>
+              <div class="col-3">
+                <label class="form-label">Authority</label>
+                <input class="form-control" name="Certifications[${i}].Authority" />
+              </div>
+              <div class="col-3">
+                <label class="form-label">License #</label>
+                <input class="form-control" name="Certifications[${i}].LicenseNumber" />
+              </div>
+              <div class="col-1">
+                <label class="form-label">Issued</label>
+                <input class="form-control" type="date" name="Certifications[${i}].IssuedOn" />
+              </div>
+              <div class="col-1">
+                <label class="form-label">Expiry</label>
+                <input class="form-control" type="date" name="Certifications[${i}].ExpiresOn" />
+              </div>
+              <div class="col-0 text-end">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
+              </div>
+            </div>`);
         }
     </script>
 }
