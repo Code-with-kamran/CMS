@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "eNO01Owm/n8=",
+  "dgSpecHash": "Ow2rfC5IuvE=",
   "success": true,
-  "projectFilePath": "D:\\SirwalaDental\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj",
+  "projectFilePath": "D:\\SirwalaDental\\DentalClicnicManagementSystem -\\DentalClicnicManagementSystem\\CMS.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kamran\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\kamran\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",

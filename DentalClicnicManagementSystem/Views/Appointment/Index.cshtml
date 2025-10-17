@@ -1,4 +1,4 @@
-﻿@{
+﻿@* @{
     ViewData["Title"] = "Appointments";
 }
 <form id="__af" method="post" style="display:none">
@@ -38,15 +38,56 @@
                             </select>
                             <span class="ms-2">entries</span>
                         </div>
+                        <div class="col-auto ms-10">
+                            <!-- This hidden input will store the current filter value for DataTables -->
+                            <input type="hidden" id="statusFilterValue" value="">
+
+
+                        </div>
+
+
+
+
+
+
+
 
                         <!-- search: full width on mobile -->
                         <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+
                             <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
                         </div>
                     </div>
 
+                    <!-- ======  SOLID-PRIMARY TAB FILTER  ====== -->
+                    <div class="card-body border-bottom pb-0 ps-0">
+                        <ul class="nav nav-tabs nav-solid-primary mb-0" id="aptFilterTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" data-value="">
+                                    All
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-value="Scheduled">
+                                    Schedule
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-value="InProgress">
+                                    In Progress
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-value="Completed">
+                                    Completed
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+
                     <div class="table-responsive">
-                        <table id="Appointment" class="table table-hover align-middle ">
+                        <table id="Appointment" class="table table-hover align-middle w-100">
                             <thead class="table-light">
                                 <tr>
                                     <th>Patient</th>            <!-- index 0 -->
@@ -78,8 +119,6 @@
         </div>
     </div>
 </div>
-
-
 <!-- Appointment Modal -->
 <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -88,141 +127,50 @@
         </div>
     </div>
 </div>
-
-<style>
-    /* ===== Truncation helpers ===== */
-    .truncate {
-        display: inline-block;
-        vertical-align: middle;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .truncate-180 {
-        max-width: 180px;
-    }
-
-    .truncate-220 {
-        max-width: 220px;
-    }
-
-    .truncate-260 {
-        max-width: 260px;
-    }
-
-    /* Compact, stable headers */
-    #Appointment thead th {
-        white-space: nowrap;
-    }
-
-    .table tbody td {
-        vertical-align: middle;
-    }
-
-    /* Mobile tweaks */
-    @@media (max-width:576px) {
-        #Appointment td, #Appointment th {
-            font-size: .92rem;
-        }
-
-        .avatar img {
-            width: 36px !important;
-            height: 36px !important;
-        }
-    }
-
-    /* Hide built-in DT controls (we use our own) */
-    .dataTables_length, .dataTables_filter {
-        display: none !important;
-    }
-
-    /* Pager cosmetics (Bootstrap 5 renderer) */
-    #dt-pager .pagination {
-        margin: 0;
-        gap: .25rem;
-        flex-wrap: wrap;
-    }
-
-    #dt-pager .page-item .page-link {
-        border-radius: .6rem;
-        padding: .4rem .65rem;
-        line-height: 1;
-        border-color: var(--bs-gray-300);
-    }
-
-        #dt-pager .page-item .page-link:focus {
-            box-shadow: none;
-        }
-
-    #dt-pager .page-item.active .page-link {
-        background: var(--primary);
-        border-color: var(--primary);
-        color: #fff;
-        box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb,13,110,253), .15);
-    }
-
-    #dt-pager .page-item.disabled .page-link {
-        opacity: .6;
-    }
-    #Appointment th,
-    #Appointment td {
-        white-space: nowrap; /* Prevent wrapping */
-    }
-    /* Ensure table always scrolls horizontally if needed */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* Smooth scroll for iOS */
-    }
-
-    /* Prevent cells from shrinking */
-    #Appointment td,
-    #Appointment th {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        min-width: 100px; /* Adjust minimum width per column if needed */
-    }
-
-        /* Keep flex elements inside cells from shrinking */
-        #Appointment td > div.d-flex,
-        #Appointment td > div.d-flex > div {
-            flex-shrink: 0;
-            min-width: 0;
-        }
-
-    .table-responsive {
-        overflow-x: auto; /* Allow horizontal scroll if table exceeds viewport */
-    }
-    /* Ensure all table cells never wrap */
-    #Appointment td, #Appointment th {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-        /* For flex containers inside cells (patient/doctor info) */
-        #Appointment td > div.d-flex,
-        #Appointment td > div.d-flex > div {
-            flex-shrink: 0; /* Prevent shrinking */
-            min-width: 0; /* Ensure text-overflow works */
-        }
-
-    /* Horizontal scroll on small screens */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
-    }
-
-
-</style>
-
 @section Scripts {
-  
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const filterItems = document.querySelectorAll(".status-filter-item");
+            const hiddenInput = document.getElementById("statusFilterValue");
+            const statusText = document.querySelector(".status-text");
+
+            filterItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    const value = this.getAttribute("data-value");
+                    const text = this.textContent.trim();
+
+                    // update hidden input and text
+                    hiddenInput.value = value;
+                    statusText.textContent = text;
+
+                    // if using DataTables, trigger filter redraw
+                    if ($.fn.dataTable) {
+                        $('#Appointment').DataTable().draw();
+                    }
+                });
+            });
+        });
+    </script>
+
 
     <script>
         $(function () {
             const token = $('#__af input[name="__RequestVerificationToken"]').val();
+
+                    /* ----------  SOLID-TAB FILTER  ---------- */
+        $('#aptFilterTabs').on('click', 'a', function (e) {
+            e.preventDefault();
+            const $a   = $(this);
+            const val  = $a.data('value');
+
+            // update hidden field + UI
+            $('#statusFilterValue').val(val);
+            $('#aptFilterTabs a').removeClass('active');
+            $a.addClass('active');
+
+            // reload DataTable
+            $('#Appointment').DataTable().draw();
+        });
 
             // Tear down if already bound
             if ($.fn.DataTable.isDataTable('#Appointment')) {
@@ -231,10 +179,13 @@
 
             const esc = (s) => (s == null ? '' : String(s));
 
-                const table = $('#Appointment').DataTable({
-        processing: true,
+         const table = $('#Appointment').DataTable({
+        processing: false,
         serverSide: true,
-        ajax: { url: '@Url.Action("GetAll", "Appointment")', type: 'GET' },
+        ajax: { url: '@Url.Action("GetAll", "Appointment")', type: 'GET', data: function (d) {
+            d.status = $('#statusFilterValue').val(); // send selected status
+        } },
+
         dom: 'rtip',
         paging: true,
         pagingType: 'simple_numbers',
@@ -244,13 +195,7 @@
         scrollCollapse: true, // collapse scroll if table smaller than container
         autoWidth: false,
         responsive: false,   // disable responsive hiding, we handle scroll manually
-        columnDefs: [
-            { targets: '_all', className: 'text-nowrap' },
-            { targets: 0, responsivePriority: 1 },
-            { targets: 5, responsivePriority: 2, className: 'text-center' },
-            { targets: [2,3], responsivePriority: 3 },
-            { targets: [1,4], responsivePriority: 4 }
-        ],
+
 
                 columnDefs: [
                     { targets: '_all', className: 'text-nowrap' },
@@ -258,12 +203,14 @@
                     { targets: 5, responsivePriority: 2, className: 'text-center' },
                     { targets: [2,3], responsivePriority: 3 },
                     { targets: [1,4], responsivePriority: 4 }
-                        ],columns: [
+                        ],
+                        columns: [
             /* 0 Patient */
             {
                 data: null,
                 orderable: true,
                 render: (data, type, row) => `
+                <a href="/Appointment/Details/${row.id}">
                   <div class="d-flex align-items-center">
                     <img src="${row.patientImg || '/uploads/doctors/patient_default.jpg'}"
                          class="rounded-circle me-2" width="36" height="36">
@@ -271,7 +218,8 @@
                       <div class="fw-semibold">${row.patientName}</div>
                       <small class="text-muted">${row.patientGender || ''}</small>
                     </div>
-                  </div>`
+                  </div>
+                   </a>`
             },
             /* 1 Doctor */
             {
@@ -288,11 +236,18 @@
                   </div>`
             },
             /* 2 Appointment Date */
-            {
-                data: 'appointmentDate',
-                orderable: true,
-                render: d => new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
-            },
+                    /* 2 Appointment Date + Start Time */
+        {
+            data: 'appointmentDate',
+            orderable: true,
+            render: d => {
+                const utc = new Date(d);
+                const pak = new Date(utc.toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
+                const dateStr = pak.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                const timeStr = pak.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true });
+                return `${dateStr} ${timeStr}`;
+            }
+        },
             /* 3 Created On */
             {
                 data: 'appCreatedOn',
@@ -320,7 +275,7 @@
               </a>
             </li>
             <li>
-              <a href="javascript:void(0)" class="dropdown-item js-delete delete-btn-appointment"
+              <a href="javascript:void(0)" class="dropdown-item js-delete "
                  data-id="${row.id}"
                  data-name="${row.patientName}"
                  data-url="/Appointment/Delete"
@@ -335,9 +290,10 @@
             }
         ],
 
-            
+
                 // Move pager; write our own info string so it always shows
                 drawCallback: function () {
+                    $('#Appointment tbody tr.pre-load').remove();
                     const api = this.api();
 
                     // move DT pager to our container
@@ -359,11 +315,17 @@
                 },
 
                 language: {
-                    emptyTable: "No doctors found",
-                    processing: "Loading..."
+                    emptyTable: "No doctors found"
+                    
                 }
             });
 
+
+            $('#Appointment tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
             // External controls
             $('#globalSearch').on('input', function () {
                 table.search(this.value).draw();
@@ -373,42 +335,38 @@
             });
 
             // Delete with Swal -> reload current page
-            // $(document).on('click', '.js-delete', function () {
-            //     const id = $(this).data('id');
-            //     const name = $(this).data('name');
+            $(document).on('click', '.js-delete', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
 
-            //     Swal.fire({
-            //         title: `Delete ${name}?`,
-            //         text: 'You will not be able to revert this!',
-            //         icon: 'warning',
-            //         showCancelButton: true,
-            //         confirmButtonColor: '#d33',
-            //         cancelButtonColor: '#aaa',
-            //         confirmButtonText: 'Yes, delete!'
-            //     }).then(res => {
-            //         if (res.isConfirmed) {
-            //             $.ajax({
-            //                 url: `/Doctor/Delete/${id}`,
-            //                 type: 'POST',
-            //                 headers: { 'RequestVerificationToken': token },
-            //                 success: r => {
-            //                     if (r.status) {
-            //                         Swal.fire('Deleted', r.message, 'success');
-            //                         table.ajax.reload(null, false);
-            //                     } else {
-            //                         Swal.fire('Error', r.message || 'Delete failed', 'error');
-            //                     }
-            //                 },
-            //                 error: () => Swal.fire('Error', 'Something went wrong', 'error')
-            //             });
-            //         }
-            //     });
-            // });      
+                Swal.fire({
+                    title: `Delete ${name}?`,
+                    text: 'You will not be able to revert this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, delete!'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        $.ajax({
+                            url: `/Appointment/Delete/${id}`,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            success: r => {
+                                if (r.status || r.success) {
+                                    Swal.fire('Deleted', r.message, 'success');
+                                    table.ajax.reload(null, false);
+                                } else {
+                                    Swal.fire('Error', r.message || 'Delete failed', 'error');
+                                }
+                            },
+                            error: () => Swal.fire('Error', 'Something went wrong', 'error')
+                        });
+                    }
+                });
+            });
         });
-
-
-
-
 
         // Handle form submit inside modal
         $(document).on("submit", "#appointmentForm", function (e) {
@@ -420,19 +378,405 @@
                 data: $(this).serialize(),
                 success: function (response) {
                     if (response.success) {
+                         toastr.success(res.message);
                         $("#appointmentModal").modal("hide");
                         $("#appointmentsTable").DataTable().ajax.reload(null, false); // reload without resetting paging
                     } else {
+                         toastr.error("Something went wrong while saving the patient.");
                         // Reload form with validation errors
                         $("#appointmentModal .modal-content").html(response);
                     }
                 }
             });
         });
+    </script>
+} *@
 
 
+@{
+    ViewData["Title"] = "Rendez-vous";
+}
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
 
-       
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
 
+            <!-- En-tête -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Grille des Rendez-vous</h4>
+                </div>
+                <div class="text-end">
+                    <a asp-controller="Appointment" asp-action="Upsert" class="btn btn-primary ms-2 fs-13 btn-md">
+                        <i class="ti ti-plus me-1"></i>Nouveau Rendez-vous
+                    </a>
+                </div>
+            </div>
+
+            <!-- Carte -->
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- Contrôles externes -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <!-- longueur-page : caché sur mobile -->
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Afficher</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entrées</span>
+                        </div>
+                        <div class="col-auto ms-10">
+                            <!-- Ce champ caché stockera la valeur du filtre actuel pour DataTables -->
+                            <input type="hidden" id="statusFilterValue" value="">
+                        </div>
+
+                        <!-- recherche : pleine largeur sur mobile -->
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Rechercher" />
+                        </div>
+                    </div>
+
+                    <!-- ======  FILTRE PAR ONGLETS SOLIDE-PRIMAIRE  ====== -->
+                    <div class="card-body border-bottom pb-0 ps-0">
+                        <ul class="nav nav-tabs nav-solid-primary mb-0" id="aptFilterTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" data-value="">
+                                    Tous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-value="Scheduled">
+                                    Planifiés
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-value="InProgress">
+                                    En Cours
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-value="Completed">
+                                    Terminés
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="Appointment" class="table table-hover align-middle w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Patient</th>            <!-- index 0 -->
+                                    <th>Médecin</th>            <!-- index 1 -->
+                                    <th>Date du Rendez-vous</th><!-- index 2 -->
+                                    <th>Créé le</th>            <!-- index 3 -->
+                                    <th>Mode</th>               <!-- index 4 -->
+                                    <th>Statut</th>             <!-- index 5 -->
+                                    <th class="text-center">Actions</th> <!-- index 6 -->
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pied de page : info + pagination -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Rendez-vous -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Le contenu sera chargé dynamiquement -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const filterItems = document.querySelectorAll(".status-filter-item");
+            const hiddenInput = document.getElementById("statusFilterValue");
+            const statusText = document.querySelector(".status-text");
+
+            filterItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    const value = this.getAttribute("data-value");
+                    const text = this.textContent.trim();
+
+                    // mettre à jour le champ caché et le texte
+                    hiddenInput.value = value;
+                    statusText.textContent = text;
+
+                    // si utilisation de DataTables, déclencher le redessin du filtre
+                    if ($.fn.dataTable) {
+                        $('#Appointment').DataTable().draw();
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(function () {
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+
+            /* ----------  FILTRE PAR ONGLETS SOLIDES  ---------- */
+            $('#aptFilterTabs').on('click', 'a', function (e) {
+                e.preventDefault();
+                const $a = $(this);
+                const val = $a.data('value');
+
+                // mettre à jour le champ caché + UI
+                $('#statusFilterValue').val(val);
+                $('#aptFilterTabs a').removeClass('active');
+                $a.addClass('active');
+
+                // recharger DataTable
+                $('#Appointment').DataTable().draw();
+            });
+
+            // Détruire si déjà lié
+            if ($.fn.DataTable.isDataTable('#Appointment')) {
+                $('#Appointment').DataTable().destroy();
+            }
+
+            const esc = (s) => (s == null ? '' : String(s));
+
+            const table = $('#Appointment').DataTable({
+                processing: false,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetAll", "Appointment")',
+                    type: 'GET',
+                    data: function (d) {
+                        d.status = $('#statusFilterValue').val(); // envoyer le statut sélectionné
+                    }
+                },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[3, 'desc']],
+                scrollX: true,       // défilement horizontal
+                scrollCollapse: true, // réduire le défilement si le tableau est plus petit que le conteneur
+                autoWidth: false,
+                responsive: false,   // désactiver le masquage responsive, nous gérons le défilement manuellement
+
+                columnDefs: [
+                    { targets: '_all', className: 'text-nowrap' },
+                    { targets: 0, responsivePriority: 1 },
+                    { targets: 5, responsivePriority: 2, className: 'text-center' },
+                    { targets: [2,3], responsivePriority: 3 },
+                    { targets: [1,4], responsivePriority: 4 }
+                ],
+                columns: [
+                    /* 0 Patient */
+                    {
+                        data: null,
+                        orderable: true,
+                        render: (data, type, row) => `
+                        <a href="/Appointment/Details/${row.id}">
+                          <div class="d-flex align-items-center">
+                            <img src="${row.patientImg || '/uploads/doctors/patient_default.jpg'}"
+                                 class="rounded-circle me-2" width="36" height="36">
+                            <div>
+                              <div class="fw-semibold">${row.patientName}</div>
+                              <small class="text-muted">${row.patientGender || ''}</small>
+                            </div>
+                          </div>
+                        </a>`
+                    },
+                    /* 1 Médecin */
+                    {
+                        data: null,
+                        orderable: true,
+                        render: (data, type, row) => `
+                          <div class="d-flex align-items-center">
+                            <img src="${row.doctorImg || '/uploads/doctors/default.jpg'}"
+                                 class="rounded-circle me-2" width="36" height="36">
+                            <div>
+                              <div class="fw-semibold">${row.doctorName}</div>
+                              <small class="text-muted">${row.doctorSpecialty || ''}</small>
+                            </div>
+                          </div>`
+                    },
+                    /* 2 Date du Rendez-vous + Heure de Début */
+                    {
+                        data: 'appointmentDate',
+                        orderable: true,
+                        render: d => {
+                            const utc = new Date(d);
+                            const pak = new Date(utc.toLocaleString("fr-FR", { timeZone: "Europe/Paris" }));
+                            const dateStr = pak.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+                            const timeStr = pak.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                            return `${dateStr} ${timeStr}`;
+                        }
+                    },
+                    /* 3 Créé le */
+                    {
+                        data: 'appCreatedOn',
+                        orderable: true,
+                        render: d => new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' })
+                    },
+                    /* 4 Mode (Type de Rendez-vous) */
+                    { data: 'type', orderable: false },
+                    /* 5 Statut */
+                    { data: 'status', orderable: false },
+                    /* 6 Actions */
+                    {
+                        data: null,
+                        orderable: false,
+                        className: 'text-center',
+                        render: (_d, _t, row) => `
+                        <div class="dropdown d-inline-block position-static">
+                          <button class="btn btn-sm btn-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end shadow" style="z-index: 1050;">
+                            <li>
+                              <a href="/Appointment/Upsert/${row.id}" class="dropdown-item">
+                                <i class="ti ti-edit me-1"></i>Modifier
+                              </a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0)" class="dropdown-item js-delete"
+                                 data-id="${row.id}"
+                                 data-name="${row.patientName}"
+                                 data-url="/Appointment/Delete"
+                                 data-table="Appointment">
+                                <i class="ti ti-trash me-1"></i>Supprimer
+                              </a>
+                            </li>
+                          </ul>
+                        </div>`
+                    }
+                ],
+
+                // Déplacer la pagination ; écrire notre propre chaîne d'info pour qu'elle s'affiche toujours
+                drawCallback: function () {
+                    $('#Appointment tbody tr.pre-load').remove();
+                    const api = this.api();
+
+                    // déplacer la pagination DT vers notre conteneur
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+
+                    // remplacer les labels Précédent/Suivant par des chevrons (plus sûr ici après le rendu)
+                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+
+                    // texte d'information robuste
+                    const info = api.page.info(); // {start,end,recordsTotal,recordsDisplay,...}
+                    const msg = info.recordsDisplay
+                      ? `Affichage de ${info.start + 1} à ${info.end} sur ${info.recordsDisplay.toLocaleString()} entrées`
+                      : (info.recordsTotal
+                          ? `Affichage de 0 à 0 sur ${info.recordsTotal.toLocaleString()} entrées`
+                          : 'Aucune entrée à afficher');
+                    $('#dt-info').text(msg);
+                },
+
+                language: {
+                    emptyTable: "Aucun médecin trouvé",
+                    search: "Rechercher:",
+                    lengthMenu: "Afficher _MENU_ entrées",
+                    info: "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                    infoEmpty: "Affichage de 0 à 0 sur 0 entrées",
+                    infoFiltered: "(filtré de _MAX_ entrées totales)",
+                    zeroRecords: "Aucun enregistrement correspondant trouvé"
+                }
+            });
+
+            $('#Appointment tbody').html(
+                `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+                   <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+                 </td></tr>`
+            );
+
+            // Contrôles externes
+            $('#globalSearch').on('input', function () {
+                table.search(this.value).draw();
+            });
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Suppression avec Swal -> recharger la page actuelle
+            $(document).on('click', '.js-delete', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+
+                Swal.fire({
+                    title: `Supprimer ${name} ?`,
+                    text: 'Vous ne pourrez pas annuler cette action !',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Oui, supprimer !',
+                    cancelButtonText: 'Annuler'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        $.ajax({
+                            url: `/Appointment/Delete/${id}`,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            success: r => {
+                                if (r.status || r.success) {
+                                    Swal.fire('Supprimé', r.message, 'success');
+                                    table.ajax.reload(null, false);
+                                } else {
+                                    Swal.fire('Erreur', r.message || 'Échec de la suppression', 'error');
+                                }
+                            },
+                            error: () => Swal.fire('Erreur', 'Quelque chose s\'est mal passé', 'error')
+                        });
+                    }
+                });
+            });
+        });
+
+        // Gérer la soumission du formulaire dans le modal
+        $(document).on("submit", "#appointmentForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        $("#appointmentModal").modal("hide");
+                        $("#appointmentsTable").DataTable().ajax.reload(null, false); // recharger sans réinitialiser la pagination
+                    } else {
+                        toastr.error("Quelque chose s'est mal passé lors de l'enregistrement du patient.");
+                        // Recharger le formulaire avec les erreurs de validation
+                        $("#appointmentModal .modal-content").html(response);
+                    }
+                }
+            });
+        });
     </script>
 }

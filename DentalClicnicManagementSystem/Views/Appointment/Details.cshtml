@@ -1,0 +1,1952 @@
+﻿@* @model int
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+<form id="__af" method="post" style="display:none">@Html.AntiForgeryToken()</form>
+
+<div class="content">
+
+    <div class="container-fluid p-0">
+        <div class="row g-3">
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm ">
+                    <div class="card-body text-center">
+                        <div class="position-relative mb-3">
+                            <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+                          
+                        </div>
+                        <h5 id="patient-name" class="card-title mb-1">Loading...</h5>
+                        <p class="text-muted small mb-3" id="patient-meta">...</p>
+
+                        <div class="row text-center my-3">
+                            <div class="col-4">
+                                <span class="badge bg-primary-light text-primary px-1 py-1">
+                                        <small class="fs-6">Age</small>
+                                    <strong class="fs-6" id="patient-age">--</strong>
+                                </span>
+                            </div>
+                            <div class="col-5">
+                                <span class="badge bg-info-light text-info px-1 pr-2">
+                                    <small class="fs-6">Gender</small>
+                                    <strong class="fs-6" id="patient-gender">--</strong>
+                                </span>
+                            </div>
+                           
+                        </div>
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                       
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            
+                            <div class=" text-muted"><i class="ti ti-phone text-success"></i>Phone</div>
+                            <div class="fw-bold" id="patient-phone">--</div>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            
+                            <div class=" text-muted"><i class="ti ti-mail text-warning"></i>Email</div>
+                            <div class="fw-bold text-truncate" id="patient-email">--</div>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Visit ID:</span>
+                            <strong id="patient-visit-id">...</strong>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Visit Date:</span>
+                            <strong id="patient-visit-date">...</strong>
+                        </div>
+
+                    </div
+                </div>
+            </div>
+    <!-- CENTER COLUMN - Vitals & Status -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="ti ti-heart-rate-monitor text-primary me-2"></i>Vital Signs</h5>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-warning status-btn" data-status="InProgress">
+                                <i class="ti ti-clock me-1"></i>In Progress
+                            </button>
+                            <button type="button" class="btn btn-outline-success status-btn" data-status="Completed">
+                                <i class="ti ti-check me-1"></i>Complete
+                            </button>
+                            <button type="button" class="btn btn-outline-danger status-btn" data-status="Cancelled">
+                                <i class="ti ti-x me-1"></i>Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="vitals-display">
+                            <!-- Vitals will be populated here -->
+                        </div>
+
+                        <div id="vitals-status" class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading vitals...</span>
+                            </div>
+                        </div>
+                    </div>
+       
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+        <!-- TABS CARD -->
+        <div class="col-12 mt-4">
+            <div class="card">
+                <div class="card-header bg-transparent border-0">
+                    <ul class="nav nav-pills-modern" id="docTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="treatments-tab" data-bs-toggle="pill"
+                               href="#treatments-pane" role="tab" aria-selected="true">
+                                Treatments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="medications-tab" data-bs-toggle="pill"
+                               href="#medications-pane" role="tab" aria-selected="false">
+                                Medications
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="attachments-tab" data-bs-toggle="pill"
+                               href="#attachments-pane" role="tab" aria-selected="false">
+                                Attachments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="notes-tab" data-bs-toggle="pill"
+                               href="#notes-pane" role="tab" aria-selected="false">
+                                Notes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tests-tab" data-bs-toggle="pill"
+                               href="#tests-pane" role="tab" aria-selected="false">
+                                Tests
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <div class="tab-content" id="docTabsContent">
+                        <!-- Treatments -->
+                        <div class="tab-pane fade show active" id="treatments-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Treatments for this visit</span>
+                                <button class="btn btn-sm btn-success add-btn-treatments d-none">
+                                    <i class="ti ti-plus"></i> Add
+                                </button>
+                            </div>
+                            
+                            <div id="treatments-card-wrapper" >
+                                <!-- existing treatments card HTML here -->
+                                <!-- original treatments card html here -->
+                                <div class="card border-0 shadow-sm ">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="ti ti-medical-cross text-success me-2"></i>Treatments
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <form id="add-treatment-form" class="d-flex gap-2 mb-3">
+                                            <select id="treatment-options" class="form-select select2 w-100">
+                                                <option value="">Select Treatment...</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="ti ti-plus"></i>
+                                            </button>
+                                        </form>
+                                        <div id="treatments-list" class="small"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medications -->
+                        <div class="tab-pane fade" id="medications-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Medications for this visit</span>
+                                <button class="btn btn-sm btn-info add-btn-medications d-none">
+                                    <i class="ti ti-plus"></i> Add
+                                </button>
+                            </div>
+                            
+                            <div id="medications-card-wrapper">
+                              
+                                <div class="card border-0 shadow-sm ">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="ti ti-pill text-info me-2"></i>Medications
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <form id="add-medication-form" class="mb-2">
+                                            <div class="d-flex gap-2 mb-2">
+                                                <select id="medication-options" class="form-select select2 w-100">
+                                                    <option value="">Select Medication...</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-info btn-sm">
+                                                    <i class="ti ti-plus"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input" type="checkbox" id="custom-med-toggle">
+                                                <label class="form-check-label small" for="custom-med-toggle">Custom Medication</label>
+                                            </div>
+
+                                            <div id="custom-med-fields" style="display:none;" class="border-top pt-2">
+                                                <input type="text" id="custom-med-name" class="form-control form-control-sm mb-2"
+                                                       placeholder="Medication Name">
+                                                <input type="number" id="custom-med-cost" class="form-control form-control-sm"
+                                                       placeholder="Cost" step="0.01">
+                                            </div>
+                                        </form>
+                                        <div id="medications-list" class="small mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attachments -->
+                        <div class="tab-pane fade" id="attachments-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Files & Images</span>
+                                <button class="btn btn-sm btn-warning add-btn-attachments d-none">
+                                    <i class="ti ti-plus"></i> Add
+                                </button>
+                            </div>
+                          
+                            <div id="attachments-card-wrapper" >
+                                <!-- existing attachments card HTML here -->  <!-- PATIENT ATTACHMENTS CARD -->
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="ti ti-paperclip text-warning me-2"></i>Attachments
+                                        </h6>
+                                        <button class="btn btn-sm btn-warning" id="add-attachment-btn">
+                                            <i class="ti ti-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <!-- hidden file picker -->
+                                        <input type="file" id="attachment-file" class="d-none" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                                        <div id="attachment-list" class="small"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="tab-pane fade" id="notes-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Doctor / Nurse Notes</span>
+                                <button class="btn btn-sm btn-primary add-btn-notes d-none">
+                                    <i class="ti ti-plus"></i> Add
+                                </button>
+                            </div>
+                         
+                            <div id="notes-card-wrapper" >
+                                <!-- existing notes card HTML here -->
+                                <!-- NOTES CARD -->
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><i class="ti ti-notes text-primary me-2"></i>Notes</h6>
+                                        <button class="btn btn-sm btn-primary" id="add-note-btn">
+                                            <i class="ti ti-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <textarea id="new-note-text" class="form-control" rows="2"
+                                                      placeholder="Type note here…"></textarea>
+                                            <button class="btn btn-primary" id="save-note-btn">
+                                                <i class="ti ti-check"></i>
+                                            </button>
+                                        </div>
+                                        <!-- scroll wrapper : 6 notes then scroll -->
+                                        <div class="overflow-auto" style="max-height:10.5rem;">
+                                            <div id="notes-list" class="small"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests -->
+                        <div class="tab-pane fade" id="tests-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Lab / diagnostic tests for this visit</span>
+                                <button class="btn btn-sm btn-primary add-btn-tests d-none">
+                                    <i class="ti ti-plus"></i> Add
+                                </button>
+                            </div>
+
+                            <div id="tests-card-wrapper">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="ti ti-test-tube text-primary me-2"></i>Tests
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <form id="add-test-form" class="row g-2 mb-3">
+                                            <div class="col-6">
+                                                <input type="text" id="test-name" class="form-control form-control-sm"
+                                                       placeholder="Test name">
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" id="test-cost" class="form-control form-control-sm"
+                                                       placeholder="Cost" step="0.01">
+                                            </div>
+                                            <div class="col-2 d-grid">
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    <i class="ti ti-plus"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <div id="tests-list" class="small"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<style>
+    /* modern pill tabs – active = primary bg */
+    .nav-pills-modern .nav-link {
+        color: var(--bs-primary);
+        border-radius: .375rem;
+        margin-right: .25rem;
+        padding: .375rem .75rem;
+        font-weight: 500;
+        transition: all .15s ease-in-out;
+    }
+
+    .nav-pills-modern .nav-link:hover {
+        background-color: rgba(var(--bs-primary-rgb),.1);
+    }
+
+    .nav-pills-modern .nav-link.active {
+        background-color: var(--bs-primary);
+        color: #fff;
+    }
+
+
+    .note-item {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 6px 8px;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+
+    .note-text {
+        flex: 1;
+        margin-right: 6px;
+        word-break: break-word;
+    }
+
+    .note-date {
+        font-size: 0.7rem;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+
+
+
+
+    /* tiny delete button */
+    .attachment-item {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 6px 8px;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .attachment-item a {
+            color: #495057;
+            text-decoration: none;
+        }
+
+            .attachment-item a:hover {
+                text-decoration: underline;
+            }
+    .del-btn {
+        cursor: pointer;
+        color: #dc3545;
+        font-weight: bold;
+        padding: 0 4px;
+        line-height: 1;
+        border: none;
+        background: transparent;
+    }
+
+    .del-btn:hover {
+        color: #a71d2a;
+    }
+    .bg-primary-light {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+
+    .bg-info-light {
+        background-color: rgba(13, 202, 240, 0.1) !important;
+    }
+
+    .bg-success-light {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
+
+    .bg-warning-light {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+
+    .vital-item {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .vital-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .vital-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+
+    .vital-bar {
+        height: 4px;
+        background: #e9ecef;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .vital-progress {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+
+    .treatment-item, .medication-item {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 8px 10px;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+
+    .status-btn.active {
+        box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.25);
+    }
+
+</style>
+
+
+
+@section Scripts
+{
+    <script>
+         $(document).ready(function() {
+           /* --------------------  Init Select2  -------------------- */
+        $('#treatment-options, #medication-options').select2({
+                theme: 'bootstrap-5',
+                width: '100%'
+            });
+
+
+                    /* ----------  TEST LOADER  ---------- */
+        function loadTests() {
+            $.get(`/Appointment/GetTests?appointmentId=${appointmentId}`)
+                .done(res => {
+                    displayTests(res.tests);
+                    $(document).trigger('tests-loaded');
+                });
+        }
+
+        /* ----------  DISPLAY  ---------- */
+                function displayTests(list) {
+            const c = $('#tests-list').empty();
+            if (!list.length) return c.append('<div class="text-muted small">No tests added yet.</div>');
+            list.forEach(t => c.append(`
+                <div class="test-item d-flex justify-content-between align-items-center">
+                    <span>${t.name}</span>
+                    <span>
+                        <small class="text-success">$${(t.unitPrice || 0).toFixed(2)}</small>
+                        <button class="del-btn del-test" data-id="${t.id}" title="Remove">✖</button>
+                    </span>
+                </div>`));
+        }
+
+        /* ----------  ADD  ---------- */
+        $(document).on('submit', '#add-test-form', function (e) {
+            e.preventDefault();
+            const name = $('#test-name').val().trim();
+            const cost = parseFloat($('#test-cost').val()) || 0;
+            if (!name) return Swal.fire('Name required', '', 'info');
+
+            $.post('/Appointment/AddTestStandAloneInvoice', {
+                appointmentId,
+                testName: name,
+                testCost: cost,
+                __RequestVerificationToken: token
+            }).done(res => {
+                if (res.success) {
+                    displayTests(res.tests);
+                    $('#test-name,#test-cost').val('');
+                    Swal.fire({ icon: 'success', title: 'Added', timer: 1200, showConfirmButton: false });
+                } else {
+                    Swal.fire('Error', res.message, 'error');
+                }
+            });
+        });
+
+        /* ----------  REMOVE  ---------- */
+        $(document).on('click', '.del-test', function () {
+            const $row = $(this).closest('.test-item');
+            $.post('/Appointment/RemoveTest', { id: $(this).data('id'), __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) {
+                        $row.remove();
+                        Swal.fire({ toast: true, icon: 'success', title: 'Removed', position: 'top-end', timer: 1500, showConfirmButton: false });
+                    }
+                });
+        });
+
+
+        /* ==========  FOLLOW-UPS  ========== */
+        function loadFollowUps() {
+            $.get(`/Appointment/GetFollowUps?appointmentId=${appointmentId}`)   // changed
+                .done(list => {
+                    const $wrap = $('#followups-list');
+                    $wrap.empty();
+                    if (!list.length) return $wrap.append('<div class="text-muted small">No follow-ups scheduled.</div>');
+
+                    list.forEach(f => {
+                        const badge = f.status === 'Scheduled'
+                            ? '<span class="badge bg-primary">Scheduled</span>'
+                            : '<span class="badge bg-success">Done</span>';
+                        $wrap.append(`
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                <div>
+                                    <div class="fw-bold">${new Date(f.date).toLocaleDateString()}</div>
+                                    <div class="text-muted">${f.notes || 'No notes'}</div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${badge}
+                                    <button class="del-btn del-followup" data-id="${f.id}" title="Remove">✖</button>
+                                </div>
+                            </div>`);
+                    });
+                });
+        }
+        // open / close form
+        $('#add-followup-btn').on('click', () => $('#add-followup-collapse').collapse('toggle'));
+
+        $('#save-followup-btn').on('click', function () {
+            const date  = $('#followup-date').val();
+            const notes = $('#followup-notes').val().trim();
+            if (!date) return Swal.fire('Pick a date', '', 'info');
+
+            $.post('/Appointment/AddFollowUp', {
+                appointmentId: appointmentId,   // NEW
+                patientId: patientId,           // still used (redundant but handy)
+                date: date,
+                notes: notes,
+                __RequestVerificationToken: token
+            }).done(res => {
+                if (res.success) {
+                    $('#followup-date, #followup-notes').val('');
+                    $('#add-followup-collapse').collapse('hide');
+                    loadFollowUps();
+                    Swal.fire({ icon: 'success', title: 'Scheduled', timer: 1200, showConfirmButton: false });
+                } else {
+                    Swal.fire('Error', res.message, 'error');
+                }
+            });
+        });
+        // delete
+                $(document).on('click', '.del-followup', function () {
+            const $row = $(this).closest('.border-bottom'); // <- outer container
+            $.post('/Appointment/DeleteFollowUp', { id: $(this).data('id'), __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) $row.remove();
+                });
+        });
+
+        /* ========================================================================
+           =  GLOBAL CONSTANTS  =
+           ======================================================================== */
+        const appointmentId = @Model;
+        const token = $('#__af input[name="__RequestVerificationToken"]').val();
+        let patientId = 0; // populated after first AJAX
+
+
+        /* ========================================================================
+           =  TAB LOADER MAP (used by pill UI)  =
+           ======================================================================== */
+        const loaders = {
+            treatments  : () => loadTreatments(),
+            medications : () => loadMedications(),
+            attachments : () => loadAttachments(),
+            notes       : () => loadNotes(),
+            tests       : () => loadTests()
+        };
+
+
+        /* ========================================================================
+           =  TAB SWITCH HANDLER (bootstrap pills)  =
+           ======================================================================== */
+        $('a[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
+            const paneId  = $(e.target).attr("href");          // #medications-pane
+            const tabName = paneId.split('-')[0].substring(1); // medications
+
+            const $pane   = $(paneId);
+            
+            const $wrap   = $pane.find('#' + tabName + '-card-wrapper');
+            const $addBtn = $pane.find('.add-btn-' + tabName);
+
+            if ($wrap.hasClass('loaded')) return;              // already fetched
+
+            if (tabName === 'followups') {
+            loadFollowUps();
+            $wrap.addClass('loaded');
+            return;}
+                            
+            loaders[tabName]();                                // AJAX call
+        });
+
+
+        /* ========================================================================
+           =  NOTES  =
+           ======================================================================== */
+        function loadNotes() {
+            $.get(`/Appointment/GetNotes?appointmentId=${appointmentId}`)
+                .done(list => {
+                    const c = $('#notes-list').empty();
+                    if (!list.length) return c.append('<div class="text-muted small">No notes yet.</div>');
+
+                    list.forEach(n => {
+                        c.append(`
+                            <div class="note-item">
+                                <div class="note-text">${escapeHtml(n.text)}</div>
+                                <div>
+                                    <div class="note-date">${new Date(n.createdAt).toLocaleString()}</div>
+                                    <button class="del-btn del-note" data-id="${n.id}" title="Remove">✖</button>
+                                </div>
+                            </div>`);
+                    });
+                    $(document).trigger('notes-loaded');   // hide spinner + show Add button
+                });
+        }
+
+        
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        
+
+        $('#save-note-btn').on('click', function () {
+            const text = $('#new-note-text').val().trim();
+            if (!text) return Swal.fire('Type something', '', 'info');
+
+            $.post('/Appointment/AddNote', { appointmentId, text, __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) {
+                        $('#new-note-text').val('');
+                        loadNotes();
+                        Swal.fire({ icon: 'success', title: 'Added', timer: 1200, showConfirmButton: false });
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                });
+        });
+
+        $(document).on('click', '.del-note', function () {
+            const $row = $(this).closest('.note-item');
+            $.post('/Appointment/DeleteNote', { id: $(this).data('id'), __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) {
+                        $row.remove();
+                        Swal.fire({ toast: true, icon: 'success', title: 'Note removed', position: 'top-end', timer: 1500, showConfirmButton: false });
+                    }
+                });
+        });
+
+
+        /* ========================================================================
+           =  ATTACHMENTS  =
+           ======================================================================== */
+        function loadAttachments() {
+            $.get(`/Appointment/GetAttachments?patientId=${patientId}`)
+                .done(list => {
+                    const c = $('#attachment-list').empty();
+                    if (!list.length) return c.append('<div class="text-muted small">No attachments yet.</div>');
+
+                    list.forEach(att => {
+                        const size = att.fileSize ? ` (${att.fileSize})` : '';
+                        c.append(`
+                            <div class="attachment-item">
+                                <a href="${att.fileUrl}" target="_blank" title="${att.description || att.fileName}">
+                                    <i class="ti ti-file me-1"></i>${att.fileName}
+                                </a>
+                                <small class="text-muted">${size}</small>
+                                <button class="del-btn del-attachment" data-id="${att.id}" title="Remove">✖</button>
+                            </div>`);
+                    });
+                    $(document).trigger('attachments-loaded');
+                });
+        }
+
+
+        $('#add-attachment-btn').on('click', () => $('#attachment-file').click());
+
+        $('#attachment-file').on('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('patientId', patientId);
+            formData.append('file', file);
+            formData.append('description', '');
+
+            $.ajax({
+                url: '/Appointment/UploadAttachment',
+                type: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: res => {
+                    if (res.success) {
+                        loadAttachments();
+                        Swal.fire({ icon: 'success', title: 'Uploaded', timer: 1500, showConfirmButton: false });
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                },
+                error: xhr => Swal.fire('Error', xhr.responseJSON?.message || 'Upload failed', 'error')
+            });
+            this.value = '';
+        });
+
+        $(document).on('click', '.del-attachment', function () {
+            const $row = $(this).closest('.attachment-item');
+            $.post('/Appointment/DeleteAttachment', { id: $(this).data('id'), __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) {
+                        $row.remove();
+                        Swal.fire({ toast: true, icon: 'success', title: 'Attachment removed', position: 'top-end', timer: 1500, showConfirmButton: false });
+                    }
+
+                });
+        });
+
+
+        /* ========================================================================
+           =  TREATMENTS  =
+           ======================================================================== */
+        function loadTreatments() {
+            $.get(`/Appointment/GetTreatments?appointmentId=${appointmentId}`)
+                .done(res => {
+                    displayTreatments(res.treatments);
+                    $(document).trigger('treatments-loaded');
+                     
+                });
+        }
+
+        /* ========================================================================
+           =  MEDICATIONS  =
+           ======================================================================== */
+        function loadMedications() {
+            $.get(`/Appointment/GetMedications?appointmentId=${appointmentId}`)
+                .done(res => {
+                    displayMedications(res.medications);
+                    $(document).trigger('medications-loaded');
+                });
+        }
+
+
+        /* ========================================================================
+           =  HELPERS  =
+           ======================================================================== */
+         function updateStatusButtons(current) {
+                $('.status-btn')
+                    .removeClass('active btn-warning btn-success btn-danger')
+                    .addClass('btn-outline-warning btn-outline-success btn-outline-danger');
+
+                const $btn = $(`.status-btn[data-status='${current}']`).addClass('active');
+                if (current === 'InProgress') $btn.removeClass('btn-outline-warning').addClass('btn-warning');
+                else if (current === 'Completed') $btn.removeClass('btn-outline-success').addClass('btn-success');
+                else if (current === 'Cancelled') $btn.removeClass('btn-outline-danger').addClass('btn-danger');
+            }
+
+         function populateDropdown(selector, options, selectedValue = "") {
+                const $dd = $(selector);
+                $dd.find('option:not(:first)').remove();
+                options.forEach(o => $dd.append(`<option value="${o.value}">${o.text}</option>`));
+                if (selectedValue) $dd.val(selectedValue);
+            }
+
+         function displayTreatments(list) {
+            const c = $('#treatments-list').empty();
+            list.forEach(t => c.append(`
+                <div class="treatment-item d-flex justify-content-between align-items-center">
+                    <span>${t.name}</span>
+                    <span>
+                            <small class="text-success">$${(t.unitPrice || 0).toFixed(2)}</small>
+                        <button class="del-btn del-treatment" data-id="${t.id}" title="Remove">✖</button>
+                    </span>
+                </div>`));
+                $(document).trigger('treatments-loaded');
+        }
+
+                function displayMedications(list) {
+            const c = $('#medications-list').empty();
+            list.forEach(m => c.append(`
+                <div class="medication-item d-flex justify-content-between align-items-center">
+                    <span>${m.name}</span>
+                    <span>
+                        <small class="text-success">$${(m.unitPrice || 0).toFixed(2)}</small>
+                        <button class="del-btn del-medication" data-id="${m.id}" title="Remove">✖</button>
+                    </span>
+                </div>`));
+        }
+
+        function displayVitals(v) {
+            $('#vitals-status').hide();
+            if (!v.bloodPressure && !v.heartRate && !v.spo2 && !v.temperature && !v.respiratoryRate && !v.weight) {
+                $('#vitals-display').html(`
+                    <div class="text-center py-4 text-muted">
+                        <i class="ti ti-heart-rate-monitor display-6 d-block mb-2"></i>
+                        <p>No vitals recorded yet.<br><small>Nurse will add vitals during consultation.</small></p>
+                    </div>`);
+                return;
+            }
+            const card = (label, value, color, prog) => `
+                <div class="col-6">
+                    <div class="vital-item">
+                        <div class="vital-label">${label}</div>
+                        <div class="vital-value text-${color}">${value}</div>
+                        <div class="vital-bar"><div class="vital-progress bg-${color}" style="width:${Math.min(prog, 100)}%"></div></div>
+                    </div>
+                </div>`;
+            $('#vitals-display').html(`
+                <div class="row g-3">
+                    ${card('Blood Pressure', v.bloodPressure || 'N/A', 'danger', calcBP(v.bloodPressure))}
+                    ${card('Heart Rate', v.heartRate ? v.heartRate + ' bpm' : 'N/A', 'info', calcHR(v.heartRate))}
+                    ${card('SpO2', v.spo2 ? v.spo2 + '%' : 'N/A', 'success', v.spo2 || 0)}
+                    ${card('Temperature', v.temperature ? v.temperature + '°F' : 'N/A', 'warning', calcTemp(v.temperature))}
+                    ${card('Resp. Rate', v.respiratoryRate ? v.respiratoryRate + '/min' : 'N/A', 'primary', v.respiratoryRate || 0)}
+                    ${card('Weight', v.weight ? v.weight + ' kg' : 'N/A', 'secondary', v.weight || 0)}
+                </div>`);
+        }
+
+        const calcBP = bp => bp ? Math.min((parseInt(bp.split('/')[0]) || 0) / 1.4, 100) : 0;
+        const calcHR = hr => hr ? Math.min(parseInt(hr) || 0, 100) : 0;
+        const calcTemp = t => t ? Math.min(((parseFloat(t) - 96) / 8) * 100, 100) : 0;
+
+        function formatDate(d) {
+            return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+
+        /* ========================================================================
+           =  EVENT HANDLERS  =
+           ======================================================================== */
+
+
+           
+           
+            // Toggle custom med fields
+        $('#custom-med-toggle').on('change', function () {
+                $('#custom-med-fields').toggle(this.checked);
+                $('#medication-options').prop('disabled', this.checked);
+            });
+
+        $(document).on('click', '.status-btn', function () {
+            const status = $(this).data('status');
+            $.post('/Appointment/UpdateStatus', { id: appointmentId, status, __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) {
+                        updateStatusButtons(status);
+                        Swal.fire({ icon: 'success', title: res.message, timer: 1500, showConfirmButton: false });
+                    }
+                });
+        });
+
+        $(document).on('submit', '#add-treatment-form', function (e) {
+            e.preventDefault();
+            const treatmentId = $('#treatment-options').val();
+            if (!treatmentId) return Swal.fire('Select Treatment', 'Please choose a treatment first.', 'warning');
+
+                $.post('/Appointment/AddTreatment', { appointmentId, treatmentId, __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) {
+                        displayTreatments(res.treatments);
+                        $('#treatment-options').val('').trigger('change');
+                        Swal.fire('Added!', 'Treatment added successfully.', 'success');
+                    }
+                });
+        });
+
+        $(document).on('submit', '#add-medication-form', function (e) {
+            e.preventDefault();
+            const isCustom = $('#custom-med-toggle').is(':checked');
+            const data = { appointmentId, __RequestVerificationToken: token };
+
+            if (isCustom) {
+                data.customName = $('#custom-med-name').val().trim();
+                data.customCost = parseFloat($('#custom-med-cost').val()) || 0;
+                if (!data.customName) return Swal.fire('Missing Name', 'Please enter a medication name.', 'warning');
+            } else {
+                data.inventoryId = $('#medication-options').val();
+                if (!data.inventoryId) return Swal.fire('Select Medication', 'Please choose a medication first.', 'warning');
+            }
+
+                $.post('/Appointment/AddMedicationStandAloneInvoice', data)
+                .done(res => {
+                    if (res.success) {
+                        displayMedications(res.medications);
+                        $('#medication-options').val('').trigger('change');
+                        $('#custom-med-name,#custom-med-cost').val('');
+                        $('#custom-med-toggle').prop('checked', false);
+                        $('#custom-med-fields').hide();
+                        Swal.fire('Added!', 'Medication added successfully.', 'success');
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                });
+        });
+
+        $(document).on('click', '.del-treatment', function () {
+            const $row = $(this).closest('.treatment-item');
+            $.post('/Appointment/RemoveTreatment', { appointmentId, treatmentId: $(this).data('id'), __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) {
+                        $row.remove();
+                        Swal.fire({ toast: true, icon: 'success', title: 'Treatment removed', position: 'top-end', timer: 1500, showConfirmButton: false });
+                    }
+                });
+        });
+
+        $(document).on('click', '.del-medication', function () {
+            const $row = $(this).closest('.medication-item');
+            $.post('/Appointment/RemoveMedication', { appointmentId, medicationId: $(this).data('id'), __RequestVerificationToken: token })
+                .done(res => {
+                    if (res.success) {
+                        $row.remove();
+                        Swal.fire({ toast: true, icon: 'success', title: 'Medication removed', position: 'top-end', timer: 1500, showConfirmButton: false });
+                    }
+                });
+        });
+
+
+        /* ========================================================================
+           =  INITIAL PAGE LOAD  =
+           ======================================================================== */
+            /* --------------------  Load Appointment  -------------------- */
+            function loadAppointmentData() {
+                $.get(`/Appointment/GetAppointmentDetails?id=${appointmentId}`)
+                    .done(function (data) {
+                        // ----- Patient Info -----
+                        $('#patient-avatar').attr('src', '/uploads/doctors/patient_default.jpg');
+                        $('#patient-name').text(data.patient.fullName);
+                        $('#patient-meta').text(`Suffering from ${data.patient.chiefComplaint}`);
+                        $('#patient-age').text(data.patient.age);
+                        $('#patient-email').text(data.patient.email);
+                        $('#patient-phone').text(data.patient.phoneNumber);
+                        $('#patient-gender').text(data.patient.gender);
+                        $('#patient-mrn').text(data.patient.mrn);
+                        $('#patient-visit-id').text(data.patient.visitId);
+                        $('#patient-visit-date').text(formatDate(data.patient.visitDate));
+                        $('#patient-complaint').text(data.patient.chiefComplaint);
+
+                        // ----- Vitals -----
+                        displayVitals(data.vitals);
+
+                        // ----- Status Buttons -----
+                        updateStatusButtons(data.currentStatus);
+
+                        // ----- Dropdown Options -----
+                        populateDropdown('#treatment-options', data.treatmentOptions);
+                        populateDropdown('#medication-options', data.medicationOptions);
+
+                        // ----- Existing Items -----
+                          displayTreatments(data.treatments);   // paint first
+        $(document).trigger('treatments-loaded');   // then reveal
+
+        displayMedications(data.medications);
+        $(document).trigger('medications-loaded');
+                 loadAttachments();
+                loadNotes();
+
+                /* fire the events for the FIRST tab (already visible) */
+                        patientId = data.patient.patientId;
+                       
+                    })
+                    .fail(function (xhr, status, err) {
+                        console.error('Error loading appointment data:', err);
+                        $('#vitals-status').html('<div class="alert alert-danger">Failed to load appointment data</div>');
+                    });
+
+
+
+            }
+
+
+
+        loadAppointmentData();  
+    });// your existing entry point – keeps the same name
+    </script>
+}
+
+
+
+
+
+                 *@
+
+
+@model int
+@{
+    ViewData["Title"] = "Détails du Rendez-vous";
+}
+<form id="__af" method="post" style="display:none">@Html.AntiForgeryToken()</form>
+
+<div class="content">
+    <div class="container-fluid p-0">
+        <div class="row g-3">
+            <!-- COLONNE GAUCHE - Informations Patient -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="position-relative mb-3">
+                            
+                            @* <div class="spinner-border avatar-lg text-primary m-2" role="status"></div> *@
+                        </div>
+                        <img src="" id="patientImg" alt="Profile Pic" class="w-50 mb-4 rounded-50"/>
+                        <h5 id="patient-name" class="card-title mb-1">Chargement...</h5>
+                        <p class="text-muted small mb-3" id="patient-meta">...</p>
+
+                        <div class="row text-center my-3">
+                            <div class="col-4">
+                                <span class="badge bg-primary-light text-primary px-1 py-1">
+                                    <small class="fs-6">Âge</small>
+                                    <strong class="fs-6" id="patient-age">--</strong>
+                                </span>
+                            </div>
+                            <div class="col-5">
+                                <span class="badge bg-info-light text-info px-1 pr-2">
+                                    <small class="fs-6">Genre</small>
+                                    <strong class="fs-6" id="patient-gender">--</strong>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="text-muted"><i class="ti ti-phone text-success"></i>Téléphone</div>
+                            <div class="fw-bold" id="patient-phone">--</div>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="text-muted"><i class="ti ti-mail text-warning"></i>Email</div>
+                            <div class="fw-bold text-truncate" id="patient-email">--</div>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">ID Visite:</span>
+                            <strong id="patient-visit-id">...</strong>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Date Visite:</span>
+                            <strong id="patient-visit-date">...</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLONNE CENTRALE - Signes Vitaux & Statut -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="ti ti-heart-rate-monitor text-primary me-2"></i>Signes Vitaux</h5>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-warning status-btn" data-status="InProgress">
+                                <i class="ti ti-clock me-1"></i>En Cours
+                            </button>
+                            <button type="button" class="btn btn-outline-success status-btn" data-status="Completed">
+                                <i class="ti ti-check me-1"></i>Terminé
+                            </button>
+                            <button type="button" class="btn btn-outline-danger status-btn" data-status="Cancelled">
+                                <i class="ti ti-x me-1"></i>Annuler
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="vitals-display">
+                            <!-- Les signes vitaux seront affichés ici -->
+                        </div>
+
+                        <div id="vitals-status" class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement des signes vitaux...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARTE DES ONGLETS -->
+        <div class="col-12 mt-4">
+            <div class="card">
+                <div class="card-header bg-transparent border-0">
+                    <ul class="nav nav-pills-modern" id="docTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="treatments-tab" data-bs-toggle="pill"
+                               href="#treatments-pane" role="tab" aria-selected="true">
+                                Traitements
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="medications-tab" data-bs-toggle="pill"
+                               href="#medications-pane" role="tab" aria-selected="false">
+                                Médicaments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="attachments-tab" data-bs-toggle="pill"
+                               href="#attachments-pane" role="tab" aria-selected="false">
+                                Pièces Jointes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="notes-tab" data-bs-toggle="pill"
+                               href="#notes-pane" role="tab" aria-selected="false">
+                                Notes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tests-tab" data-bs-toggle="pill"
+                               href="#tests-pane" role="tab" aria-selected="false">
+                                Tests
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <div class="tab-content" id="docTabsContent">
+                        <!-- Traitements -->
+                        <div class="tab-pane fade show active" id="treatments-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Traitements pour cette visite</span>
+                                <button class="btn btn-sm btn-success add-btn-treatments d-none">
+                                    <i class="ti ti-plus"></i> Ajouter
+                                </button>
+                            </div>
+
+                            <div id="treatments-card-wrapper">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="ti ti-medical-cross text-success me-2"></i>Traitements
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <form id="add-treatment-form" class="d-flex gap-2 mb-3">
+                                            <select id="treatment-options" class="form-select select2 w-100">
+                                                <option value="">Sélectionner un traitement...</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="ti ti-plus"></i>
+                                            </button>
+                                        </form>
+                                        <div id="treatments-list" class="small"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Médicaments -->
+                        <div class="tab-pane fade" id="medications-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Médicaments pour cette visite</span>
+                                <button class="btn btn-sm btn-info add-btn-medications d-none">
+                                    <i class="ti ti-plus"></i> Ajouter
+                                </button>
+                            </div>
+
+                            <div id="medications-card-wrapper">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="ti ti-pill text-info me-2"></i>Médicaments
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <form id="add-medication-form" class="mb-2">
+                                            <div class="d-flex gap-2 mb-2">
+                                                <select id="medication-options" class="form-select select2 w-100">
+                                                    <option value="">Sélectionner un médicament...</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-info btn-sm">
+                                                    <i class="ti ti-plus"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input" type="checkbox" id="custom-med-toggle">
+                                                <label class="form-check-label small" for="custom-med-toggle">Médicament Personnalisé</label>
+                                            </div>
+
+                                            <div id="custom-med-fields" style="display:none;" class="border-top pt-2">
+                                                <input type="text" id="custom-med-name" class="form-control form-control-sm mb-2"
+                                                       placeholder="Nom du médicament">
+                                                <input type="number" id="custom-med-cost" class="form-control form-control-sm"
+                                                       placeholder="Coût" step="0.01">
+                                            </div>
+                                        </form>
+                                        <div id="medications-list" class="small mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pièces Jointes -->
+                        <div class="tab-pane fade" id="attachments-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Fichiers & Images</span>
+                                <button class="btn btn-sm btn-warning add-btn-attachments d-none">
+                                    <i class="ti ti-plus"></i> Ajouter
+                                </button>
+                            </div>
+
+                            <div id="attachments-card-wrapper">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="ti ti-paperclip text-warning me-2"></i>Pièces Jointes
+                                        </h6>
+                                        <button class="btn btn-sm btn-warning" id="add-attachment-btn">
+                                            <i class="ti ti-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <input type="file" id="attachment-file" class="d-none" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                                        <div id="attachment-list" class="small"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="tab-pane fade" id="notes-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Notes Médecin / Infirmier</span>
+                                <button class="btn btn-sm btn-primary add-btn-notes d-none">
+                                    <i class="ti ti-plus"></i> Ajouter
+                                </button>
+                            </div>
+
+                            <div id="notes-card-wrapper">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><i class="ti ti-notes text-primary me-2"></i>Notes</h6>
+                                        <button class="btn btn-sm btn-primary" id="add-note-btn">
+                                            <i class="ti ti-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <textarea id="new-note-text" class="form-control" rows="2"
+                                                      placeholder="Tapez votre note ici…"></textarea>
+                                            <button class="btn btn-primary" id="save-note-btn">
+                                                <i class="ti ti-check"></i>
+                                            </button>
+                                        </div>
+                                        <div class="overflow-auto" style="max-height:10.5rem;">
+                                            <div id="notes-list" class="small"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests -->
+                        <div class="tab-pane fade" id="tests-pane" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted">Tests de laboratoire / diagnostics pour cette visite</span>
+                                <button class="btn btn-sm btn-primary add-btn-tests d-none">
+                                    <i class="ti ti-plus"></i> Ajouter
+                                </button>
+                            </div>
+
+                            <div id="tests-card-wrapper">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="ti ti-test-tube text-primary me-2"></i>Tests
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <form id="add-test-form" class="row g-2 mb-3">
+                                            <div class="col-6">
+                                                <input type="text" id="test-name" class="form-control form-control-sm"
+                                                       placeholder="Nom du test">
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" id="test-cost" class="form-control form-control-sm"
+                                                       placeholder="Coût" step="0.01">
+                                            </div>
+                                            <div class="col-2 d-grid">
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    <i class="ti ti-plus"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <div id="tests-list" class="small"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .nav-pills-modern .nav-link {
+        color: var(--bs-primary);
+        border-radius: .375rem;
+        margin-right: .25rem;
+        padding: .375rem .75rem;
+        font-weight: 500;
+        transition: all .15s ease-in-out;
+    }
+
+        .nav-pills-modern .nav-link:hover {
+            background-color: rgba(var(--bs-primary-rgb),.1);
+        }
+
+        .nav-pills-modern .nav-link.active {
+            background-color: var(--bs-primary);
+            color: #fff;
+        }
+
+    .note-item {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 6px 8px;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+
+    .note-text {
+        flex: 1;
+        margin-right: 6px;
+        word-break: break-word;
+    }
+
+    .note-date {
+        font-size: 0.7rem;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+
+    .attachment-item {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 6px 8px;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .attachment-item a {
+            color: #495057;
+            text-decoration: none;
+        }
+
+            .attachment-item a:hover {
+                text-decoration: underline;
+            }
+
+    .del-btn {
+        cursor: pointer;
+        color: #dc3545;
+        font-weight: bold;
+        padding: 0 4px;
+        line-height: 1;
+        border: none;
+        background: transparent;
+    }
+
+        .del-btn:hover {
+            color: #a71d2a;
+        }
+
+    .bg-primary-light {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+
+    .bg-info-light {
+        background-color: rgba(13, 202, 240, 0.1) !important;
+    }
+
+    .bg-success-light {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
+
+    .bg-warning-light {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+
+    .vital-item {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .vital-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .vital-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+
+    .vital-bar {
+        height: 4px;
+        background: #e9ecef;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .vital-progress {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+
+    .treatment-item, .medication-item {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 8px 10px;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+
+    .status-btn.active {
+        box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.25);
+    }
+</style>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function() {
+            /* --------------------  Initialisation Select2  -------------------- */
+            $('#treatment-options, #medication-options').select2({
+                theme: 'bootstrap-5',
+                width: '100%'
+            });
+
+            /* ----------  CHARGEMENT DES TESTS  ---------- */
+            function loadTests() {
+                $.get(`/Appointment/GetTests?appointmentId=${appointmentId}`)
+                    .done(res => {
+                        displayTests(res.tests);
+                        $(document).trigger('tests-loaded');
+                    });
+            }
+
+            /* ----------  AFFICHAGE DES TESTS  ---------- */
+            function displayTests(list) {
+                const c = $('#tests-list').empty();
+                if (!list.length) return c.append('<div class="text-muted small">Aucun test ajouté pour le moment.</div>');
+                list.forEach(t => c.append(`
+                    <div class="test-item d-flex justify-content-between align-items-center">
+                        <span>${t.name}</span>
+                        <span>
+                            <small class="text-success">$${(t.unitPrice || 0).toFixed(2)}</small>
+                            <button class="del-btn del-test" data-id="${t.id}" title="Supprimer">✖</button>
+                        </span>
+                    </div>`));
+            }
+
+            /* ----------  AJOUT DE TEST  ---------- */
+            $(document).on('submit', '#add-test-form', function (e) {
+                e.preventDefault();
+                const name = $('#test-name').val().trim();
+                const cost = parseFloat($('#test-cost').val()) || 0;
+                if (!name) return Swal.fire('Nom requis', '', 'info');
+
+                $.post('/Appointment/AddTestStandAloneInvoice', {
+                    appointmentId,
+                    testName: name,
+                    testCost: cost,
+                    __RequestVerificationToken: token
+                }).done(res => {
+                    if (res.success) {
+                        displayTests(res.tests);
+                        $('#test-name,#test-cost').val('');
+                        Swal.fire({ icon: 'success', title: 'Ajouté', timer: 1200, showConfirmButton: false });
+                    } else {
+                        Swal.fire('Erreur', res.message, 'error');
+                    }
+                });
+            });
+
+            /* ----------  SUPPRESSION DE TEST  ---------- */
+            $(document).on('click', '.del-test', function () {
+                const $row = $(this).closest('.test-item');
+                $.post('/Appointment/RemoveTest', { id: $(this).data('id'), __RequestVerificationToken: token })
+                    .done(res => {
+                        if (res.success) {
+                            $row.remove();
+                            Swal.fire({ toast: true, icon: 'success', title: 'Supprimé', position: 'top-end', timer: 1500, showConfirmButton: false });
+                        }
+                    });
+            });
+
+            /* ==========  CONSTANTES GLOBALES  ========== */
+            const appointmentId = @Model;
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+            let patientId = 0;
+
+            /* ==========  GESTIONNAIRES DE CHARGEMENT DES ONGLETS  ========== */
+            const loaders = {
+                treatments  : () => loadTreatments(),
+                medications : () => loadMedications(),
+                attachments : () => loadAttachments(),
+                notes       : () => loadNotes(),
+                tests       : () => loadTests()
+            };
+
+            /* ==========  GESTIONNAIRE DE CHANGEMENT D'ONGLET  ========== */
+            $('a[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
+                const paneId  = $(e.target).attr("href");
+                const tabName = paneId.split('-')[0].substring(1);
+                const $pane   = $(paneId);
+                const $wrap   = $pane.find('#' + tabName + '-card-wrapper');
+                const $addBtn = $pane.find('.add-btn-' + tabName);
+
+                if ($wrap.hasClass('loaded')) return;
+
+                if (tabName === 'followups') {
+                    loadFollowUps();
+                    $wrap.addClass('loaded');
+                    return;
+                }
+
+                loaders[tabName]();
+            });
+
+            /* ==========  NOTES  ========== */
+            function loadNotes() {
+                $.get(`/Appointment/GetNotes?appointmentId=${appointmentId}`)
+                    .done(list => {
+                        const c = $('#notes-list').empty();
+                        if (!list.length) return c.append('<div class="text-muted small">Aucune note pour le moment.</div>');
+
+                        list.forEach(n => {
+                            c.append(`
+                                <div class="note-item">
+                                    <div class="note-text">${escapeHtml(n.text)}</div>
+                                    <div>
+                                        <div class="note-date">${new Date(n.createdAt).toLocaleString()}</div>
+                                        <button class="del-btn del-note" data-id="${n.id}" title="Supprimer">✖</button>
+                                    </div>
+                                </div>`);
+                        });
+                        $(document).trigger('notes-loaded');
+                    });
+            }
+
+            function escapeHtml(str) {
+                return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            }
+
+            $('#save-note-btn').on('click', function () {
+                const text = $('#new-note-text').val().trim();
+                if (!text) return Swal.fire('Tapez quelque chose', '', 'info');
+
+                $.post('/Appointment/AddNote', { appointmentId, text, __RequestVerificationToken: token })
+                    .done(res => {
+                        if (res.success) {
+                            $('#new-note-text').val('');
+                            loadNotes();
+                            Swal.fire({ icon: 'success', title: 'Ajouté', timer: 1200, showConfirmButton: false });
+                        } else {
+                            Swal.fire('Erreur', res.message, 'error');
+                        }
+                    });
+            });
+
+            $(document).on('click', '.del-note', function () {
+                const $row = $(this).closest('.note-item');
+                $.post('/Appointment/DeleteNote', { id: $(this).data('id'), __RequestVerificationToken: token })
+                    .done(res => {
+                        if (res.success) {
+                            $row.remove();
+                            Swal.fire({ toast: true, icon: 'success', title: 'Note supprimée', position: 'top-end', timer: 1500, showConfirmButton: false });
+                        }
+                    });
+            });
+
+            /* ==========  PIÈCES JOINTES  ========== */
+            function loadAttachments() {
+                $.get(`/Appointment/GetAttachments?patientId=${patientId}`)
+                    .done(list => {
+                        const c = $('#attachment-list').empty();
+                        if (!list.length) return c.append('<div class="text-muted small">Aucune pièce jointe pour le moment.</div>');
+
+                        list.forEach(att => {
+                            const size = att.fileSize ? ` (${att.fileSize})` : '';
+                            c.append(`
+                                <div class="attachment-item">
+                                    <a href="${att.fileUrl}" target="_blank" title="${att.description || att.fileName}">
+                                        <i class="ti ti-file me-1"></i>${att.fileName}
+                                    </a>
+                                    <small class="text-muted">${size}</small>
+                                    <button class="del-btn del-attachment" data-id="${att.id}" title="Supprimer">✖</button>
+                                </div>`);
+                        });
+                        $(document).trigger('attachments-loaded');
+                    });
+            }
+
+            $('#add-attachment-btn').on('click', () => $('#attachment-file').click());
+
+            $('#attachment-file').on('change', function () {
+                const file = this.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('patientId', patientId);
+                formData.append('file', file);
+                formData.append('description', '');
+
+                $.ajax({
+                    url: '/Appointment/UploadAttachment',
+                    type: 'POST',
+                    headers: { 'RequestVerificationToken': token },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: res => {
+                        if (res.success) {
+                            loadAttachments();
+                            Swal.fire({ icon: 'success', title: 'Téléversé', timer: 1500, showConfirmButton: false });
+                        } else {
+                            Swal.fire('Erreur', res.message, 'error');
+                        }
+                    },
+                    error: xhr => Swal.fire('Erreur', xhr.responseJSON?.message || 'Échec du téléversement', 'error')
+                });
+                this.value = '';
+            });
+
+            $(document).on('click', '.del-attachment', function () {
+                const $row = $(this).closest('.attachment-item');
+                $.post('/Appointment/DeleteAttachment', { id: $(this).data('id'), __RequestVerificationToken: token })
+                    .done(res => {
+                        if (res.success) {
+                            $row.remove();
+                            Swal.fire({ toast: true, icon: 'success', title: 'Pièce jointe supprimée', position: 'top-end', timer: 1500, showConfirmButton: false });
+                        }
+                    });
+            });
+
+            /* ==========  TRAITEMENTS  ========== */
+            function loadTreatments() {
+                $.get(`/Appointment/GetTreatments?appointmentId=${appointmentId}`)
+                    .done(res => {
+                        displayTreatments(res.treatments);
+                        $(document).trigger('treatments-loaded');
+                    });
+            }
+
+            /* ==========  MÉDICAMENTS  ========== */
+            function loadMedications() {
+                $.get(`/Appointment/GetMedications?appointmentId=${appointmentId}`)
+                    .done(res => {
+                        displayMedications(res.medications);
+                        $(document).trigger('medications-loaded');
+                    });
+            }
+
+            /* ==========  FONCTIONS UTILITAIRES  ========== */
+            function updateStatusButtons(current) {
+                $('.status-btn')
+                    .removeClass('active btn-warning btn-success btn-danger')
+                    .addClass('btn-outline-warning btn-outline-success btn-outline-danger');
+
+                const $btn = $(`.status-btn[data-status='${current}']`).addClass('active');
+                if (current === 'InProgress') $btn.removeClass('btn-outline-warning').addClass('btn-warning');
+                else if (current === 'Completed') $btn.removeClass('btn-outline-success').addClass('btn-success');
+                else if (current === 'Cancelled') $btn.removeClass('btn-outline-danger').addClass('btn-danger');
+            }
+
+            function populateDropdown(selector, options, selectedValue = "") {
+                const $dd = $(selector);
+                $dd.find('option:not(:first)').remove();
+                options.forEach(o => $dd.append(`<option value="${o.value}">${o.text}</option>`));
+                if (selectedValue) $dd.val(selectedValue);
+            }
+
+            function displayTreatments(list) {
+                const c = $('#treatments-list').empty();
+                list.forEach(t => c.append(`
+                    <div class="treatment-item d-flex justify-content-between align-items-center">
+                        <span>${t.name}</span>
+                        <span>
+                            <small class="text-success">$${(t.unitPrice || 0).toFixed(2)}</small>
+                            <button class="del-btn del-treatment" data-id="${t.id}" title="Supprimer">✖</button>
+                        </span>
+                    </div>`));
+                $(document).trigger('treatments-loaded');
+            }
+
+            function displayMedications(list) {
+                const c = $('#medications-list').empty();
+                list.forEach(m => c.append(`
+                    <div class="medication-item d-flex justify-content-between align-items-center">
+                        <span>${m.name}</span>
+                        <span>
+                            <small class="text-success">$${(m.unitPrice || 0).toFixed(2)}</small>
+                            <button class="del-btn del-medication" data-id="${m.id}" title="Supprimer">✖</button>
+                        </span>
+                    </div>`));
+            }
+
+            function displayVitals(v) {
+                $('#vitals-status').hide();
+                if (!v.bloodPressure && !v.heartRate && !v.spo2 && !v.temperature && !v.respiratoryRate && !v.weight) {
+                    $('#vitals-display').html(`
+                        <div class="text-center py-4 text-muted">
+                            <i class="ti ti-heart-rate-monitor display-6 d-block mb-2"></i>
+                            <p>Aucun signe vital enregistré.<br><small>L'infirmier ajoutera les signes vitaux pendant la consultation.</small></p>
+                        </div>`);
+                    return;
+                }
+                const card = (label, value, color, prog) => `
+                    <div class="col-6">
+                        <div class="vital-item">
+                            <div class="vital-label">${label}</div>
+                            <div class="vital-value text-${color}">${value}</div>
+                            <div class="vital-bar"><div class="vital-progress bg-${color}" style="width:${Math.min(prog, 100)}%"></div></div>
+                        </div>
+                    </div>`;
+                $('#vitals-display').html(`
+                    <div class="row g-3">
+                        ${card('Pression Artérielle', v.bloodPressure || 'N/A', 'danger', calcBP(v.bloodPressure))}
+                        ${card('Rythme Cardiaque', v.heartRate ? v.heartRate + ' bpm' : 'N/A', 'info', calcHR(v.heartRate))}
+                        ${card('SpO2', v.spo2 ? v.spo2 + '%' : 'N/A', 'success', v.spo2 || 0)}
+                        ${card('Température', v.temperature ? v.temperature + '°F' : 'N/A', 'warning', calcTemp(v.temperature))}
+                        ${card('Fréq. Respiratoire', v.respiratoryRate ? v.respiratoryRate + '/min' : 'N/A', 'primary', v.respiratoryRate || 0)}
+                        ${card('Poids', v.weight ? v.weight + ' kg' : 'N/A', 'secondary', v.weight || 0)}
+                    </div>`);
+            }
+
+            const calcBP = bp => bp ? Math.min((parseInt(bp.split('/')[0]) || 0) / 1.4, 100) : 0;
+            const calcHR = hr => hr ? Math.min(parseInt(hr) || 0, 100) : 0;
+            const calcTemp = t => t ? Math.min(((parseFloat(t) - 96) / 8) * 100, 100) : 0;
+
+            function formatDate(d) {
+                return new Date(d).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            }
+
+            /* ==========  GESTIONNAIRES D'ÉVÉNEMENTS  ========== */
+
+            // Basculer les champs de médicament personnalisé
+            $('#custom-med-toggle').on('change', function () {
+                $('#custom-med-fields').toggle(this.checked);
+                $('#medication-options').prop('disabled', this.checked);
+            });
+
+            $(document).on('click', '.status-btn', function () {
+                const status = $(this).data('status');
+                $.post('/Appointment/UpdateStatus', { id: appointmentId, status, __RequestVerificationToken: token })
+                    .done(res => {
+                        if (res.success) {
+                            updateStatusButtons(status);
+                            Swal.fire({ icon: 'success', title: res.message, timer: 1500, showConfirmButton: false });
+                        }
+                    });
+            });
+
+            $(document).on('submit', '#add-treatment-form', function (e) {
+                e.preventDefault();
+                const treatmentId = $('#treatment-options').val();
+                if (!treatmentId) return Swal.fire('Sélectionnez un traitement', 'Veuillez choisir un traitement d\'abord.', 'warning');
+
+                $.post('/Appointment/AddTreatment', { appointmentId, treatmentId, __RequestVerificationToken: token })
+                    .done(res => {
+                        if (res.success) {
+                            displayTreatments(res.treatments);
+                            $('#treatment-options').val('').trigger('change');
+                            Swal.fire('Ajouté!', 'Traitement ajouté avec succès.', 'success');
+                        }
+                    });
+            });
+
+            $(document).on('submit', '#add-medication-form', function (e) {
+                e.preventDefault();
+                const isCustom = $('#custom-med-toggle').is(':checked');
+                const data = { appointmentId, __RequestVerificationToken: token };
+
+                if (isCustom) {
+                    data.customName = $('#custom-med-name').val().trim();
+                    data.customCost = parseFloat($('#custom-med-cost').val()) || 0;
+                    if (!data.customName) return Swal.fire('Nom manquant', 'Veuillez entrer un nom de médicament.', 'warning');
+                } else {
+                    data.inventoryId = $('#medication-options').val();
+                    if (!data.inventoryId) return Swal.fire('Sélectionnez un médicament', 'Veuillez choisir un médicament d\'abord.', 'warning');
+                }
+
+                $.post('/Appointment/AddMedicationStandAloneInvoice', data)
+                    .done(res => {
+                        if (res.success) {
+                            displayMedications(res.medications);
+                            $('#medication-options').val('').trigger('change');
+                            $('#custom-med-name,#custom-med-cost').val('');
+                            $('#custom-med-toggle').prop('checked', false);
+                            $('#custom-med-fields').hide();
+                            Swal.fire('Ajouté!', 'Médicament ajouté avec succès.', 'success');
+                        } else {
+                            Swal.fire('Erreur', res.message, 'error');
+                        }
+                    });
+            });
+
+            $(document).on('click', '.del-treatment', function () {
+                const $row = $(this).closest('.treatment-item');
+                $.post('/Appointment/RemoveTreatment', { appointmentId, treatmentId: $(this).data('id'), __RequestVerificationToken: token })
+                    .done(res => {
+                        if (res.success) {
+                            $row.remove();
+                            Swal.fire({ toast: true, icon: 'success', title: 'Traitement supprimé', position: 'top-end', timer: 1500, showConfirmButton: false });
+                        }
+                    });
+            });
+
+            $(document).on('click', '.del-medication', function () {
+                const $row = $(this).closest('.medication-item');
+                $.post('/Appointment/RemoveMedication', { appointmentId, medicationId: $(this).data('id'), __RequestVerificationToken: token })
+                    .done(res => {
+                        if (res.success) {
+                            $row.remove();
+                            Swal.fire({ toast: true, icon: 'success', title: 'Médicament supprimé', position: 'top-end', timer: 1500, showConfirmButton: false });
+                        }
+                    });
+            });
+
+            /* ==========  CHARGEMENT INITIAL DE LA PAGE  ========== */
+            function loadAppointmentData() {
+                $.get(`/Appointment/GetAppointmentDetails?id=${appointmentId}`)
+                    .done(function (data) {
+                        // ----- Informations Patient -----
+                        $('#patient-avatar').attr('src', '/uploads/doctors/patient_default.jpg');
+                        $('#patientImg').attr('src', data.profileImageUrl ?? "/uploads/doctors/patient_default.jpg");
+                        $('#patient-name').text(data.patient.fullName);
+                        $('#patient-meta').text(`Souffre de ${data.patient.chiefComplaint}`);
+                        $('#patient-age').text(data.patient.age);
+                        $('#patient-email').text(data.patient.email);
+                        $('#patient-phone').text(data.patient.phoneNumber);
+                        $('#patient-gender').text(data.patient.gender);
+                        $('#patient-mrn').text(data.patient.mrn);
+                        $('#patient-visit-id').text(data.patient.visitId);
+                        $('#patient-visit-date').text(formatDate(data.patient.visitDate));
+                        $('#patient-complaint').text(data.patient.chiefComplaint);
+
+                        // ----- Signes Vitaux -----
+                        displayVitals(data.vitals);
+
+                        // ----- Boutons de Statut -----
+                        updateStatusButtons(data.currentStatus);
+
+                        // ----- Options des Listes Déroulantes -----
+                        populateDropdown('#treatment-options', data.treatmentOptions);
+                        populateDropdown('#medication-options', data.medicationOptions);
+
+                        // ----- Éléments Existants -----
+                        displayTreatments(data.treatments);
+                        $(document).trigger('treatments-loaded');
+
+                        displayMedications(data.medications);
+                        $(document).trigger('medications-loaded');
+
+                        loadAttachments();
+                        loadNotes();
+
+                        patientId = data.patient.patientId;
+                    })
+                    .fail(function (xhr, status, err) {
+                        console.error('Erreur lors du chargement des données du rendez-vous:', err);
+                        $('#vitals-status').html('<div class="alert alert-danger">Échec du chargement des données du rendez-vous</div>');
+                    });
+            }
+
+            loadAppointmentData();
+        });
+    </script>
+}

@@ -5,7 +5,7 @@
             toastr.options = {
                 "closeButton": true,
                 "progressBar": true,
-                "positionClass": "toast-top-right",
+                "positionClass": "toast-bottom-right",
                 "timeOut": "5000"
             };
             toastr.success(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Success"])));
@@ -19,7 +19,7 @@
             toastr.options = {
                 "closeButton": true,
                 "progressBar": true,
-                "positionClass": "toast-top-right",
+                "positionClass": "toast-bottom-right",
                 "timeOut": "5000"
             };
             toastr.error(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Error"])));

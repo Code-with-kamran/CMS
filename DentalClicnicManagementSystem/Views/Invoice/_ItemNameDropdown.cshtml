@@ -1,0 +1,243 @@
+﻿@* @model IEnumerable<dynamic>
+@{
+    var fieldName = ViewData["FieldName"] as string;
+    var placeholder = ViewData["Placeholder"] as string;
+}
+
+<select name="@fieldName" class="form-control select2 item-name-select" data-toggle="select2">
+    <option value="">@placeholder</option>
+    @foreach (var item in Model)
+    {
+        <!-- Check for appropriate identifier -->
+        @if (item is CMS.Models.LabTestOrder)
+        {
+            <!-- Render input for custom test when LabTestOrder is selected -->
+            <option value="@GetItemId(item)"
+                    data-Cost="@item.UnitPrice"
+                    data-description="@(GetItemDescription(item))">
+                <input type="text" name="customTest_@GetItemId(item)" placeholder="Enter Custom Test" />
+            </option>
+        }
+        else
+        {
+            <option value="@GetItemId(item)"
+                    data-Cost="@item.UnitPrice"
+                    data-description="@(GetItemDescription(item))">
+                @if (item is CMS.Models.Treatment)
+                {
+                    @(item.Name ?? "Unnamed Treatment")
+                }
+                else if (item is CMS.Models.LabTestOrder)
+                {
+                    @(item.TestName ?? "Unnamed Test")
+                }
+                else
+                {
+                    @(item.Name ?? "Unnamed Item")
+                }
+            </option>
+        }
+    }
+</select>
+
+
+
+
+@functions {
+    public string GetItemId(dynamic item)
+    {
+        // Check for various identifier fields and return the correct one
+        if (item is CMS.Models.Treatment)
+        {
+            return item.TreatmentId.ToString();
+        }
+        else if (item is CMS.Models.InventoryItem)
+        {
+            return item.Id.ToString();
+        }
+        else if (item is CMS.Models.LabTestOrder)
+        {
+            return item.LabTestId.ToString();
+        }
+        else if (item is CMS.Models.Medications)
+        {
+            return item.MedicationsId.ToString();
+        }
+        else
+        {
+            return item.Id?.ToString() ?? "0";
+        }
+    }
+
+    public decimal GetItemCost(dynamic item)
+    {
+        // Check if the item has the Cost property and return it, otherwise return 0
+        if (item is CMS.Models.InventoryItem)
+        {
+            return item.UnitPrice ?? 0;
+        }
+        else if (item is CMS.Models.Medications)
+        {
+            return item.UnitPrice ?? 0;
+        }
+        else if (item is CMS.Models.Treatment)
+        {
+            // Return a default Cost for Treatment if it's available
+            return item.UnitPrice ?? 0;  // Assuming Treatment has a Cost property, otherwise set a default.
+        }
+        else if (item is CMS.Models.LabTestOrder)
+        {
+            return item.UnitPrice ?? 0;  // Assuming LabTestOrder has a TestCost property.
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public string GetItemDescription(dynamic item)
+    {
+        // Check for the description property of each item
+        if (item is CMS.Models.InventoryItem)
+        {
+            return item.Description ?? "No description available";
+        }
+        else if (item is CMS.Models.Medications)
+        {
+            return item.Description ?? "No description available";
+        }
+        else if (item is CMS.Models.Treatment)
+        {
+            return item.Description ?? "No description available";
+        }
+        else if (item is CMS.Models.LabTestOrder)
+        {
+            return item.Description ?? "No description available";  // Laboratory Test description
+        }
+        else
+        {
+            return "No description available";
+        }
+    }
+} *@
+
+
+@model IEnumerable<dynamic>
+@{
+    var fieldName = ViewData["FieldName"] as string;
+    var placeholder = ViewData["Placeholder"] as string;
+}
+
+<select name="@fieldName" class="form-control select2 item-name-select" data-toggle="select2">
+    <option value="">@placeholder</option>
+    @foreach (var item in Model)
+    {
+        <!-- Vérifier l'identifiant approprié -->
+        @if (item is CMS.Models.LabTestOrder)
+        {
+            <!-- Rendre une entrée pour le test personnalisé lorsque LabTestOrder est sélectionné -->
+            <option value="@GetItemId(item)"
+                    data-Cost="@item.UnitPrice"
+                    data-description="@(GetItemDescription(item))">
+                <input type="text" name="customTest_@GetItemId(item)" placeholder="Saisir un test personnalisé" />
+            </option>
+        }
+        else
+        {
+            <option value="@GetItemId(item)"
+                    data-Cost="@item.UnitPrice"
+                    data-description="@(GetItemDescription(item))">
+                @if (item is CMS.Models.Treatment)
+                {
+                    @(item.Name ?? "Traitement sans nom")
+                }
+                else if (item is CMS.Models.LabTestOrder)
+                {
+                    @(item.TestName ?? "Test sans nom")
+                }
+                else
+                {
+                    @(item.Name ?? "Article sans nom")
+                }
+            </option>
+        }
+    }
+</select>
+
+@functions {
+    public string GetItemId(dynamic item)
+    {
+        // Vérifier les différents champs d'identifiant et retourner le bon
+        if (item is CMS.Models.Treatment)
+        {
+            return item.TreatmentId.ToString();
+        }
+        else if (item is CMS.Models.InventoryItem)
+        {
+            return item.Id.ToString();
+        }
+        else if (item is CMS.Models.LabTestOrder)
+        {
+            return item.LabTestId.ToString();
+        }
+        else if (item is CMS.Models.Medications)
+        {
+            return item.MedicationsId.ToString();
+        }
+        else
+        {
+            return item.Id?.ToString() ?? "0";
+        }
+    }
+
+    public decimal GetItemCost(dynamic item)
+    {
+        // Vérifier si l'article a la propriété Cost et la retourner, sinon retourner 0
+        if (item is CMS.Models.InventoryItem)
+        {
+            return item.UnitPrice ?? 0;
+        }
+        else if (item is CMS.Models.Medications)
+        {
+            return item.UnitPrice ?? 0;
+        }
+        else if (item is CMS.Models.Treatment)
+        {
+            // Retourner un prix par défaut pour Treatment s'il est disponible
+            return item.UnitPrice ?? 0;  // En supposant que Treatment a une propriété UnitPrice, sinon définir une valeur par défaut.
+        }
+        else if (item is CMS.Models.LabTestOrder)
+        {
+            return item.UnitPrice ?? 0;  // En supposant que LabTestOrder a une propriété UnitPrice.
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public string GetItemDescription(dynamic item)
+    {
+        // Vérifier la propriété de description de chaque article
+        if (item is CMS.Models.InventoryItem)
+        {
+            return item.Description ?? "Aucune description disponible";
+        }
+        else if (item is CMS.Models.Medications)
+        {
+            return item.Description ?? "Aucune description disponible";
+        }
+        else if (item is CMS.Models.Treatment)
+        {
+            return item.Description ?? "Aucune description disponible";
+        }
+        else if (item is CMS.Models.LabTestOrder)
+        {
+            return item.Description ?? "Aucune description disponible";  // Description du test de laboratoire
+        }
+        else
+        {
+            return "Aucune description disponible";
+        }
+    }
+}

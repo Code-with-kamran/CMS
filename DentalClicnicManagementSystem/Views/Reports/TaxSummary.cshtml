@@ -1,0 +1,267 @@
+﻿@* File: Views/Reports/TaxSummary.cshtml *@
+@{
+    ViewData["Title"] = "Tax Summary Report";
+}
+
+<div class="content">
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3 pb-3 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Tax Summary Report</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export <i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item export-csv" href="javascript:void(0);" data-report="taxsummary">Download as CSV</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Total Taxable Revenue</p>
+                            <h4 class="mb-0 fw-bold text-primary" id="totalTaxableRevenue">$0.00</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-primary text-primary rounded-2">
+                            <i class="ti ti-cash fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Total Tax Collected</p>
+                            <h4 class="mb-0 fw-bold text-success" id="totalTaxCollected">$0.00</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-success text-success rounded-2">
+                            <i class="ti ti-report-money fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">GST Collected</p>
+                            <h4 class="mb-0 fw-bold text-info" id="gstCollected">$0.00</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-info text-info rounded-2">
+                            <i class="ti ti-receipt-tax fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Taxable Transactions</p>
+                            <h4 class="mb-0 fw-bold text-warning" id="taxableTransactions">0</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-warning text-warning rounded-2">
+                            <i class="ti ti-files fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row row-gap-2">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" value="@DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd")">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate" value="@DateTime.Today.ToString("yyyy-MM-dd")">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Tax Type</label>
+                        <select class="form-select" id="taxTypeFilter">
+                            <option value="">All Taxes</option>
+                            <option value="GST">GST</option>
+                            <option value="VAT">VAT</option>
+                            <option value="SalesTax">Sales Tax</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3 d-flex align-items-end">
+                        <button type="button" class="btn btn-dark w-100" id="applyFiltersBtn">
+                            <i class="ti ti-player-play me-1"></i>Run Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="taxSummaryTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Invoice #</th>
+                            <th>Patient</th>
+                            <th>Taxable Amount</th>
+                            <th>Tax Type</th>
+                            <th>Tax Rate</th>
+                            <th>Tax Amount</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let isExporting = false;
+
+            // Load initial data
+            loadTaxSummaryData();
+
+            // Apply filters
+            $('#applyFiltersBtn').on('click', function () {
+                loadTaxSummaryData();
+            });
+
+            function loadTaxSummaryData() {
+                const params = getFilterParams();
+
+                // For demo purposes - replace with actual API call
+                const demoData = getDemoTaxData();
+                updateSummary(demoData.summary);
+                populateTable(demoData.data);
+
+                /* Actual implementation:
+                $.ajax({
+                    url: '@Url.Action("GetTaxSummaryData", "Reports")',
+                    type: 'GET',
+                    data: params,
+                    success: function (response) {
+                        if (response.data && response.summary) {
+                            updateSummary(response.summary);
+                            populateTable(response.data);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading data:', error);
+                        alert('Error loading tax summary data');
+                    }
+                });
+                */
+            }
+
+            function getFilterParams() {
+                return {
+                    startDate: $('#startDate').val(),
+                    endDate: $('#endDate').val(),
+                    taxType: $('#taxTypeFilter').val()
+                };
+            }
+
+            function updateSummary(summary) {
+                $('#totalTaxableRevenue').text('$' + summary.totalTaxableRevenue.toFixed(2));
+                $('#totalTaxCollected').text('$' + summary.totalTaxCollected.toFixed(2));
+                $('#gstCollected').text('$' + summary.gstCollected.toFixed(2));
+                $('#taxableTransactions').text(summary.taxableTransactions);
+            }
+
+            function populateTable(data) {
+                const tbody = $('#taxSummaryTable tbody');
+                tbody.empty();
+
+                if (data.length === 0) {
+                    tbody.append('<tr><td colspan="8" class="text-center">No tax data found for the selected period</td></tr>');
+                    return;
+                }
+
+                data.forEach(function (item) {
+                    const row = `
+                        <tr>
+                            <td>${item.date}</td>
+                            <td>${item.invoiceNumber}</td>
+                            <td>${item.patientName}</td>
+                            <td>$${item.taxableAmount.toFixed(2)}</td>
+                            <td><span class="badge bg-soft-info">${item.taxType}</span></td>
+                            <td>${item.taxRate}%</td>
+                            <td><strong class="text-success">$${item.taxAmount.toFixed(2)}</strong></td>
+                            <td>$${item.totalAmount.toFixed(2)}</td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
+
+            // Demo data function
+            function getDemoTaxData() {
+                return {
+                    summary: {
+                        totalTaxableRevenue: 12500.00,
+                        totalTaxCollected: 1250.00,
+                        gstCollected: 875.00,
+                        taxableTransactions: 45
+                    },
+                    data: [
+                        {
+                            date: '@DateTime.Today.ToString("yyyy-MM-dd")',
+                            invoiceNumber: 'INV-001',
+                            patientName: 'John Smith',
+                            taxableAmount: 200.00,
+                            taxType: 'GST',
+                            taxRate: 10,
+                            taxAmount: 20.00,
+                            totalAmount: 220.00
+                        },
+                        {
+                            date: '@DateTime.Today.ToString("yyyy-MM-dd")',
+                            invoiceNumber: 'INV-002',
+                            patientName: 'Sarah Johnson',
+                            taxableAmount: 150.00,
+                            taxType: 'GST',
+                            taxRate: 10,
+                            taxAmount: 15.00,
+                            totalAmount: 165.00
+                        }
+                    ]
+                };
+            }
+        });
+    </script>
+}

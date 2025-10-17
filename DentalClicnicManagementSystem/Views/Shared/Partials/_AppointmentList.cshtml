@@ -1,5 +1,4 @@
-﻿@* In: Views/Shared/Partials/_AppointmentList.cshtml *@
-@model IEnumerable<CMS.Models.Appointment>
+﻿@* @model IEnumerable<CMS.Models.Appointment>
 
 @{
     var cardColors = new[] { "bg-light", "bg-soft-danger", "bg-soft-info" };
@@ -28,4 +27,34 @@
 else
 {
     <div class="text-center p-4"><p class="text-muted mb-0">No appointments for this day.</p></div>
+} *@
+@model IEnumerable<CMS.Models.Appointment>
+
+@{
+    var cardColors = new[] { "bg-light", "bg-soft-danger", "bg-soft-info" };
+    var colorIndex = 0;
+}
+
+@if (Model.Any())
+{
+    @foreach (var appt in Model)
+    {
+        var cardColor = cardColors[colorIndex++ % cardColors.Length];
+        <div class="mb-3 @cardColor p-3 rounded-2 d-flex align-items-center justify-content-between">
+            <div>
+                <h6 class="fs-14 fw-semibold mb-1">@(appt.Mode ?? "Consultation Générale")</h6>
+                <p class="mb-0 text-body text-truncate">
+                    <i class="ti ti-calendar-time me-1 text-body"></i> @appt.AppointmentDate.ToString("ddd, dd MMM yyyy, HH:mm")
+                </p>
+            </div>
+            <div class="avatar-list-stacked avatar-group-sm event flex-shrink-0">
+                <span class="avatar avatar-lg rounded-circle border-0"><img src="~/@(appt.Patient?.ProfileImageUrl ?? "assets/img/profiles/avatar-02.jpg")" class="img-fluid rounded-circle" alt="Patient"></span>
+                <span class="avatar avatar-lg rounded-circle border-0"><img src="~/@(appt.Doctor?.ProfileImageUrl ?? "assets/img/doctors/doctor-01.jpg")" class="img-fluid rounded-circle" alt="Médecin"></span>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="text-center p-4"><p class="text-muted mb-0">Aucun rendez-vous pour ce jour.</p></div>
 }

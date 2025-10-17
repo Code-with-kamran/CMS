@@ -1,4 +1,4 @@
-﻿@model CMS.Models.Invoice
+﻿@* @model CMS.Models.Invoice
 
 <div class="row g-3">
     <div class="col-12 col-lg-7">
@@ -53,6 +53,78 @@
             <th>Description</th>
             <th>Qty</th>
             <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Description</td>
+                <td>@item.Quantity</td>
+                <td>@item.UnitPrice</td>
+                <td>@item.LineTotal</td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+
+
+@model CMS.Models.Invoice
+
+<div class="row g-3">
+    <div class="col-12 col-lg-7">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Informations Client</h6>
+                <div class="mb-3">
+                    <label asp-for="CustomerName" class="form-label"></label>
+                    <input asp-for="CustomerName" class="form-control" placeholder="Nom du client" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="CustomerEmail" class="form-label"></label>
+                    <input asp-for="CustomerEmail" class="form-control" placeholder="Email du client" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="CustomerAddress" class="form-label"></label>
+                    <input asp-for="CustomerAddress" class="form-control" placeholder="Adresse du client" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Finances</h6>
+                <div class="mb-3">
+                    <label asp-for="SubTotal" class="form-label"></label>
+                    <input asp-for="SubTotal" class="form-control" readonly />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Tax" class="form-label"></label>
+                    <input asp-for="Tax" class="form-control" placeholder="Montant de la taxe" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Discount" class="form-label"></label>
+                    <input asp-for="Discount" class="form-control" placeholder="Montant de la remise" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Total" class="form-label"></label>
+                    <input asp-for="Total" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h6 class="text-muted mb-3">Articles de la Facture</h6>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Qté</th>
+            <th>Prix Unitaire</th>
             <th>Total</th>
         </tr>
     </thead>

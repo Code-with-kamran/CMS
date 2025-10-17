@@ -3,6 +3,7 @@ using CMS.Models;
 using CMS.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,11 +57,11 @@ namespace CMS.Controllers
             switch (user.Role)
             {
                 case "Admin":
-                    return RedirectToAction("Index", "AdminDashboard");
+                    return RedirectToAction("Index", "Admin");
                 case "Doctor":
                     return RedirectToAction("Index", "DoctorDashboard");
                 case "Receptionist":
-                    return RedirectToAction("Index", "ReceptionDashboard");
+                    return RedirectToAction("Index", "ReceptionistDashboard");
                 default:
                     return RedirectToAction("Index", "Home");
             }
@@ -69,30 +70,71 @@ namespace CMS.Controllers
 
         private async Task SignInUserAsync(User user, bool isPersistent)
         {
-            var claims = new List<Claim>
-    {
-        new Claim("UserId", user.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.FullName ?? string.Empty),
+            // Ensure FullName and other user data are populated correctly.
+    var claims = new List<Claim>
+         {
+        new Claim("UserId", user.Id.ToString()),  // Add UserId for session tracking
+        new Claim(ClaimTypes.Name, user.FullName ?? "Unknown User"), // Default if FullName is null
         new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-        new Claim(ClaimTypes.Role, user.Role ?? string.Empty)
-    };
+        new Claim(ClaimTypes.Role, user.Role ?? string.Empty) // Role-based claim
+          };
 
-            // If this user is a doctor, store the DoctorId claim as well
+            // Additional claims for specific roles
             if (user.Role == "Doctor")
             {
                 var doctor = await _context.Doctors
                                            .AsNoTracking()
                                            .FirstOrDefaultAsync(d => d.UserId == user.Id);
                 if (doctor != null)
-                    claims.Add(new Claim("DoctorId", doctor.Id.ToString()));
+                {
+                    claims.Add(new Claim("ProfileImageUrl", doctor.ProfileImageUrl ?? "~/uploads/doctors/patient_default.jpg"));
+                    claims.Add(new Claim("DoctorId", doctor.Id.ToString())); // Add Doctor-specific claim if needed
+                }
             }
 
+            // If the user is a Receptionist, make sure you are handling their claims properly.
+            if (user.Role == "Receptionist")
+            {
+                // Optionally add more claims for Receptionists, like hospital/clinic-related data.
+                claims.Add(new Claim("ReceptionistId", user.Id.ToString()));  // Example: Adding a ReceptionistId claim
+            }
+
+            // Create identity and principal objects for the user.
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
             var authProps = new AuthenticationProperties { IsPersistent = isPersistent };
 
+            // Sign-in the user with authentication scheme and properties.
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
         }
+
+
+        //    private async Task SignInUserAsync(User user, bool isPersistent)
+        //    {
+        //        var claims = new List<Claim>
+        //{
+        //    new Claim("UserId", user.Id.ToString()),
+        //    new Claim(ClaimTypes.Name, user.FullName ?? string.Empty),
+        //    new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+        //    new Claim(ClaimTypes.Role, user.Role ?? string.Empty)
+        //};
+
+        //        // If this user is a doctor, store the DoctorId claim as well
+        //        if (user.Role == "Doctor")
+        //        {
+        //            var doctor = await _context.Doctors
+        //                                       .AsNoTracking()
+        //                                       .FirstOrDefaultAsync(d => d.UserId == user.Id);
+        //            if (doctor != null)
+        //                claims.Add(new Claim("DoctorId", doctor.Id.ToString()));
+        //        }
+
+        //        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        //        var principal = new ClaimsPrincipal(identity);
+        //        var authProps = new AuthenticationProperties { IsPersistent = isPersistent };
+
+        //        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
+        //    }
 
         [HttpPost]
         public async Task<IActionResult> Logout()

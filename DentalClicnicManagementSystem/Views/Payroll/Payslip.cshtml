@@ -1,4 +1,4 @@
-﻿@* // File: Views/Payroll/Payslip.cshtml *@
+﻿@* // File: Views/Payroll/Payslip.cshtml
 @model CMS.Models.PayrollItem
 
 @{
@@ -74,7 +74,103 @@
                     <p>@(!string.IsNullOrEmpty(Model.PayrollRun.Notes) ? Model.PayrollRun.Notes : "No specific notes for this payroll run.")</p>
                 </div>
             </div>
+            <hr />
+            <div class="row">
+                <div class="col-12">
+                    <h5>Attendance Summary</h5>
+                    <p class="text-muted">@(!string.IsNullOrEmpty(Model.AttendanceSummary) ? Model.AttendanceSummary : "No attendance data available.")</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+ *@
 
+
+
+
+@* // Fichier: Views/Payroll/Payslip.cshtml *@
+@model CMS.Models.PayrollItem
+
+@{
+    ViewData["Title"] = $"Fiche de Paie - {Model.Employee.FullName}";
+}
+
+<div class="content py-3">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <h4 class="mb-0">@ViewData["Title"]</h4>
+        <div class="d-flex gap-2">
+            <a asp-action="RunDetails" asp-route-id="@Model.PayrollRunId" class="btn btn-outline-secondary btn-sm">Retour aux Détails de Paie</a>
+            <button class="btn btn-primary btn-sm" onclick="window.print()">
+                <i class="ti ti-printer me-1"></i>Imprimer la Fiche
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Informations Employé</h5>
+                    <p><strong>Nom :</strong> @Model.Employee.FullName</p>
+                    <p><strong>Code Employé :</strong> @Model.Employee.Code</p>
+                    <p><strong>Poste :</strong> @Model.Employee.Designation</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5>Période de Paie</h5>
+                    <p><strong>Mois :</strong> @(new DateTime(Model.PayrollRun.Year, Model.PayrollRun.Month, 1).ToString("MMMM yyyy"))</p>
+                    <p><strong>Date d'Exécution :</strong> @Model.PayrollRun.RunAt.ToString("dd MMM yyyy HH:mm")</p>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Gains</h5>
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>Salaire de Base :</td>
+                                <td class="text-end">@Model.BaseSalary.ToString("N2") €</td>
+                            </tr>
+                            <tr>
+                                <td>Allocations :</td>
+                                <td class="text-end">@Model.Allowances.ToString("N2") €</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h5>Déductions</h5>
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>Déductions :</td>
+                                <td class="text-end">@Model.Deductions.ToString("N2") €</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-12 text-end">
+                    <h4>Salaire Net : <span class="text-primary">@Model.NetPay.ToString("N2") €</span></h4>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-12">
+                    <h5>Notes</h5>
+                    <p>@(!string.IsNullOrEmpty(Model.PayrollRun.Notes) ? Model.PayrollRun.Notes : "Aucune note spécifique pour cette exécution de paie.")</p>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-12">
+                    <h5>Résumé de Présence</h5>
+                    <p class="text-muted">@(!string.IsNullOrEmpty(Model.AttendanceSummary) ? Model.AttendanceSummary : "Aucune donnée de présence disponible.")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

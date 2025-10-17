@@ -12,7 +12,7 @@ namespace CMS.Models
         public int PayrollRunId { get; set; }
         [ValidateNever]
         public PayrollRun PayrollRun { get; set; }
-
+        public string? AttendanceSummary { get; set; }
         [Required]
         public int EmployeeId { get; set; }
         [ValidateNever]       

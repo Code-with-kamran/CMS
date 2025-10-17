@@ -1,0 +1,767 @@
+﻿@* @model List<Invoice>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointment Invoice Receipt - A4</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 10;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Container for A4 sizing */
+        .a4-container {
+            max-width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            position: relative;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .logo-area h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .logo-area .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .print-actions {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+            .btn:hover {
+                background: #2980b9;
+            }
+
+        /* Invoice Block Styles */
+        .invoice-block {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            page-break-inside: avoid;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .invoice-title {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .invoice-meta {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .invoice-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .patient-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item strong {
+            color: #2c3e50;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tfoot tr {
+            background: #f8f9fa;
+        }
+
+        .total-row {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+            .total-row td {
+                border-top: 2px solid #e9ecef;
+                border-bottom: none;
+            }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Footer Styles */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* Print Styles */
+        @@media print {
+            body
+
+        {
+            background: white;
+            padding: 0;
+        }
+
+        .a4-container {
+            box-shadow: none;
+            padding: 0;
+            max-width: 100%;
+            min-height: auto;
+        }
+
+        .print-actions {
+            display: none;
+        }
+
+        .invoice-block {
+            box-shadow: none;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="print-actions">
+        <button class="btn" onclick="window.print()"> <i class="ti ti-printer me-1"></i>Print All Invoices</button>
+    </div>
+
+    <div class="a4-container">
+        <div class="header">
+            <div class="logo-area">
+                <h1>Medical Practice</h1>
+                <div class="subtitle">Appointment Invoice Receipts</div>
+            </div>
+            <div class="document-info">
+                <div>Generated on: @DateTime.Now.ToString("MMMM dd, yyyy")</div>
+                <div>Document: Appointment Invoices</div>
+            </div>
+        </div>
+        @foreach (var inv in Model)
+{
+    <div class="invoice-block">
+        <div class="invoice-header">
+            <div>
+                <h2 class="invoice-title">
+                    Invoice: @inv.InvoiceNumber
+                    <span class="invoice-type-badge">@inv.InvoiceType</span>
+                </h2>
+                <div class="invoice-meta">
+                    Issued: @inv.IssueDate.ToString("MMMM dd, yyyy") |
+                    Due: @inv.DueDate.ToString("MMMM dd, yyyy")
+                </div>
+            </div>
+            <div class="invoice-amount">
+                <div style="font-size: 18px; font-weight: bold; color: #2c3e50;">
+                    @String.Format("{0:C}", inv.Total)
+                </div>
+                <div style="font-size: 12px; color: #7f8c8d;">Total Amount</div>
+            </div>
+        </div>
+
+        <div class="patient-info">
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Patient:</strong> @inv.CustomerName
+                </div>
+                <div class="info-item">
+                    <strong>Doctor:</strong> @inv.Doctor?.FullName
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%">#</th>
+                    <th width="55%">Item Name</th>
+                    <th width="10%">Qty</th>
+                    <th width="15%">Unit Price</th>
+                    <th width="15%">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < inv.Items.Count; i++)
+                {
+                    var item = inv.Items[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>
+                            @if (item.ItemType == "Test")
+                            {
+                                <span>@item.TestName</span>  <!-- Display Test Name -->
+                            }
+                            else if (item.ItemType == "Inventory")
+                            {
+                                <span>
+                                    @(item.InventoryItem?.Name       
+                                      ?? item.MedicationsName      
+                                      ?? "Treatment not found")
+                                </span>  <!-- Display Inventory Name -->
+                            }
+                            else if (item.ItemType == "Medication")
+                            {
+                                <span>
+                                    @(item.InventoryItem?.Name       
+                                      ?? item.MedicationsName      
+                                      ?? "Treatment not found")
+                                </span>
+                            }
+                            else if (item.ItemType == "Treatment")
+                            {
+                                <span>
+                                    @(item.Treatment?.Name       
+                                      ?? item.TreatmentName      
+                                      ?? "Treatment not found")
+                                </span>  <!-- Display Treatment Name -->
+                            }else if (item.ItemType == "Appointment")
+                            {
+                                <span>
+                                    @(item.AppointmentWIth       
+                                      ?? item.Appointment.Doctor.FullName    
+                                      ?? "Appointment not found")
+                                </span>
+ <!-- Display Treatment Name -->
+                            }
+                            else if (item.ItemType == "Combined")
+                            {
+                                <span>
+                                    @(item.Treatment?.Name       
+                                      ?? item.TreatmentName      
+                                      ?? "Treatment not found")
+                                </span>
+ <!-- Display Treatment Name -->
+                            }
+                            else
+                            {
+                                <span>@item.Description</span>  <!-- Default to Description if no specific type -->
+                            }
+                        </td>
+                        <td>@item.Quantity</td>
+                        <td>@String.Format("{0:C}", item.UnitPrice)</td>
+                        <td>@String.Format("{0:C}", item.LineTotal)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="4" class="text-right">Subtotal</td>
+                    <td>@String.Format("{0:C}", inv.SubTotal)</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="4" class="text-right">Tax</td>
+                    <td>@String.Format("{0:C}", inv.Tax)</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="4" class="text-right">Discount</td>
+                    <td>@String.Format("{0:C}", inv.Discount)</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="4" class="text-right">Total Amount</td>
+                    <td>@String.Format("{0:C}", inv.Total)</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+
+   
+
+        <div class="footer">
+            <p>These invoices relate to a single appointment. Thank you for your business!</p>
+            <p>Computer generated document - valid without signature</p>
+        </div>
+    </div>
+
+    <script>
+        // Add print functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-trigger print dialog if URL has ?print parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('print')) {
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html>  *@
+
+
+
+
+@inject CMS.Services.ICurrencyService CurrencyService
+@model List<Invoice>
+@{
+    Layout = null;
+    var currentCurrency = await CurrencyService.GetCurrentCurrencyAsync();
+    var currencySymbol = currentCurrency?.Symbol ?? "£";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reçus de Facture de Rendez-vous - Format A4</title>
+    <style>
+        /* Réinitialisation et styles de base */
+        * {
+            margin: 0;
+            padding: 10;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Conteneur pour format A4 */
+        .a4-container {
+            max-width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            position: relative;
+        }
+
+        /* Styles d'en-tête */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .logo-area h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .logo-area .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .print-actions {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+            .btn:hover {
+                background: #2980b9;
+            }
+
+        /* Styles des blocs de facture */
+        .invoice-block {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            page-break-inside: avoid;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .invoice-title {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .invoice-meta {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .invoice-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .patient-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item strong {
+            color: #2c3e50;
+        }
+
+        /* Styles des tableaux */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tfoot tr {
+            background: #f8f9fa;
+        }
+
+        .total-row {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+            .total-row td {
+                border-top: 2px solid #e9ecef;
+                border-bottom: none;
+            }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Styles de pied de page */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* Styles d'impression */
+        @@media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .a4-container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+                min-height: auto;
+            }
+
+            .print-actions {
+                display: none;
+            }
+
+            .invoice-block {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-actions">
+        <button class="btn" onclick="window.print()"> <i class="ti ti-printer me-1"></i>Imprimer Toutes les Factures</button>
+    </div>
+
+    <div class="a4-container">
+        <div class="header">
+            <div class="logo-area">
+                <h1>Cabinet Médical</h1>
+                <div class="subtitle">Reçus de Facture de Rendez-vous</div>
+            </div>
+            <div class="document-info">
+                <div>Généré le : @DateTime.Now.ToString("dd MMMM yyyy")</div>
+                <div>Document : Factures de Rendez-vous</div>
+            </div>
+        </div>
+        
+        @foreach (var inv in Model)
+        {
+            <div class="invoice-block">
+                <div class="invoice-header">
+                    <div>
+                        <h2 class="invoice-title">
+                            Facture : @inv.InvoiceNumber
+                            <span class="invoice-type-badge">@inv.InvoiceType</span>
+                        </h2>
+                        <div class="invoice-meta">
+                            Émise le : @inv.IssueDate.ToString("dd MMMM yyyy") |
+                            Échéance : @inv.DueDate.ToString("dd MMMM yyyy")
+                        </div>
+                    </div>
+                   <div class="invoice-amount">
+    <div style="font-size: 18px; font-weight: bold; color: #2c3e50;">
+        @(currencySymbol)@inv.Total.ToString("N2")
+    </div>
+    <div style="font-size: 12px; color: #7f8c8d;">Montant Total</div>
+</div>
+                </div>
+
+                <div class="patient-info">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Patient :</strong> @inv.CustomerName
+                        </div>
+                        <div class="info-item">
+                            <strong>Médecin :</strong> @inv.Doctor?.FullName
+                        </div>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="55%">Nom de l'Article</th>
+                            <th width="10%">Qté</th>
+                            <th width="15%">Prix Unitaire</th>
+                            <th width="15%">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < inv.Items.Count; i++)
+                        {
+                            var item = inv.Items[i];
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td>
+                                    @if (item.ItemType == "Test")
+                                    {
+                                        <span>@item.TestName</span>  <!-- Afficher le nom du test -->
+                                    }
+                                    else if (item.ItemType == "Inventory")
+                                    {
+                                        <span>
+                                            @(item.InventoryItem?.Name       
+                                              ?? item.MedicationsName      
+                                              ?? "Traitement non trouvé")
+                                        </span>  <!-- Afficher le nom de l'inventaire -->
+                                    }
+                                    else if (item.ItemType == "Medication")
+                                    {
+                                        <span>
+                                            @(item.InventoryItem?.Name       
+                                              ?? item.MedicationsName      
+                                              ?? "Traitement non trouvé")
+                                        </span>  <!-- Afficher le nom du médicament -->
+                                    }
+                                    else if (item.ItemType == "Treatment")
+                                    {
+                                        <span>
+                                            @(item.Treatment?.Name       
+                                              ?? item.TreatmentName      
+                                              ?? "Traitement non trouvé")
+                                        </span>  <!-- Afficher le nom du traitement -->
+                                    }
+                                    else if (item.ItemType == "Appointment")
+                                    {
+                                        <span>
+                                            @(item.AppointmentWIth       
+                                              ?? item.Appointment?.Doctor?.FullName    
+                                              ?? "Rendez-vous non trouvé")
+                                        </span>  <!-- Afficher le nom du rendez-vous -->
+                                    }
+                                    else if (item.ItemType == "Combined")
+                                    {
+                                        <span>
+                                            @(item.Treatment?.Name       
+                                              ?? item.TreatmentName      
+                                              ?? "Traitement non trouvé")
+                                        </span>  <!-- Afficher le nom du traitement combiné -->
+                                    }
+                                    else
+                                    {
+                                        <span>@item.Description</span>  <!-- Par défaut afficher la description si aucun type spécifique -->
+                                    }
+                                </td>
+                                <td>@item.Quantity</td>
+                                <td>@(currencySymbol)@item.UnitPrice.ToString("N2")</td>
+<td>@(currencySymbol)@item.LineTotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                   <tfoot>
+    <tr class="total-row">
+        <td colspan="4" class="text-right">Sous-total</td>
+        <td>@(currencySymbol)@inv.SubTotal.ToString("N2")</td>
+    </tr>
+    <tr class="total-row">
+        <td colspan="4" class="text-right">Taxe</td>
+        <td>@(currencySymbol)@inv.Tax.ToString("N2")</td>
+    </tr>
+    <tr class="total-row">
+        <td colspan="4" class="text-right">Remise</td>
+        <td>@(currencySymbol)@inv.Discount.ToString("N2")</td>
+    </tr>
+    <tr class="total-row">
+        <td colspan="4" class="text-right">Montant Total</td>
+        <td>@(currencySymbol)@inv.Total.ToString("N2")</td>
+    </tr>
+</tfoot>   </table>
+            </div>
+        }
+
+        <div class="footer">
+            <p>Ces factures sont liées à un seul rendez-vous. Merci pour votre confiance !</p>
+            <p>Document généré par ordinateur - valide sans signature</p>
+        </div>
+    </div>
+
+    <script>
+        // Ajouter la fonctionnalité d'impression
+        document.addEventListener('DOMContentLoaded', function() {
+            // Déclencher automatiquement l'impression si l'URL a le paramètre ?print
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('print')) {
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html>

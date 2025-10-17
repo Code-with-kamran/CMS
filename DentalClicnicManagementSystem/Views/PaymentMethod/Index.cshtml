@@ -1,4 +1,4 @@
-﻿<form id="__af" method="post" style="display:none">
+﻿@* <form id="__af" method="post" style="display:none">
     @Html.AntiForgeryToken()
 </form>
 
@@ -323,6 +323,342 @@
                             errorMessage = xhr.responseJSON.message || errorMessage;
                         }
                         Swal.fire('Error', errorMessage, 'error');
+                    },
+                    complete: function () {
+                        spinner.hide();
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+} *@
+
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- En-tête de page -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Moyens de Paiement</h4>
+                </div>
+                <div class="text-end">
+                    <!-- Bouton pour ouvrir le modal -->
+                    <button type="button" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="modal" data-bs-target="#paymentMethodModal">
+                        <i class="ti ti-plus me-1"></i>Nouveau Moyen de Paiement
+                    </button>
+                </div>
+            </div>
+
+            <!-- Carte avec filtres et tableau -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Filtres -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Afficher</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entrées</span>
+                        </div>
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Rechercher" />
+                        </div>
+                    </div>
+
+                    <!-- Tableau -->
+                    <div class="table-responsive">
+                        <table id="paymentMethodList" class="table table-hover align-middle w-100 nowrap" style="min-width: 800px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Description</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pied de page -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inclure le partiel du modal des moyens de paiement -->
+@await Html.PartialAsync("_PaymentMethodModalPartial")
+
+@section Scripts {
+    <script>
+        $(function () {
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+            const esc = s => s == null ? '' : String(s);
+
+            // Détruire la DataTable existante si elle existe
+            if ($.fn.DataTable.isDataTable('#paymentMethodList')) {
+                $('#paymentMethodList').DataTable().destroy();
+            }
+
+            const table = $('#paymentMethodList').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: { url: '/PaymentMethod/GetList', type: 'GET' },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[0, 'asc']],
+                autoWidth: false,
+                responsive: true,
+                columnDefs: [
+                    { targets: 0, responsivePriority: 1 },
+                    { targets: 3, orderable: false, className: 'text-end', responsivePriority: 2 }
+                ],
+                columns: [
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            let content = `<p class="mb-0 me-2">${esc(row.name)}</p>`;
+                            if (row.isDefault) {
+                                content = `<div class="d-flex align-items-center">${content}<span class="badge badge-soft-primary border border-primary fw-medium">Par défaut</span></div>`;
+                            }
+                            return content;
+                        }
+                    },
+                    { data: 'description', render: d => esc(d) },
+                    {
+                        data: 'isActive',
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return data ? '<span class="badge bg-soft-success fs-13 fw-medium text-success border border-success py-1 px-2">Actif</span>' : '<span class="badge bg-soft-danger fs-13 fw-medium text-danger border border-danger py-1 px-2">Inactif</span>';
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function (_d, _t, row) {
+                            return `
+                                <div class="dropdown d-inline-block">
+                                    <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1" data-bs-toggle="dropdown">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-edit-paymentmethod" data-id="${row.id}">
+                                                <i class="ti ti-edit me-2"></i>Modifier
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center text-danger js-delete" data-id="${row.id}" data-name="${esc(row.name)}">
+                                                <i class="ti ti-trash me-2"></i>Supprimer
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    }
+                ],
+                drawCallback() {
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) {
+                        $('#dt-pager').empty().append(pagerEl);
+                        $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                        $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+                    }
+
+                    const info = api.page.info();
+                    const msg = info.recordsDisplay
+                        ? `Affichage de ${info.start + 1} à ${info.end} sur ${info.recordsDisplay.toLocaleString()} entrées`
+                        : (info.recordsTotal
+                            ? `Affichage de 0 à 0 sur ${info.recordsTotal.toLocaleString()} entrées`
+                            : 'Aucune entrée à afficher');
+                    $('#dt-info').text(msg);
+                },
+                language: {
+                    emptyTable: "Aucun moyen de paiement trouvé",
+                    processing: "Chargement...",
+                    paginate: {
+                        previous: "&lsaquo;",
+                        next: "&rsaquo;"
+                    }
+                }
+            });
+
+            // Contrôles de recherche personnalisés et longueur de page
+            $('#globalSearch').on('input', () => table.search($('#globalSearch').val()).draw());
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Réinitialiser le modal lors de l'ouverture pour ajouter un nouveau moyen de paiement
+            $('#paymentMethodModal').on('show.bs.modal', function (e) {
+                const button = $(e.relatedTarget);
+                if (button.length === 0) {
+                    // Modal ouvert programmatiquement, ne rien faire (garder les données du formulaire)
+                    return;
+                }
+                const isEdit = button.hasClass('js-edit-paymentmethod');
+
+                if (!isEdit) {
+                    resetModalForAdd();
+                }
+            });
+
+            // Fonction pour réinitialiser le modal pour l'ajout d'un nouveau moyen de paiement
+            function resetModalForAdd() {
+                $('#paymentMethodForm')[0].reset();
+                $('#paymentMethodId').val('0');
+                $('#paymentMethodModalLabel').text('Ajouter un moyen de paiement');
+                $('#paymentMethodForm button[type="submit"]').text('Ajouter le moyen de paiement');
+                $('#statusField').hide();
+                $('#paymentMethodForm .form-control').removeClass('is-invalid is-valid');
+                $('#paymentMethodForm .invalid-feedback').text('');
+            }
+
+            // Gérer la suppression du moyen de paiement
+            $(document).on('click', '.js-delete', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+
+                Swal.fire({
+                    title: `Supprimer ${name} ?`,
+                    text: "Vous ne pourrez pas annuler cette action !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Oui, supprimer !',
+                    cancelButtonText: 'Annuler'
+                }).then(res => {
+                    if (!res.isConfirmed) return;
+
+                    // Afficher l'état de chargement
+                    Swal.fire({
+                        title: 'Suppression en cours...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Envoyer la requête AJAX DELETE
+                    $.ajax({
+                        url: `/PaymentMethod/Delete/${id}`,
+                        type: 'DELETE',
+                        headers: { 'RequestVerificationToken': token },
+                        success: function (response) {
+                            if (response.status) {
+                                Swal.fire('Supprimé !', 'Le moyen de paiement a été supprimé.', 'success');
+                                table.ajax.reload(null, false); // Actualiser le tableau
+                            } else {
+                                Swal.fire('Erreur', response.message || 'Échec de la suppression du moyen de paiement.', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Erreur', 'Une erreur est survenue lors de la suppression du moyen de paiement.', 'error');
+                        },
+                        complete: function () {
+                            Swal.close();
+                        }
+                    });
+                });
+            });
+
+            // Gérer le clic sur le bouton Modifier
+            $(document).on('click', '.js-edit-paymentmethod', function () {
+                const paymentMethodId = $(this).data('id');
+                if (!paymentMethodId) return;
+
+                // Afficher l'état de chargement dans le modal
+                $('#paymentMethodModalLabel').text('Modifier le moyen de paiement');
+                $('#paymentMethodForm button[type="submit"]').text('Mettre à jour le moyen de paiement');
+                $('#statusField').show();  // Afficher le champ statut pour l'édition
+
+                // Récupérer les données du moyen de paiement
+                $.ajax({
+                    url: `/PaymentMethod/Get/${paymentMethodId}`,
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.status) {
+                            const pm = response.data;
+
+                            // Remplir les champs du formulaire avec les données existantes du moyen de paiement
+                            $('#paymentMethodId').val(pm.id);
+                            $('#paymentMethodName').val(pm.name);
+                            $('#paymentMethodDescription').val(pm.description);
+                            $('#isDefaultPaymentMethod').prop('checked', pm.isDefault);
+                            $('#isActivePaymentMethod').prop('checked', pm.isActive);
+
+                            $('#paymentMethodModal').modal('show');
+                        } else {
+                            Swal.fire('Erreur', response.message || 'Échec du chargement des données du moyen de paiement.', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Erreur', 'Une erreur est survenue lors du chargement des données du moyen de paiement.', 'error');
+                    }
+                });
+            });
+
+            $('#paymentMethodForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const submitBtn = $(this).find('button[type="submit"]');
+                const spinner = submitBtn.find('.spinner-border');
+                spinner.show();
+                submitBtn.prop('disabled', true);
+
+                const formData = {
+                    Id: parseInt($('#paymentMethodId').val()) || 0,  // Utiliser 0 pour un nouveau moyen de paiement
+                    Name: $('#paymentMethodName').val().trim(),
+                    Description: $('#paymentMethodDescription').val().trim(),
+                    IsDefault: $('#isDefaultPaymentMethod').is(':checked'),
+                    IsActive: $('#isActivePaymentMethod').is(':checked')
+                };
+
+                const isEdit = formData.Id > 0;
+                const successMessage = isEdit ? 'Moyen de paiement mis à jour avec succès !' : 'Moyen de paiement ajouté avec succès !';
+
+                $.ajax({
+                    url: '/PaymentMethod/Upsert',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: { 'RequestVerificationToken': token },
+                    data: JSON.stringify(formData),
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire('Succès', response.message || successMessage, 'success');
+                            $('#paymentMethodModal').modal('hide');
+                            table.ajax.reload(null, false); // Actualiser le tableau après ajout ou mise à jour
+                        } else {
+                            Swal.fire('Erreur', response.message || 'Opération échouée', 'error');
+                        }
+                    },
+                    error: function (xhr) {
+                        let errorMessage = 'Une erreur est survenue lors du traitement de la requête.';
+                        if (xhr.responseJSON) {
+                            errorMessage = xhr.responseJSON.message || errorMessage;
+                        }
+                        Swal.fire('Erreur', errorMessage, 'error');
                     },
                     complete: function () {
                         spinner.hide();

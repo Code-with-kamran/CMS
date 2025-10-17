@@ -10,26 +10,28 @@
 <div class="main-wrapper">
     <div class="page-wrapper m-0">
         <div class="content">
-
             <!-- Header -->
             <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
                 <div class="flex-grow-1">
                     <h4 class="fw-bold mb-0">Performance Reviews</h4>
                 </div>
                 <div class="text-end">
-                    <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="modal" data-bs-target="#performanceReviewModal" data-url="@Url.Action("Upsert", "PerformanceReviews")">
+                    <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md"
+                       data-bs-toggle="modal" data-bs-target="#performanceReviewModal"
+                       data-url="@Url.Action("Upsert", "PerformanceReviews")">
                         <i class="ti ti-plus me-1"></i>New Review
                     </a>
+                    <button id="btnExportPerf" class="btn btn-outline-secondary ms-2 fs-13 btn-md">
+                        <i class="ti ti-file-export me-1"></i>Export CSV
+                    </button>
                 </div>
             </div>
 
             <!-- Card -->
             <div class="card">
                 <div class="card-body">
-
                     <!-- External controls -->
                     <div class="row g-2 mb-3 align-items-center">
-                        <!-- page-length -->
                         <div class="col-auto d-none d-sm-flex align-items-center">
                             <label class="me-2 mb-0">Show</label>
                             <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
@@ -40,8 +42,6 @@
                             </select>
                             <span class="ms-2">entries</span>
                         </div>
-
-                        <!-- search -->
                         <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
                             <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
                         </div>
@@ -73,10 +73,8 @@
                             <div id="dt-pager"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -99,21 +97,61 @@
 @section Scripts {
     <script>
         $(function () {
-            const table = myCodeDataTable(
-                'performanceReviewList',
-                '@Url.Action("GetPerformanceReviews", "PerformanceReviews")',
-                [
+            /* 1. Build the table with loader */
+            const perfTable = $('#performanceReviewList').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetPerformanceReviews", "PerformanceReviews")',
+                    type: 'GET',
+                    beforeSend: function () {
+                        $('#performanceReviewList_processing')
+                            .html('<div class="spinner-border avatar-lg text-primary m-2" role="status"></div>')
+                            .show();
+                    },
+                    complete: function () {
+                        $('#performanceReviewList_processing').hide();
+                    }
+                },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[2, 'desc']],   // Review Date desc
+                autoWidth: false,
+                responsive: { details: { type: 'inline', target: 'tr' } },
+                columns: [
                     { data: 'employeeCode', orderable: true },
                     { data: 'employeeName', orderable: true },
-                    { data: 'reviewDate', orderable: true },
+                    {
+                        data: 'reviewDate',
+                        orderable: true,
+                        render: d => {
+                            if (!d) return '';
+                            const dt = new Date(d);
+                            return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                        }
+                    },
                     { data: 'reviewer', orderable: true },
-                    { data: 'rating', orderable: true, className: 'text-center' },
-                    { data: 'notes', orderable: false, render: d => `<span class="truncate truncate-220">${esc(d)}</span>` },
+                    {
+                        data: 'rating',
+                        orderable: true,
+                        className: 'text-center',
+                        render: d => {
+                            if (!d) return '-';
+                            return `<span class="badge bg-primary">${d}/5</span>`;
+                        }
+                    },
+                    {
+                        data: 'notes',
+                        orderable: false,
+                        render: d => `<span class="truncate truncate-220">${esc(d || '')}</span>`
+                    },
                     {
                         data: null,
                         orderable: false,
                         className: 'text-center',
-                        render: function (_data, _type, row) {
+                        render: function(data, type, row) {
                             return `
                                 <div class="dropdown d-inline-block">
                                     <a href="javascript:void(0);"
@@ -132,10 +170,9 @@
                                         </li>
                                         <li>
                                             <a href="javascript:void(0);"
-                                               class="dropdown-item d-flex align-items-center js-delete"
+                                               class="dropdown-item d-flex align-items-center js-delete-perf"
                                                data-url="/PerformanceReviews/Delete/${row.id}"
                                                data-table="performanceReviewList"
-                                               data-id="${row.id}"
                                                data-name="review for ${esc(row.employeeName)} on ${esc(row.reviewDate)}">
                                                 <i class="ti ti-trash me-2"></i> Delete
                                             </a>
@@ -145,31 +182,89 @@
                         }
                     }
                 ],
-                [[2, 'desc']] // Default sort by Review Date descending
-            );
+                drawCallback: function () {
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
 
-            // Handle modal loading
-            $('#performanceReviewModal').on('show.bs.modal', function (event) {
-                const button = $(event.relatedTarget); // Button that triggered the modal
-                const url = button.data('url'); // Extract info from data-* attributes
-                const modal = $(this);
+                    const info = api.page.info();
+                    const msg = info.recordsDisplay
+                        ? `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                        : (info.recordsTotal
+                            ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
+                            : 'No entries to show');
+                    $('#dt-info').text(msg);
+                },
+                language: {
+                    emptyTable: "No records found",
+                    processing: "Loading...",
+                    processing: '<div class="spinner-border avatar-lg text-primary m-2" role="status"></div>'
+                }
+            });
 
-                modal.find('.modal-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+            /* Global search & page-length */
+            $('#globalSearch').on('input', () => perfTable.search($('#globalSearch').val()).draw());
+            $('#pageLength').on('change', () => perfTable.page.len(parseInt($('#pageLength').val(), 10)).draw());
 
-                $.get(url, function (data) {
-                    modal.find('.modal-body').html(data);
-                    // Re-apply unobtrusive validation after content is loaded
-                    $.validator.unobtrusive.parse(modal.find('form'));
-                }).fail(function () {
-                    modal.find('.modal-body').html('<div class="alert alert-danger">Error loading content.</div>');
+            /* 2. Performance Review delete handler */
+            $(document).on('click', '.js-delete-perf', function () {
+                const url = $(this).data('url'),
+                      name = $(this).data('name'),
+                      tblId = $(this).data('table');
+
+                Swal.fire({
+                    title: `Delete ${name}?`,
+                    text: 'You will not be able to revert this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, delete!'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        const token = $('form#__af input[name="__RequestVerificationToken"]').val();
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            success: r => {
+                                if (r.status) {
+                                    Swal.fire('Deleted', r.message, 'success');
+                                    perfTable.ajax.reload(null, false);
+                                } else {
+                                    Swal.fire('Error', r.message || 'Delete failed', 'error');
+                                }
+                            },
+                            error: () => Swal.fire('Error', 'Something went wrong', 'error')
+                        });
+                    }
                 });
             });
 
-            // Handle form submission within the modal
+            /* 3. Modal loader */
+            $('#performanceReviewModal').on('show.bs.modal', function (e) {
+                const btn = $(e.relatedTarget), url = btn.data('url'), modal = $(this);
+                modal.find('.modal-body').html('<div class="text-center py-5"><div class="spinner-border avatar-lg text-primary m-2" role="status"></div></div>');
+                $.get(url)
+                    .done(data => {
+                        modal.find('.modal-body').html(data);
+                        $.validator.unobtrusive.parse(modal.find('form'));
+                    })
+                    .fail(() => modal.find('.modal-body').html('<div class="alert alert-danger">Error loading content.</div>'));
+            });
+
+            /* 4. Export CSV button */
+            $('#btnExportPerf').on('click', function () {
+                exportTableToCsv('performanceReviewList', 'PerformanceReviews.csv');
+            });
+
+            /* 5. Form submission handler */
             $(document).on('submit', '#performanceReviewFormModal', function (e) {
                 e.preventDefault();
                 const form = $(this);
-                if (!form.valid()) { // Check client-side validation
+                if (!form.valid()) {
                     return;
                 }
 
@@ -187,7 +282,7 @@
                         if (response.status) {
                             Swal.fire('Success', response.message, 'success');
                             $('#performanceReviewModal').modal('hide');
-                            table.ajax.reload(null, false);
+                            perfTable.ajax.reload(null, false);
                         } else {
                             Swal.fire('Error', response.message, 'error');
                         }
@@ -199,5 +294,16 @@
                 });
             });
         });
+
+        // Add the esc function if not already defined
+        function esc(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#x27;');
+        }
     </script>
 }

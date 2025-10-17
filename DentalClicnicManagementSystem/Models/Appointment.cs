@@ -8,7 +8,7 @@ namespace CMS.Models
     {
         [Key]
         public int AppointmentId { get; set; }
-        public string? AppointmentNo { get; set; } = string.Empty;
+        public string? AppointmentNo { get; set; }
         [Required]
         public int PatientId { get; set; }
          [ValidateNever]
@@ -20,8 +20,8 @@ namespace CMS.Models
         public Doctor Doctor { get; set; }
 
         [Required]
-        public DateTime AppointmentDate { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public DateTimeOffset AppointmentDate { get; set; }
+        public DateTimeOffset CreatedOn { get; set; } = DateTimeOffset.UtcNow;
 
         // ✅ New field for Department
         public int? DepartmentId { get; set; }
@@ -37,8 +37,19 @@ namespace CMS.Models
         public string Mode { get; set; } = "In-Person"; // New field for Mode
         [StringLength(1000)]
         public string? Notes { get; set; }
+        public int? TreamentId { get; set; }
+        public Treatment? Treatments { get; set; }
+        public Invoice? Invoice { get; set; }
+
+        public ICollection<Note>? NotesList { get; set; } = new List<Note>();
+        public ICollection<FollowUp> FollowUps { get; set; } = new List<FollowUp>();
+
+
 
         // Navs
-        public ICollection<Treatment> Treatments { get; set; } = new List<Treatment>();
+        public ICollection<PatientVitals> PatientVitals { get; set; } = new List<PatientVitals>();
+        public ICollection<PatientTreatments> PatientTreatments { get; set; } = new List<PatientTreatments>();
+        public ICollection<Medications> Medications { get; set; } = new List<Medications>();
+       
     }
 }

@@ -1,0 +1,743 @@
+﻿@model CMS.ViewModels.ReceptionistDashboardViewModel
+@inject CMS.Services.ICurrencyService CurrencyService
+@{
+    ViewData["Title"] = "Receptionist Dashboard";
+    Layout = "_Layout";
+    var currencySymbol = await CurrencyService.GetCurrentCurrencySymbolAsync();
+}
+
+<div class="content pb-0">
+    <!-- Page Header -->
+    <div class="d-flex align-items-sm-center justify-content-between flex-wrap gap-2 mb-4">
+        <div>
+            <h4 class="fw-bold mb-0">Welcome, @Model.Receptionist.FullName</h4>
+            <p class="text-muted mb-0">Receptionist Dashboard - Manage Patients, Appointments & Invoices</p>
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <a href="/Appointment/Create" class="btn btn-primary d-inline-flex align-items-center">
+                <i class="ti ti-plus me-1"></i>New Appointment
+            </a>
+            <a href="/Patient/Create" class="btn btn-success d-inline-flex align-items-center">
+                <i class="ti ti-user-plus me-1"></i>Add Patient
+            </a>
+            <a href="/Invoice/Create" class="btn btn-info d-inline-flex align-items-center">
+                <i class="ti ti-file-invoice me-1"></i>Create Invoice
+            </a>
+        </div>
+    </div>
+
+    <!-- Top Stats Cards Row -->
+    <div class="row">
+        <!-- Total Appointments Today -->
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="mb-1">Today's Appointments</p>
+                            <div class="d-flex align-items-center gap-1">
+                                <h3 class="fw-bold mb-0" id="total-appointments-today">0</h3>
+                                <span class="badge fw-medium bg-success flex-shrink-0" id="total-appointments-change-top">+0%</span>
+                            </div>
+                        </div>
+                        <span class="avatar border border-success text-primary rounded-2 flex-shrink-0">
+                            <i class="ti ti-calendar-heart fs-20"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="total-appointments-change-bottom">
+                                +0% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">vs last week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Patients Today -->
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="mb-1">New Patients Today</p>
+                            <div class="d-flex align-items-center gap-1">
+                                <h3 class="fw-bold mb-0" id="new-patients-today">0</h3>
+                                <span class="badge fw-medium bg-danger flex-shrink-0" id="new-patients-change-top">-0%</span>
+                            </div>
+                        </div>
+                        <span class="avatar border border-danger text-danger rounded-2 flex-shrink-0">
+                            <i class="ti ti-user-plus fs-20"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="new-patients-change-bottom">
+                                +0% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">vs last week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Appointments -->
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="mb-1">Pending Appointments</p>
+                            <div class="d-flex align-items-center gap-1">
+                                <h3 class="fw-bold mb-0" id="pending-appointments-today">0</h3>
+                                <span class="badge fw-medium bg-warning flex-shrink-0" id="pending-appointments-change-top">+0%</span>
+                            </div>
+                        </div>
+                        <span class="avatar border border-warning text-warning rounded-2 flex-shrink-0">
+                            <i class="ti ti-clock fs-20"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="pending-appointments-change-bottom">
+                                +0% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">vs last week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Revenue -->
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="mb-1">Today's Revenue</p>
+                            <div class="d-flex align-items-center gap-1">
+                                <h3 class="fw-bold mb-0" id="revenue-today">@currencySymbol 0</h3>
+                                <span class="badge fw-medium bg-info flex-shrink-0" id="revenue-change-top">+0%</span>
+                            </div>
+                        </div>
+                        <span class="avatar border border-info text-info rounded-2 flex-shrink-0">
+                            <i class="ti ti-currency-dollar fs-20"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="revenue-change-bottom">
+                                +0% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">vs last week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row mt-4">
+        <!-- Today's Appointments & Quick Actions -->
+        <div class="col-xl-4 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Today's Appointments</h5>
+                    <a href="/Appointment/Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body" id="todays-appointments-container">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading appointments...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Chart -->
+        <div class="col-xl-8 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Appointments Overview</h5>
+                    <div class="dropdown" id="appointments-chart">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                            Monthly
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="#" data-filter="weekly">
+                                    Weekly
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="#" data-filter="monthly">
+                                    Monthly
+                                    <i class="ti ti-check fs-16 ms-auto"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="#" data-filter="yearly">
+                                    Yearly
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body pb-0">
+                    <div class="d-flex align-items-center justify-content-end gap-2 mb-1 flex-wrap mb-3">
+                        <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-point-filled me-1 fs-18 text-primary"></i>Total Appointments</p>
+                        <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-point-filled me-1 fs-18 text-success"></i>Completed Appointments</p>
+                    </div>
+                    <div class="chart-set" id="appointments-chart-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards Row -->
+    <div class="row row-cols-1 row-cols-xl-6 row-cols-md-3 row-cols-sm-2 mt-4">
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-primary rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-users"></i></span>
+                    <p class="mb-1 text-truncate">Total Patients</p>
+                    <h3 class="fw-bold mb-2" id="total-patients">0</h3>
+                    <p class="mb-0 text-success text-truncate">All Time</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-secondary rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-calendar"></i></span>
+                    <p class="mb-1 text-truncate">Weekly Appointments</p>
+                    <h3 class="fw-bold mb-2" id="weekly-appointments">0</h3>
+                    <p class="mb-0 text-success text-truncate">This Week</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-success rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-currency-dollar"></i></span>
+                    <p class="mb-1 text-truncate">Monthly Revenue</p>
+                    <h3 class="fw-bold mb-2" id="monthly-revenue">@currencySymbol 0</h3>
+                    <p class="mb-0 text-success text-truncate">This Month</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-danger rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-stethoscope"></i></span>
+                    <p class="mb-1 text-truncate">Total Doctors</p>
+                    <h3 class="fw-bold mb-2" id="total-doctors">0</h3>
+                    <p class="mb-0 text-success text-truncate">Active</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-info rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-package"></i></span>
+                    <p class="mb-1 text-truncate">Inventory Items</p>
+                    <h3 class="fw-bold mb-2" id="total-inventory">0</h3>
+                    <p class="mb-0 text-success text-truncate">In Stock</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-warning rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-alert-triangle"></i></span>
+                    <p class="mb-1 text-truncate">Low Stock Items</p>
+                    <h3 class="fw-bold mb-2" id="low-stock-count">0</h3>
+                    <p class="mb-0 text-danger text-truncate">Need Restock</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Data Row -->
+    <div class="row mt-4">
+        <!-- Recent Appointments -->
+        <div class="col-xl-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Recent Appointments</h5>
+                    <a href="/Appointment/Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table border">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-appointments-tbody">
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading appointments...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Invoices -->
+        <div class="col-xl-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Recent Invoices</h5>
+                    <a href="/Invoice/Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table border">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Patient</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-invoices-tbody">
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading invoices...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Alerts & Quick Stats -->
+    <div class="row mt-4">
+        <!-- Inventory Alerts -->
+        <div class="col-xl-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0 text-danger"><i class="ti ti-alert-triangle me-2"></i>Low Stock Alerts</h5>
+                    <a href="/Inventory/Index" class="btn btn-sm btn-outline-danger">Manage Inventory</a>
+                </div>
+                <div class="card-body">
+                    <div id="inventory-alerts-container">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-danger" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Checking inventory...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="col-xl-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0">Quick Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="border-end">
+                                <span class="avatar bg-warning rounded-2 fs-18 d-inline-flex mb-2"><i class="ti ti-clock"></i></span>
+                                <p class="mb-1 fs-12">Today's Pending</p>
+                                <h4 class="fw-bold mb-0" id="todays-pending">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border-end">
+                                <span class="avatar bg-success rounded-2 fs-18 d-inline-flex mb-2"><i class="ti ti-check"></i></span>
+                                <p class="mb-1 fs-12">Today's Completed</p>
+                                <h4 class="fw-bold mb-0" id="todays-completed">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div>
+                                <span class="avatar bg-danger rounded-2 fs-18 d-inline-flex mb-2"><i class="ti ti-file-invoice"></i></span>
+                                <p class="mb-1 fs-12">Pending Invoices</p>
+                                <h4 class="fw-bold mb-0" id="pending-invoices">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Global functions
+        window.updateBadge = function (element, value, isTopBadge) {
+            const formattedValue = (value >= 0 ? '+' : '') + Math.abs(value) + '%';
+            element.text(formattedValue);
+
+            if (isTopBadge) {
+                element.removeClass('bg-success bg-danger bg-warning bg-info')
+                    .addClass(value >= 0 ? 'bg-success' : 'bg-danger');
+            } else {
+                element.removeClass('badge-soft-success badge-soft-danger')
+                    .addClass(value >= 0 ? 'badge-soft-success' : 'badge-soft-danger');
+                const arrow = value >= 0 ? '<i class="ti ti-arrow-up ms-1"></i>' : '<i class="ti ti-arrow-down ms-1"></i>';
+                element.html(formattedValue + ' ' + arrow);
+            }
+        };
+
+        window.getStatusClass = function (status) {
+            switch ((status || '').toLowerCase()) {
+                case 'completed': return 'bg-success';
+                case 'pending': return 'bg-warning';
+                case 'cancelled': return 'bg-danger';
+                case 'confirmed': return 'bg-info';
+                case 'paid': return 'bg-success';
+                case 'overdue': return 'bg-danger';
+                case 'partiallypaid': return 'bg-warning';
+                default: return 'bg-secondary';
+            }
+        };
+
+        // Load dashboard data
+        window.loadDashboardData = function () {
+            $.ajax({
+                url: '/ReceptionistDashboard/GetData',
+                type: 'GET',
+                success: function(data){
+                    // Update top cards
+                    $('#total-appointments-today').text(data.totalAppointmentsToday || 0);
+                    $('#new-patients-today').text(data.newPatientsToday || 0);
+                    $('#pending-appointments-today').text(data.pendingAppointmentsToday || 0);
+                    $('#revenue-today').text('@currencySymbol' + (data.revenueToday || 0).toLocaleString());
+
+                    // Update percentage changes
+                    updateBadge($('#total-appointments-change-top'), data.totalAppointmentsChange || 0, true);
+                    updateBadge($('#new-patients-change-top'), data.newPatientsChange || 0, true);
+                    updateBadge($('#pending-appointments-change-top'), data.pendingAppointmentsChange || 0, true);
+                    updateBadge($('#revenue-change-top'), data.revenueChange || 0, true);
+
+                    updateBadge($('#total-appointments-change-bottom'), data.totalAppointmentsChange || 0, false);
+                    updateBadge($('#new-patients-change-bottom'), data.newPatientsChange || 0, false);
+                    updateBadge($('#pending-appointments-change-bottom'), data.pendingAppointmentsChange || 0, false);
+                    updateBadge($('#revenue-change-bottom'), data.revenueChange || 0, false);
+
+                    // Load today's appointments
+                    loadTodaysAppointments(data.todaysAppointments);
+
+                    // Load inventory alerts
+                    loadInventoryAlerts(data.lowStockItems);
+
+                    // Load recent invoices
+                    loadRecentInvoices(data.recentInvoices);
+                },
+                error: function(xhr, status, error){
+                    console.error('Failed to load dashboard data:', error);
+                }
+            });
+        };
+
+        // Load today's appointments
+        function loadTodaysAppointments(appointments) {
+            const container = $('#todays-appointments-container');
+
+            if (appointments && appointments.length > 0) {
+                let html = '';
+                appointments.forEach(apt => {
+                    const statusClass = getStatusClass(apt.status);
+                    html += `
+                        <div class="d-flex align-items-center justify-content-between mb-3 p-2 border rounded bg-light">
+                            <div class="d-flex align-items-center">
+                                <img src="${apt.patientImage}" alt="img" class="rounded-circle me-2" width="40" height="40"
+                                     onerror="this.src='/assets/img/patients/patient.jpg'">
+                                <div>
+                                    <h6 class="fs-14 mb-0 fw-semibold">${apt.patientName}</h6>
+                                    <p class="mb-0 fs-12 text-muted">${apt.doctorName}</p>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <p class="mb-0 fs-12 fw-semibold">${apt.appointmentTime}</p>
+                                <span class="badge ${statusClass} fw-medium">${apt.status}</span>
+                            </div>
+                        </div>`;
+                });
+                container.html(html);
+            } else {
+                container.html(`
+                    <div class="text-center py-4">
+                        <i class="ti ti-calendar-off fs-40 text-muted"></i>
+                        <h6 class="fw-semibold text-muted mt-2">No Appointments Today</h6>
+                        <a href="/Appointment/Create" class="btn btn-primary btn-sm mt-2">Schedule Appointment</a>
+                    </div>
+                `);
+            }
+        }
+
+        // Load inventory alerts
+        function loadInventoryAlerts(lowStockItems) {
+            const container = $('#inventory-alerts-container');
+
+            if (lowStockItems && lowStockItems.length > 0) {
+                let html = '';
+                lowStockItems.forEach(item => {
+                    const alertClass = item.stock < 5 ? 'border-danger' : 'border-warning';
+                    html += `
+                        <div class="d-flex align-items-center justify-content-between mb-2 p-2 border ${alertClass} rounded">
+                            <div>
+                                <h6 class="fs-14 mb-0 fw-semibold">${item.name}</h6>
+                                <p class="mb-0 fs-12 text-muted">${item.category}</p>
+                            </div>
+                            <div class="text-end">
+                                <p class="mb-0 fs-12 fw-semibold text-danger">Stock: ${item.stock}</p>
+                                <small class="text-muted">Reorder needed</small>
+                            </div>
+                        </div>`;
+                });
+                container.html(html);
+            } else {
+                container.html(`
+                    <div class="text-center py-2">
+                        <i class="ti ti-circle-check fs-40 text-success"></i>
+                        <h6 class="fw-semibold text-success mt-2">All Items in Stock</h6>
+                    </div>
+                `);
+            }
+        }
+
+        // Load recent invoices
+        function loadRecentInvoices(invoices) {
+            const container = $('#recent-invoices-tbody');
+
+            if (invoices && invoices.length > 0) {
+                let html = '';
+                invoices.forEach(invoice => {
+                    const statusClass = getStatusClass(invoice.status);
+                    html += `
+                        <tr>
+                            <td>
+                                <a href="/Invoice/Details/${invoice.id}" class="fw-semibold">${invoice.invoiceNumber}</a>
+                                <p class="mb-0 fs-12 text-muted">${invoice.issueDate}</p>
+                            </td>
+                            <td>${invoice.patientName}</td>
+                            <td class="fw-semibold">@currencySymbol${invoice.amount}</td>
+                            <td><span class="badge ${statusClass} fw-medium">${invoice.status}</span></td>
+                        </tr>`;
+                });
+                container.html(html);
+            } else {
+                container.html('<tr><td colspan="4" class="text-center py-4 text-muted">No invoices found</td></tr>');
+            }
+        }
+
+        // Load recent appointments
+        window.loadRecentAppointments = function () {
+            $.ajax({
+                url: '/ReceptionistDashboard/GetRecentAppointments',
+                type: 'GET',
+                success: function (data) {
+                    let html = '';
+                    if (data && data.length > 0) {
+                        data.forEach(appointment => {
+                            const statusClass = getStatusClass(appointment.status);
+                            html += `
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="${appointment.patientImage}" alt="img" class="rounded-circle me-2" width="32" height="32"
+                                                 onerror="this.src='/assets/img/patients/patient.jpg'">
+                                            <div>
+                                                <h6 class="fs-14 mb-0">${appointment.patientName}</h6>
+                                                <p class="mb-0 fs-12 text-muted">${appointment.phoneNumber}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${appointment.doctorName}</td>
+                                    <td>${appointment.appointmentDate}</td>
+                                    <td><span class="badge ${statusClass} fw-medium">${appointment.status}</span></td>
+                                </tr>`;
+                        });
+                    } else {
+                        html = '<tr><td colspan="4" class="text-center py-4 text-muted">No appointments found</td></tr>';
+                    }
+                    $('#recent-appointments-tbody').html(html);
+                },
+                error: function () {
+                    $('#recent-appointments-tbody').html('<tr><td colspan="4" class="text-center py-4 text-danger">Failed to load appointments</td></tr>');
+                }
+            });
+        };
+
+        // Load statistics
+        window.loadStatistics = function () {
+            $.ajax({
+                url: '/ReceptionistDashboard/GetStatistics',
+                type: 'GET',
+                success: function (data) {
+                    $('#total-patients').text(data.totalPatients || 0);
+                    $('#weekly-appointments').text(data.weeklyAppointments || 0);
+                    $('#monthly-revenue').text('@currencySymbol' + (data.monthlyRevenue || 0).toLocaleString());
+                    $('#total-doctors').text(data.totalDoctors || 0);
+                    $('#total-inventory').text(data.totalInventoryItems || 0);
+                    $('#low-stock-count').text(data.lowStockCount || 0);
+                },
+                error: function () {
+                    console.error('Failed to load statistics');
+                }
+            });
+        };
+
+        // Load quick stats
+        window.loadQuickStats = function () {
+            $.ajax({
+                url: '/ReceptionistDashboard/GetQuickStats',
+                type: 'GET',
+                success: function (data) {
+                    $('#todays-pending').text(data.todaysPending || 0);
+                    $('#todays-completed').text(data.todaysCompleted || 0);
+                    $('#pending-invoices').text(data.pendingInvoices || 0);
+                },
+                error: function () {
+                    console.error('Failed to load quick stats');
+                }
+            });
+        };
+
+        // Chart functions
+        window.initializeCharts = function () {
+            if (typeof ApexCharts === 'undefined') {
+                console.error('ApexCharts missing');
+                return;
+            }
+
+            // Main appointments chart
+            window.appointmentsMainChart = new ApexCharts(document.querySelector("#appointments-chart-container"), {
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: { show: false },
+                    zoom: { enabled: false },
+                    animations: { enabled: true }
+                },
+                series: [
+                    { name: 'Total Appointments', data: [] },
+                    { name: 'Completed Appointments', data: [] }
+                ],
+                colors: ['#0d6efd', '#198754'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                },
+                stroke: { curve: 'smooth', width: 2 },
+                xaxis: {
+                    categories: [],
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: { style: { colors: '#6c757d' } }
+                },
+                yaxis: {
+                    show: true,
+                    labels: { style: { colors: '#6c757d' } }
+                },
+                grid: {
+                    show: true,
+                    borderColor: '#f1f1f1',
+                    strokeDashArray: 3
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                    horizontalAlign: 'right'
+                },
+                dataLabels: { enabled: false }
+            });
+
+            window.appointmentsMainChart.render();
+        };
+
+        function loadAppointmentsChart(filter = 'monthly') {
+            $.get('/ReceptionistDashboard/GetAppointmentsChart', { filter }, function(data) {
+                if (window.appointmentsMainChart && data) {
+                    window.appointmentsMainChart.updateOptions({
+                        series: [
+                            { name: 'Total Appointments', data: data.totalAppointments || [] },
+                            { name: 'Completed Appointments', data: data.completedAppointments || [] }
+                        ],
+                        xaxis: { categories: data.categories || [] }
+                    });
+                }
+            }).fail(() => console.error('Failed to load appointments chart data'));
+        }
+
+        // Dropdown filter handler
+        $(document).on('click', '.dropdown-item[data-filter]', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const $item = $(this);
+            const $dropdown = $item.closest('.dropdown');
+            const $toggle = $dropdown.find('.dropdown-toggle');
+            const $menu = $item.closest('.dropdown-menu');
+
+            // Update button text
+            const newText = $item.text().trim();
+            $toggle.html(newText + ' ');
+
+            // Update checkmarks
+            $menu.find('.ti-check').addClass('d-none');
+            $item.find('.ti-check').removeClass('d-none');
+
+            // Get filter and load chart
+            const filter = $item.data('filter') || newText.toLowerCase();
+            if ($dropdown.attr('id') === 'appointments-chart') {
+                loadAppointmentsChart(filter);
+            }
+
+            // Close dropdown
+            $dropdown.removeClass('show');
+            $menu.removeClass('show');
+        });
+
+        // Initialize everything
+        $(function () {
+            initializeCharts();
+            loadDashboardData();
+            loadRecentAppointments();
+            loadStatistics();
+            loadQuickStats();
+            loadAppointmentsChart('monthly');
+        });
+    </script>
+}

@@ -1,4 +1,4 @@
-﻿@model CMS.ViewModels.PublicAppointmenConfirmfVM
+﻿@* @model CMS.ViewModels.PublicAppointmenConfirmfVM
 @{
     ViewData["Title"] = "Select a Slot";
     Layout = null;
@@ -360,4 +360,364 @@
 </html>
 
 
+ *@
 
+
+@model CMS.ViewModels.PublicAppointmenConfirmfVM
+@{
+    ViewData["Title"] = "Sélectionner un Créneau";
+    Layout = null;
+    var availabilityUrl = Url.Action("Availability", "PublicAppointments");
+    var bookUrl = Url.Action("BookSlot", "PublicAppointments"); // Réservation JSON
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dreams Technologies">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/assets/img/CABINET-DENTAIRE-CORVIL.png">
+    <!-- Apple Icon -->
+    <link rel="apple-touch-icon" href="~/assets/img/apple-icon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+    <!-- Datetimepicker CSS -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap-datetimepicker.min.css">
+    <!-- Daterangepikcer CSS -->
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="~/assets/plugins/simplebar/simplebar.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/tabler-icons/tabler-icons.min.css">
+    <!-- Datatable CSS -->
+    <link rel="stylesheet" href="~/assets/css/dataTables.bootstrap5.min.css">
+    <link href="~/assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link href="~/assets/plugins/toastr/toastr .min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
+
+</head>
+
+<style>
+    .btn-danger:disabled, .btn-danger.disabled {
+        opacity: 1 !important;
+    }
+
+    .slot-booked {
+        cursor: not-allowed;
+    }
+
+    .slot-btn {
+        margin: .25rem;
+    }
+
+    .skeleton {
+        background: linear-gradient(100deg,#f0f0f0 40%,#e6e6e6 50%,#f0f0f0 60%);
+        background-size: 200% 100%;
+        animation: s 1.2s infinite;
+        border-radius: .5rem;
+        height: 88px;
+    }
+
+    @@keyframes s {
+        to {
+            background-position-x: -200%;
+        }
+    }
+</style>
+
+
+<body>
+
+
+    <div class="content p-4" aria-busy="false">
+        <h3 class="mb-3">Sélectionner un Médecin & Horaire</h3>
+
+        <div class="alert alert-info">
+            <div><strong>Patient:</strong> @Model.PatientName (@Model.Email)</div>
+            <div class="mt-2">
+                <label for="datePicker" class="form-label me-2 mb-0"><strong>Date:</strong></label>
+                <input id="datePicker" type="date" class="form-control d-inline-block w-auto"
+                       value="@Model.AppointmentDate.ToString("yyyy-MM-dd")" />
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.Notes))
+            {
+                <div class="mt-2"><strong>Motif:</strong> @Model.Notes</div>
+            }
+        </div>
+
+        <div class="mb-3 small">
+            <span class="badge text-bg-primary me-2">Disponible</span>
+            <span class="badge text-bg-danger">Réservé</span>
+        </div>
+
+        <!-- token anti-falsification unique pour AJAX -->
+        <form id="af-token">@Html.AntiForgeryToken()</form>
+
+        <div id="doctorList">
+            <div class="row g-3" aria-live="polite">
+                <div class="col-md-6"><div class="skeleton w-100"></div></div>
+                <div class="col-md-6"><div class="skeleton w-100"></div></div>
+            </div>
+        </div>
+
+
+        <div class="text-end mt-3">
+            <button id="confirmBtn" class="btn btn-primary d-none">
+                <span class="spinner-border spinner-border-sm me-2 d-none" role="status" id="bookingSpinner"></span>
+                Confirmer le Rendez-vous
+            </button>
+        </div>
+
+    </div>
+
+    <!-- JS requis (léger pour les utilisateurs publics) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/plugins/select2/js/select2.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+            (() => {
+              const availabilityUrl = '@availabilityUrl';
+              const bookUrl = '@bookUrl';
+
+              const csrf = document.querySelector('#af-token input[name="__RequestVerificationToken"]').value;
+              const datePicker = document.getElementById('datePicker');
+              const content = document.querySelector('.content');
+              const doctorList = document.getElementById('doctorList');
+
+              let aborter = null;
+              let debounceT = null;
+              let selectedDoctorId = null;
+              let selectedSlot = null;
+
+              let selectedBtn = null;
+
+
+              // ---------- utilitaires ----------
+              const fmtMoney = (n) => {
+                try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(n); }
+                catch { return `$${Number(n || 0).toFixed(2)}`; }
+              };
+              const esc = (s) => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+              const toYmd = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : new Date(new Date(d).getTime() - (new Date().getTimezoneOffset()*60000)).toISOString().slice(0,10);
+              const setBusy = (v) => content.setAttribute('aria-busy', v ? 'true' : 'false');
+
+              // ---------- récupération des données ----------
+              async function loadAvailability() {
+                // annuler la requête précédente si elle existe
+                if (aborter) aborter.abort();
+                aborter = new AbortController();
+
+                setBusy(true);
+                doctorList.innerHTML = `
+                  <div class="row g-3" aria-live="polite">
+                    <div class="col-md-6"><div class="skeleton w-100"></div></div>
+                    <div class="col-md-6"><div class="skeleton w-100"></div></div>
+                  </div>`;
+
+                try {
+                  const res = await fetch(availabilityUrl, {
+                    method: 'POST',
+                    signal: aborter.signal,
+                    headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': csrf },
+                    body: JSON.stringify({ preferredDate: toYmd(datePicker.value), preferredSpecialization: null })
+                  });
+                  if (!res.ok) throw new Error('Échec du chargement');
+                  const data = await res.json();
+                  renderDoctors(data.doctors || []);
+                } catch (e) {
+                  if (e.name === 'AbortError') return; // ignorer la requête annulée
+                  doctorList.innerHTML = '<div class="alert alert-danger">Échec du chargement des disponibilités.</div>';
+                } finally {
+                  setBusy(false);
+                }
+              }
+
+              // ---------- rendu ----------
+              function renderDoctors(doctors) {
+                if (!doctors.length) {
+                  doctorList.innerHTML = '<div class="alert alert-warning">Aucun médecin n\'a de créneaux disponibles à cette date.</div>';
+                  return;
+                }
+
+                const frag = document.createDocumentFragment();
+                const row = document.createElement('div');
+                row.className = 'row g-3';
+
+                for (const d of doctors) {
+                  const bookedSet = new Set((d.bookedSlots || []).map(x => String(x).toUpperCase()));
+                  const col = document.createElement('div');
+                  col.className = 'col-md-6';
+
+                  // structure de la carte
+                  col.innerHTML = `
+                    <div class="card shadow-sm h-100">
+                      <div class="card-body">
+                        <h5 class="card-title mb-1">${esc(d.name)}</h5>
+                        <div class="text-muted">${esc(d.specialization || '')}</div>
+                        <div class="small mb-3">Honoraire: ${fmtMoney(d.fee)}</div>
+                        <div class="d-flex flex-wrap gap-2 slots" data-doc="${d.id}"></div>
+                      </div>
+                    </div>`;
+
+                  // créneaux (construits avec fragment pour minimiser le reflow)
+                  const slotsWrap = col.querySelector('.slots');
+                  const slotsFrag = document.createDocumentFragment();
+
+                  for (const slot of (d.slots || [])) {
+                    const isBooked = bookedSet.has(String(slot).toUpperCase());
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = isBooked ? 'btn btn-sm btn-danger slot-booked slot-btn'
+                                             : 'btn btn-sm btn-outline-primary slot-btn';
+                    btn.textContent = isBooked ? `${slot} (Réservé)` : slot;
+                    btn.dataset.slot = slot;
+                    btn.dataset.doc = d.id;
+                    if (isBooked) {
+                      btn.disabled = true;
+                      btn.setAttribute('aria-disabled', 'true');
+                      btn.title = 'Ce créneau est déjà réservé';
+                    } else {
+                      btn.classList.add('slot-free'); // utilisé par la délégation d'événements
+                    }
+                    slotsFrag.appendChild(btn);
+                  }
+
+                  slotsWrap.appendChild(slotsFrag);
+                  row.appendChild(col);
+                }
+
+                frag.appendChild(row);
+                doctorList.innerHTML = '';
+                doctorList.appendChild(frag);
+              }
+
+              // ---------- réservation (délégation d'événements) ----------
+                     doctorList.addEventListener('click', (e) => {
+            const btn = e.target.closest('button.slot-free');
+            if (!btn) return;
+
+            // Réinitialiser la sélection précédente
+            if (selectedBtn) {
+                selectedBtn.classList.remove('btn-primary');
+                selectedBtn.classList.add('btn-outline-primary');
+            }
+
+            // Stocker la nouvelle sélection
+            selectedBtn = btn;
+            selectedDoctorId = Number(btn.dataset.doc);
+            selectedSlot = btn.dataset.slot;
+
+            // Indication visuelle de la sélection
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-primary');
+
+            // Afficher le bouton de confirmation
+            document.getElementById('confirmBtn').classList.remove('d-none');
+        });
+
+              // ---------- Logique de Confirmation ----------
+                      document.getElementById('confirmBtn').addEventListener('click', async () => {
+            if (!selectedDoctorId || !selectedSlot) return;
+
+            const btn = document.getElementById('confirmBtn');
+            const spinner = document.getElementById('bookingSpinner');
+
+            // Désactiver le bouton + afficher le spinner
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            try {
+                const res = await fetch(bookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': csrf
+                    },
+                    body: JSON.stringify({
+                        doctorId: selectedDoctorId,
+                        selectedSlot: selectedSlot,
+                        appointmentDate: datePicker.value
+                    })
+                });
+
+                if (!res.ok) throw new Error('Échec de la réservation');
+                const data = await res.json();
+
+                if (!data.success) {
+                    await Swal.fire({ icon: 'warning', title: 'Créneau indisponible', text: data.message || 'Veuillez choisir un autre créneau.' });
+                    await loadAvailability();
+                    return;
+                }
+
+                // ✅ Redirection
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    window.location.href = '/PublicAppointments/ThankYou/' + encodeURIComponent(data.appointmentId);
+                }
+
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Erreur réseau', text: 'Veuillez réessayer.' });
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        });
+
+
+
+              // ---------- changement de date (anti-rebond + annulation précédente) ----------
+              datePicker.addEventListener('input', () => {
+                clearTimeout(debounceT);
+                debounceT = setTimeout(loadAvailability, 250);
+              });
+
+              // chargement initial
+              loadAvailability();
+            })();
+    </script>
+
+
+
+    <style>
+        .btn-danger:disabled, .btn-danger.disabled {
+            opacity: 1 !important;
+        }
+
+        .slot-booked {
+            cursor: not-allowed;
+        }
+
+        .slot-btn {
+            margin: .25rem;
+        }
+
+        .skeleton {
+            background: linear-gradient(100deg,#f0f0f0 40%,#e6e6e6 50%,#f0f0f0 60%);
+            background-size: 200% 100%;
+            animation: s 1.2s infinite;
+            border-radius: .5rem;
+            height: 88px;
+        }
+
+        @@keyframes s {
+            to {
+                background-position-x: -200%;
+            }
+        }
+    </style>
+
+
+</body>
+
+</html>

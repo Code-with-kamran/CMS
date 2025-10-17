@@ -1,4 +1,4 @@
-﻿@model CMS.Models.Patient
+﻿@* @model CMS.Models.Patient
 
 @{
     ViewData["Title"] = Model.PatientId == 0 ? "Add Patient" : "Edit Patient";
@@ -188,6 +188,206 @@
 
 
         // -------------------Image Preview-----------------------
+        const currentImage = '@currentImage';
+        document.getElementById('ProfileImage')?.addEventListener('change', function () {
+            const output = document.getElementById('imagePreview');
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (evt) => output.src = evt.target.result;
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                output.src = currentImage || defaultImage;
+            }
+        });
+    </script>
+} *@
+
+@model CMS.Models.Patient
+
+@{
+    ViewData["Title"] = Model.PatientId == 0 ? "Ajouter un Patient" : "Modifier le Patient";
+    
+    var currentImage = string.IsNullOrEmpty(Model?.ProfileImageUrl) ? "/uploads/doctors/patient_default.jpg" : Model.ProfileImageUrl;
+}
+
+<form id="patientForm" asp-action="PatientModel" asp-controller="Appointment" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PatientId" />
+
+    <div class="content py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h4 class="mb-0">@ViewData["Title"]</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Retour</a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    @(Model.PatientId == 0 ? "Créer" : "Mettre à jour")
+                    
+                </button>
+            </div>
+        </div>
+
+        <validation-summary model-only="true" class="text-danger small"></validation-summary>
+
+        <div class="row g-3">
+            <!-- Colonne de gauche -->
+            <div class="col-12 col-lg-7">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Informations personnelles</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label">Prénom</label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label">Nom</label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label">Numéro de téléphone</label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Gender" class="form-label">Genre</label>
+                                <select asp-for="Gender" class="form-select" required>
+                                    <option value="">-- Sélectionner le genre --</option>
+                                    <option value="Male">Homme</option>
+                                    <option value="Female">Femme</option>
+                                    <option value="Other">Autre</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DateOfBirth" class="form-label">Date de naissance</label>
+                                <input asp-for="DateOfBirth" type="date" class="form-control" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Address" class="form-label">Adresse</label>
+                                <input asp-for="Address" class="form-control" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+                        <h6 class="text-muted mb-3">Détails médicaux</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="InsuranceProvider" class="form-label">Fournisseur d'assurance</label>
+                                <input asp-for="InsuranceProvider" class="form-control" />
+                                <span asp-validation-for="InsuranceProvider" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="InsuranceNumber" class="form-label">Numéro d'assurance</label>
+                                <input asp-for="InsuranceNumber" class="form-control" />
+                                <span asp-validation-for="InsuranceNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Allergies" class="form-label">Allergies</label>
+                                <textarea asp-for="Allergies" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Allergies" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="DentalHistory" class="form-label">Antécédents dentaires</label>
+                                <textarea asp-for="DentalHistory" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="DentalHistory" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Notes" class="form-label">Notes</label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colonne de droite -->
+            <div class="col-12 col-lg-5">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Profil</h6>
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Image de profil</label>
+                                <input type="file" name="ProfileImage" id="ProfileImage" class="form-control" accept="image/*" />
+                                <div class="mt-3">
+                                    <img id="imagePreview"
+                                         src="@currentImage"
+                                         alt="Aperçu de l'image"
+                                         class="img-thumbnail"
+                                         style="max-height: 200px;" />
+                                </div>
+                                <div class="subtle mt-1">PNG/JPG jusqu'à 1 Mo recommandé. Une image par défaut s'affiche jusqu'à ce que vous choisissiez un fichier.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Validation côté client de Bootstrap
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', e => {
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+        
+        $(document).on('submit', '#patientForm', function (e) {
+            e.preventDefault();
+
+            const form = $(this);
+
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" }, // marqué comme AJAX
+                success: function (res) {
+                    if (res.success) {
+                        toastr.success(res.message);
+
+                        // Ajouter le nouveau patient dans la liste déroulante du rendez-vous et le sélectionner
+                        let patientDropdown = $('select[name="Appointment.PatientId"]');
+                        patientDropdown.append(new Option(res.patientName, res.patientId, true, true));
+                        patientDropdown.val(res.patientId).trigger('change');
+
+                        $('#addPatientModal').modal('hide');
+                    } else {
+                        // Erreurs de validation : recharger la vue partielle du modal
+                        $('#patientFormContainer').html(res);
+                    }
+                },
+                error: function () {
+                    toastr.error("Quelque chose a mal tourné !");
+                }
+            });
+        });
+
+        // -------------------Aperçu de l'image-----------------------
         const currentImage = '@currentImage';
         document.getElementById('ProfileImage')?.addEventListener('change', function () {
             const output = document.getElementById('imagePreview');

@@ -1,6 +1,5 @@
 ﻿@model CMS.Models.AttendanceRecord
-@using Microsoft.AspNetCore.Mvc.Rendering // Required for SelectList
-
+@using Microsoft.AspNetCore.Mvc.Rendering 
 <form id="attendanceFormModal" asp-action="Upsert" asp-controller="Attendance" method="post" class="needs-validation" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
@@ -10,7 +9,7 @@
     <div class="row g-3">
         <div class="col-md-12">
             <label asp-for="EmployeeId" class="form-label"></label>
-            <select asp-for="EmployeeId" class="form-select" asp-items="@(ViewData["EmployeeList"] as SelectList)" required>
+            <select asp-for="EmployeeId" class="form-select select2" asp-items="@(ViewData["EmployeeList"] as SelectList)" required>
                 <option value="">-- Select Employee --</option>
             </select>
             <span asp-validation-for="EmployeeId" class="text-danger"></span>
@@ -55,7 +54,14 @@
 </form>
 
 <script>
-    // Re-initialize client-side validation for the modal form
+    $(document).ready(function() {
+            $('.select2').select2({
+               
+                width: '100%',
+                placeholder: "-- Select Employee --",
+                allowClear: true
+            });
+        });
     (() => {
         'use strict';
         const form = document.getElementById('attendanceFormModal');

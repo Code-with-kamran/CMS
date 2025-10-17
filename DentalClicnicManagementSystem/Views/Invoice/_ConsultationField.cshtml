@@ -1,0 +1,11 @@
+﻿@* @{
+    var index = (int)ViewData["Index"];
+}
+
+<input type="text" name="Items[@index].AppointmentWIth" class="form-control" placeholder="Consultation With" /> *@
+
+@{
+    var index = (int)ViewData["Index"];
+}
+
+<input type="text" name="Items[@index].AppointmentWIth" class="form-control" placeholder="Consultation avec" />

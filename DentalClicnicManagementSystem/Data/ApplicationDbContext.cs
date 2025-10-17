@@ -1,5 +1,6 @@
 ﻿using CMS.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System.Reflection.Emit;
 
 namespace CMS.Data
@@ -26,7 +27,10 @@ namespace CMS.Data
         public DbSet<Document> Document { get; set; }
         public DbSet<PatientVitals> PatientVitals { get; set; }
         public DbSet<Payment> Payments{ get; set; }
+        public DbSet<BillReceipt> BillReceipts { get; set; }
 
+        // Add this line inside your ApplicationDbContext class
+        public DbSet<LaboratoryOrder> LaboratoryOrders { get; set; }
 
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<DoctorWeeklyAvailability> DoctorWeeklyAvailabilities { get; set; }
@@ -37,11 +41,19 @@ namespace CMS.Data
         public DbSet<Department> Department { get; set; }
         public DbSet<DefaultSettings> DefaultSettings { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public DbSet<InvoicePayment> InvoicePayments { get; set; }
+        public DbSet<PaymentRequest> PaymentRequests { get; set; }
+        public DbSet<PurchaseItem> PurchaseItems { get; set; }
+        public DbSet<ServiceItem> ServiceItems { get; set; }
+        public DbSet<PatientTreatments> PatientTreatments { get; set; }
+        public DbSet<Medications> Medications { get; set; }
 
 
 
 
-        //Employee Related table 
+
+
+      
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
@@ -50,6 +62,8 @@ namespace CMS.Data
         public DbSet<PayrollRun> PayrollRuns { get; set; }
         public DbSet<PayrollItem> PayrollItems { get; set; }
         public DbSet<PerformanceReview> PerformanceReviews { get; set; }
+        public DbSet<LabTestOrder> LabTestOrders { get; set; }
+        public DbSet<Note> NotesList { get; set; }
         protected override void OnModelCreating(ModelBuilder b)
         {
             base.OnModelCreating(b);
@@ -63,7 +77,32 @@ namespace CMS.Data
                 p.SetScale(2);      // Digits after decimal
             }
 
-            
+
+
+
+            b.Entity<Invoice>()
+        .HasIndex(i => i.AppointmentId)
+        .HasFilter($"{nameof(Invoice.IsMedicationInvoice)} = 1")
+        .IsUnique();
+
+            b.Entity<Invoice>()
+                .HasIndex(i => i.AppointmentId)
+                .HasFilter($"{nameof(Invoice.IsAppointmentInvoice)} = 1")
+                .IsUnique();
+
+            b.Entity<Invoice>()
+                .HasIndex(i => i.AppointmentId)
+                .HasFilter($"{nameof(Invoice.IsCombinedInvoice)} = 1")
+                .IsUnique();
+
+            // check constraint
+            b.Entity<Invoice>()
+                .ToTable(t => t.HasCheckConstraint(
+                    "CK_Invoices_OneTypeOnly",
+                    "(CASE WHEN IsMedicationInvoice = 1 THEN 1 ELSE 0 END) + " +
+                    "(CASE WHEN IsAppointmentInvoice = 1 THEN 1 ELSE 0 END) + " +
+                    "(CASE WHEN IsCombinedInvoice = 1 THEN 1 ELSE 0 END) <= 1"));
+
 
 
             b.Entity<FollowUp>()
@@ -71,6 +110,26 @@ namespace CMS.Data
           .WithMany(p => p.FollowUps)
           .HasForeignKey(f => f.PatientId)
           .OnDelete(DeleteBehavior.Restrict);
+
+            b.Entity<FollowUp>()
+            .HasOne(f => f.Appointment)
+            .WithMany(a => a.FollowUps)
+            .HasForeignKey(f => f.AppointmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+          
+            //b.Entity<InvoiceItem>()
+            //            .HasOne(ii => ii.Invoice)
+            //            .WithMany(i => i.Items)
+            //            .HasForeignKey(ii => ii.InvoiceId)   // real column
+            //            .OnDelete(DeleteBehavior.Restrict);  // optional
+
+    //        b.Entity<Invoice>()
+    //.HasOne(i => i.PaymentMethod)
+    //.WithMany()
+    //.HasForeignKey(i => i.PaymentMethodId) // ✅ specify FK explicitly
+    //.OnDelete(DeleteBehavior.Restrict);
+
 
 
             b.Entity<Document>()
@@ -97,11 +156,11 @@ namespace CMS.Data
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascading deletes
 
             // --- LeaveRequest Entity ---------------------------------------
-            b.Entity<LeaveRequest>()
-                .HasOne(lr => lr.Employee)
-                .WithMany(e => e.LeaveRequests)
-                .HasForeignKey(lr => lr.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading deletes
+            //b.Entity<LeaveRequest>()
+            //    .HasOne(lr => lr.Employee)
+            //    .WithMany(e => e.LeaveRequests)
+            //    .HasForeignKey(lr => lr.EmployeeId)
+            //    .OnDelete(DeleteBehavior.Restrict); // Prevent cascading deletes
 
             // --- PayrollRun & PayrollItem Entities -------------------------
             b.Entity<PayrollRun>()
@@ -110,18 +169,18 @@ namespace CMS.Data
                 .HasForeignKey(pi => pi.PayrollRunId)
                 .OnDelete(DeleteBehavior.Cascade); // Delete items if run is deleted
 
-            b.Entity<PayrollItem>()
-                .HasOne(pi => pi.Employee)
-                .WithMany(e => e.PayrollItems)
-                .HasForeignKey(pi => pi.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+            //b.Entity<PayrollItem>()
+            //    .HasOne(pi => pi.Employee)
+            //    .WithMany(e => e.PayrollItems)
+            //    .HasForeignKey(pi => pi.EmployeeId)
+            //    .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
             // --- PerformanceReview Entity ---------------------------------
-            b.Entity<PerformanceReview>()
-                .HasOne(pr => pr.Employee)
-                .WithMany(e => e.PerformanceReviews)
-                .HasForeignKey(pr => pr.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+            //b.Entity<PerformanceReview>()
+            //    .HasOne(pr => pr.Employee)
+            //    .WithMany(e => e.PerformanceReviews)
+            //    .HasForeignKey(pr => pr.EmployeeId)
+            //    .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
             // --- Invoice & InvoiceItem -------------------------------------
             b.Entity<Invoice>(e =>
@@ -131,19 +190,25 @@ namespace CMS.Data
                 e.Property(x => x.Tax).HasPrecision(18, 2);
                 e.Property(x => x.Discount).HasPrecision(18, 2);
                 e.Property(x => x.Total).HasPrecision(18, 2);
-
-                // One-to-many: Invoice -> InvoiceItems
-                e.HasMany(i => i.Items)
-                 .WithOne()
-                 .HasForeignKey(ii => ii.InvoiceId)
-                 .OnDelete(DeleteBehavior.Cascade);
+  
             });
 
-            b.Entity<Invoice>()
-                .HasMany(i => i.Items)
-                .WithOne()
-                .HasForeignKey(ii => ii.InvoiceId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // 1. sequence (already done)
+            b.HasSequence<int>("EmployeeCodeSeq", schema: "dbo")
+             .StartsAt(10000)
+             .IncrementsBy(1);
+
+            // 2. configure Code – generated on insert, never touched afterwards
+            b.Entity<Employee>()
+             .Property(e => e.Code)
+             .HasDefaultValueSql("('EMP' + FORMAT(NEXT VALUE FOR EmployeeCodeSeq, '00000'))")
+             .ValueGeneratedOnAdd()          // ← only on INSERT
+             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);   // ✅ correct API
+
+            // 3. enforce uniqueness
+            b.Entity<Employee>()
+                   .HasIndex(e => e.Code)
+                   .IsUnique();
 
 
             b.Entity<Invoice>()
@@ -181,51 +246,58 @@ namespace CMS.Data
             });
 
             // --- Invoice ID & Status defaults -----------------------------
-            b.Entity<Invoice>(i =>
-            {
-                i.Property(e => e.Id)
-                 .UseIdentityColumn(1000, 1); // Start invoice IDs from 1000
+            //b.Entity<Invoice>(i =>
+            //{
+            //    i.Property(e => e.Id)
+            //     .UseIdentityColumn(1000, 1); // Start invoice IDs from 1000
 
-                i.Property(e => e.Status)
-                 .HasConversion<string>() // Store enum as string
-                 .HasDefaultValue(InvoiceStatus.Draft);
+            //    i.Property(e => e.status)
+            //     .HasConversion<string>() // Store enum as string
+            //     .HasDefaultValue(InvoiceStatus.Draft);
 
-                i.HasMany(e => e.Items)
-                 .WithOne()
-                 .HasForeignKey(e => e.InvoiceId)
-                 .OnDelete(DeleteBehavior.Cascade);
-            });
+            //    i.HasMany(e => e.Items)
+            //     .WithOne()
+            //     .HasForeignKey(e => e.InvoiceId)
+            //     .OnDelete(DeleteBehavior.Cascade);
+            //});
+
+            b.Entity<Note>()
+            .HasOne(n => n.Appointment)
+            .WithMany(a => a.NotesList)
+            .HasForeignKey(n => n.AppointmentId)
+            .OnDelete(DeleteBehavior.Cascade);
 
             // --- Appointment & Treatments ---------------------------------
-            b.Entity<Appointment>(a =>
-            {
-                a.Property(e => e.Status)
-                 .HasConversion<string>()
-                 .HasDefaultValue(AppointmentStatus.Scheduled);
+  //          b.Entity<Appointment>(a =>
+  //          {
+  //              a.Property(e => e.Status)
+  //               .HasConversion<string>()
+  //               .HasDefaultValue(AppointmentStatus.Scheduled);
 
-                a.Property(e => e.AppointmentType)
-                 .HasConversion<string>();
+  //              a.Property(e => e.AppointmentType)
+  //               .HasConversion<string>();
 
-                a.HasOne(e => e.Patient)
-                 .WithMany()
-                 .HasForeignKey(e => e.PatientId)
-                 .IsRequired()
-                 .OnDelete(DeleteBehavior.Restrict);
+  //              a.HasOne(e => e.Patient)
+  //               .WithMany()
+  //               .HasForeignKey(e => e.PatientId)
+  //               .IsRequired()
+  //               .OnDelete(DeleteBehavior.Restrict);
 
-                a.HasOne(e => e.Doctor)
-                 .WithMany()
-                 .HasForeignKey(e => e.DoctorId)
-                 .IsRequired()
-                 .OnDelete(DeleteBehavior.Restrict);
+  //              a.HasOne(e => e.Doctor)
+  //               .WithMany()
+  //               .HasForeignKey(e => e.DoctorId)
+  //               .IsRequired()
+  //               .OnDelete(DeleteBehavior.Restrict);
 
-                a.HasMany(e => e.Treatments)
-                 .WithOne(t => t.Appointment)
-                 .HasForeignKey(t => t.AppointmentId)
-                 .OnDelete(DeleteBehavior.Restrict);
-            });
+  //              a.HasOne(e => e.Treatments)
+  //.WithOne(t => t.Appointment)
+  //.HasForeignKey<Treatment>(t => t.AppointmentId)
+  //.OnDelete(DeleteBehavior.Restrict);
+
+  //          });
 
             // --- Treatment Cost Precision ---------------------------------
-            b.Entity<Treatment>().Property(t => t.Cost).HasPrecision(18, 2);
+            b.Entity<Treatment>().Property(t => t.UnitPrice).HasPrecision(18, 2);
 
             // --- Enum conversions for readability ------------------------
             b.Entity<LeaveRequest>().Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
@@ -297,10 +369,10 @@ namespace CMS.Data
 
             var payrollItems = new PayrollItem[]
             {
-                new PayrollItem { Id = 1, PayrollRunId = 1, EmployeeId = 1, BaseSalary = 45000.00m / 12, Allowances = 500.00m, Deductions = 200.00m, NetPay = (45000.00m / 12) + 500.00m - 200.00m },
-                new PayrollItem { Id = 2, PayrollRunId = 1, EmployeeId = 2, BaseSalary = 60000.00m / 12, Allowances = 750.00m, Deductions = 300.00m, NetPay = (60000.00m / 12) + 750.00m - 300.00m },
-                new PayrollItem { Id = 3, PayrollRunId = 1, EmployeeId = 3, BaseSalary = 35000.00m / 12, Allowances = 300.00m, Deductions = 150.00m, NetPay = (35000.00m / 12) + 300.00m - 150.00m },
-                new PayrollItem { Id = 4, PayrollRunId = 1, EmployeeId = 4, BaseSalary = 70000.00m / 12, Allowances = 1000.00m, Deductions = 400.00m, NetPay = (70000.00m / 12) + 1000.00m - 400.00m }
+                new PayrollItem { Id = 1, PayrollRunId = 1, EmployeeId = 1, BaseSalary = 45000.00m / 12, Allowances = 500.00m, Deductions = 200.00m, NetPay = (45000.00m / 12) + 500.00m - 200.00m, AttendanceSummary = "Present: 23, Absent: 0, Half-days: 0"},
+                new PayrollItem { Id = 2, PayrollRunId = 1, EmployeeId = 2, BaseSalary = 60000.00m / 12, Allowances = 750.00m, Deductions = 300.00m, NetPay = (60000.00m / 12) + 750.00m - 300.00m, AttendanceSummary = "Present: 12, Absent: 10, Half-days: 0"  },
+                new PayrollItem { Id = 3, PayrollRunId = 1, EmployeeId = 3, BaseSalary = 35000.00m / 12, Allowances = 300.00m, Deductions = 150.00m, NetPay = (35000.00m / 12) + 300.00m - 150.00m, AttendanceSummary = "Present: 52, Absent: 0, Half-days: 0" },
+                new PayrollItem { Id = 4, PayrollRunId = 1, EmployeeId = 4, BaseSalary = 70000.00m / 12, Allowances = 1000.00m, Deductions = 400.00m, NetPay = (70000.00m / 12) + 1000.00m - 400.00m, AttendanceSummary = "Present: 2, Absent: 0, Half-days: 5" }
             };
             b.Entity<PayrollItem>().HasData(payrollItems);
 

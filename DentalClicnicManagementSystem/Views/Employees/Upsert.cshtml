@@ -1,79 +1,260 @@
-﻿@model CMS.Models.Employee
-
+﻿@* @model CMS.ViewModels.EmployeeUpsertViewModel
 @{
-    ViewData["Title"] = Model.Id == 0 ? "Add Employee" : "Edit Employee";
+    ViewData["Title"] = Model.Employee.Id == 0 ? "Add Employee" : "Edit Employee";
 }
 
-<form id="employeeForm" asp-action="Upsert" asp-controller="Employees" method="post" class="needs-validation" novalidate>
+<form asp-action="Upsert" asp-controller="Employees" method="post" class="needs-validation" novalidate>
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Employee.Id" />
 
     <div class="content py-3">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-            <h4 class="mb-0">@ViewData["Title"]</h4>
+            <h4 class="mb-0 text-primary fw-semibold">@((Model.Employee.Id == 0 ? "Add" : "Edit") + " Employee")</h4>
             <div class="d-flex gap-2">
-                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to List</a>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="ti ti-arrow-left me-1"></i> Back to List
+                </a>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    @(Model.Id == 0 ? "Create" : "Update")
+                    <i class="ti ti-device-floppy me-1"></i> @(Model.Employee.Id == 0 ? "Save Employee" : "Update Employee")
                 </button>
             </div>
         </div>
 
         <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
-
         <div class="card shadow-sm mb-3">
             <div class="card-body">
-                <h6 class="text-muted mb-3">Employee Details</h6>
+                <h6 class="text-muted mb-3">Employee Information</h6>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label asp-for="Code" class="form-label"></label>
-                        <input asp-for="Code" class="form-control" required />
-                        <span asp-validation-for="Code" class="text-danger"></span>
+                        <label asp-for="Employee.FirstName" class="form-label fw-medium">First Name</label>
+                        <input asp-for="Employee.FirstName" class="form-control" placeholder="e.g. Alice" required />
+                        <span asp-validation-for="Employee.FirstName" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="FirstName" class="form-label"></label>
-                        <input asp-for="FirstName" class="form-control" required />
-                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                        <label asp-for="Employee.LastName" class="form-label fw-medium">Last Name</label>
+                        <input asp-for="Employee.LastName" class="form-control" placeholder="e.g. Smith" required />
+                        <span asp-validation-for="Employee.LastName" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="LastName" class="form-label"></label>
-                        <input asp-for="LastName" class="form-control" required />
-                        <span asp-validation-for="LastName" class="text-danger"></span>
+                        <label asp-for="Employee.Email" class="form-label fw-medium">Email Address</label>
+                        <input asp-for="Employee.Email" type="email" class="form-control" placeholder="alice.smith@example.com" required />
+                        <span asp-validation-for="Employee.Email" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" type="email" class="form-control" required />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <label asp-for="Employee.Phone" class="form-label fw-medium">Phone Number</label>
+                        <input asp-for="Employee.Phone" class="form-control" placeholder="+1 (555) 123-4567" />
+                        <span asp-validation-for="Employee.Phone" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Phone" class="form-label"></label>
-                        <input asp-for="Phone" class="form-control" />
-                        <span asp-validation-for="Phone" class="text-danger"></span>
+                        <label asp-for="Employee.Designation" class="form-label fw-medium">Job Title</label>
+                        <input asp-for="Employee.Designation" class="form-control" placeholder="e.g. Software Engineer" required />
+                        <span asp-validation-for="Employee.Designation" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Designation" class="form-label"></label>
-                        <input asp-for="Designation" class="form-control" required />
-                        <span asp-validation-for="Designation" class="text-danger"></span>
+                        <label asp-for="Employee.HireDate" class="form-label fw-medium">Hire Date</label>
+                        <input asp-for="Employee.HireDate" type="text" class="form-control date-picker" placeholder="Select date" required />
+                        <span asp-validation-for="Employee.HireDate" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="HireDate" class="form-label"></label>
-                        <input asp-for="HireDate" type="date" class="form-control" required />
-                        <span asp-validation-for="HireDate" class="text-danger"></span>
+                        <label asp-for="Employee.BaseSalary" class="form-label fw-medium">Base Salary </label>
+                        <input asp-for="Employee.BaseSalary" type="number" step="0.01" class="form-control" placeholder="75000.00" required />
+                        <span asp-validation-for="Employee.BaseSalary" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <label asp-for="Employee.HousingAllowance" class="form-label fw-medium">Housing Allowance </label>
+                        <input asp-for="Employee.HousingAllowance" type="number" step="0.01" class="form-control" placeholder="75000.00"  />
+                        <span asp-validation-for="Employee.HousingAllowance" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="BaseSalary" class="form-label"></label>
-                        <input asp-for="BaseSalary" type="number" step="0.01" class="form-control" required />
-                        <span asp-validation-for="BaseSalary" class="text-danger"></span>
+                        <label asp-for="Employee.TransportAllowance" class="form-label fw-medium">Transport Allowance </label>
+                        <input asp-for="Employee.TransportAllowance" type="number" step="0.01" class="form-control" placeholder="75000.00" />
+                        <span asp-validation-for="Employee.TransportAllowance" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <label asp-for="Employee.LeaveBalance" class="form-label fw-medium">Annual Leave Balance (Days)</label>
+                        <input asp-for="Employee.LeaveBalance" type="number" class="form-control" placeholder="14" required />
+                        <span asp-validation-for="Employee.LeaveBalance" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label asp-for="Employee.PaymentMethodId" class="form-label fw-medium">Payment Method</label>
+                        <select asp-for="Employee.PaymentMethodId" asp-items="Model.PaymentMethodList" class="form-select">
+                            <option value="">Select Payment Method</option>
+                        </select>
+                        <span asp-validation-for="Employee.PaymentMethodId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Employee.AccountNumber" class="form-label fw-medium">Account Number</label>
+                        <input asp-for="Employee.AccountNumber" class="form-control" placeholder="Enter Bank Account Number" />
+                        <span asp-validation-for="Employee.AccountNumber" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="LeaveBalance" class="form-label"></label>
-                        <input asp-for="LeaveBalance" type="number" class="form-control" required />
-                        <span asp-validation-for="LeaveBalance" class="text-danger"></span>
+                        <label asp-for="Employee.BankName" class="form-label fw-medium">Bank Name</label>
+                        <input asp-for="Employee.BankName" class="form-control" placeholder="e.g. Attijariwafa Bank" />
+                        <span asp-validation-for="Employee.BankName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.IBAN" class="form-label fw-medium">IBAN</label>
+                        <input asp-for="Employee.IBAN" class="form-control" placeholder="e.g. MA64 1234 5678 9012 3456 7890" />
+                        <span asp-validation-for="Employee.IBAN" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
                         <div class="form-check form-switch mt-4">
-                            <input class="form-check-input" type="checkbox" id="IsActive" asp-for="IsActive">
-                            <label class="form-check-label" for="IsActive">Is Active</label>
+                            <input class="form-check-input" type="checkbox" id="IsActive" asp-for="Employee.IsActive">
+                            <label class="form-check-label" for="IsActive">Employee is Active</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+   
+    <!-- Flatpickr -->
+    <script>
+        flatpickr(".date-picker", {
+            dateFormat: "d M Y",
+            defaultDate: '@Model.Employee.HireDate.ToString("yyyy-MM-dd")',
+            allowInput: true,
+            theme: "light"
+        });
+    </script>
+
+    <!-- Bootstrap validation -->
+    <script>
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', e => {
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+} *@
+
+@model CMS.ViewModels.EmployeeUpsertViewModel
+@{
+    ViewData["Title"] = Model.Employee.Id == 0 ? "Ajouter un Employé" : "Modifier l'Employé";
+}
+
+<form asp-action="Upsert" asp-controller="Employees" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Employee.Id" />
+
+    <div class="content py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h4 class="mb-0 text-primary fw-semibold">@((Model.Employee.Id == 0 ? "Ajouter" : "Modifier") + " un Employé")</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="ti ti-arrow-left me-1"></i> Retour à la liste
+                </a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="ti ti-device-floppy me-1"></i> @(Model.Employee.Id == 0 ? "Enregistrer l'Employé" : "Mettre à jour l'Employé")
+                </button>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Informations de l'Employé</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Employee.FirstName" class="form-label fw-medium">Prénom</label>
+                        <input asp-for="Employee.FirstName" class="form-control" placeholder="ex: Alice" required />
+                        <span asp-validation-for="Employee.FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.LastName" class="form-label fw-medium">Nom</label>
+                        <input asp-for="Employee.LastName" class="form-control" placeholder="ex: Smith" required />
+                        <span asp-validation-for="Employee.LastName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.Email" class="form-label fw-medium">Adresse Email</label>
+                        <input asp-for="Employee.Email" type="email" class="form-control" placeholder="alice.smith@example.com" required />
+                        <span asp-validation-for="Employee.Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.Phone" class="form-label fw-medium">Numéro de Téléphone</label>
+                        <input asp-for="Employee.Phone" class="form-control" placeholder="+212 6 12 34 56 78" />
+                        <span asp-validation-for="Employee.Phone" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.Designation" class="form-label fw-medium">Poste</label>
+                        <input asp-for="Employee.Designation" class="form-control" placeholder="ex: Ingénieur Logiciel" required />
+                        <span asp-validation-for="Employee.Designation" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.HireDate" class="form-label fw-medium">Date d'Embauche</label>
+                        <input asp-for="Employee.HireDate" type="text" class="form-control date-picker" placeholder="Sélectionner une date" required />
+                        <span asp-validation-for="Employee.HireDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.BaseSalary" class="form-label fw-medium">Salaire de Base</label>
+                        <input asp-for="Employee.BaseSalary" type="number" step="0.01" class="form-control" placeholder="75000.00" required />
+                        <span asp-validation-for="Employee.BaseSalary" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Employee.HousingAllowance" class="form-label fw-medium">Allocation Logement</label>
+                        <input asp-for="Employee.HousingAllowance" type="number" step="0.01" class="form-control" placeholder="75000.00" />
+                        <span asp-validation-for="Employee.HousingAllowance" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.TransportAllowance" class="form-label fw-medium">Allocation Transport</label>
+                        <input asp-for="Employee.TransportAllowance" type="number" step="0.01" class="form-control" placeholder="75000.00" />
+                        <span asp-validation-for="Employee.TransportAllowance" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Employee.LeaveBalance" class="form-label fw-medium">Solde de Congés Annuels (Jours)</label>
+                        <input asp-for="Employee.LeaveBalance" type="number" class="form-control" placeholder="14" required />
+                        <span asp-validation-for="Employee.LeaveBalance" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Employee.PaymentMethodId" class="form-label fw-medium">Méthode de Paiement</label>
+                        <select asp-for="Employee.PaymentMethodId" asp-items="Model.PaymentMethodList" class="form-select">
+                            <option value="">Sélectionner une méthode de paiement</option>
+                        </select>
+                        <span asp-validation-for="Employee.PaymentMethodId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Employee.AccountNumber" class="form-label fw-medium">Numéro de Compte</label>
+                        <input asp-for="Employee.AccountNumber" class="form-control" placeholder="Entrer le numéro de compte bancaire" />
+                        <span asp-validation-for="Employee.AccountNumber" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.BankName" class="form-label fw-medium">Nom de la Banque</label>
+                        <input asp-for="Employee.BankName" class="form-control" placeholder="ex: Attijariwafa Bank" />
+                        <span asp-validation-for="Employee.BankName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Employee.IBAN" class="form-label fw-medium">IBAN</label>
+                        <input asp-for="Employee.IBAN" class="form-control" placeholder="ex: MA64 1234 5678 9012 3456 7890" />
+                        <span asp-validation-for="Employee.IBAN" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mt-4">
+                            <input class="form-check-input" type="checkbox" id="IsActive" asp-for="Employee.IsActive">
+                            <label class="form-check-label" for="IsActive">L'employé est actif</label>
                         </div>
                     </div>
                 </div>
@@ -84,18 +265,27 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <!-- Flatpickr -->
     <script>
-           
-        // bootstrap client-side validation
+        flatpickr(".date-picker", {
+            dateFormat: "d M Y",
+            defaultDate: '@Model.Employee.HireDate.ToString("yyyy-MM-dd")',
+            allowInput: true,
+            theme: "light",
+            locale: "fr"
+        });
+    </script>
+
+    <!-- Bootstrap validation -->
+    <script>
         (() => {
             'use strict';
             const forms = document.querySelectorAll('.needs-validation');
-         
             Array.from(forms).forEach(form => {
                 form.addEventListener('submit', e => {
                     if (!form.checkValidity()) {
                         e.preventDefault();
-                        
                         e.stopPropagation();
                     }
                     form.classList.add('was-validated');

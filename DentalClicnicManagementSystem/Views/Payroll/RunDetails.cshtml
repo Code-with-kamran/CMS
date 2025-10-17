@@ -1,9 +1,10 @@
-﻿@* // File: Views/Payroll/RunDetails.cshtml *@
-@model CMS.Models.PayrollRun
+﻿@* @model CMS.ViewModels.PayrollRunDetailsViewModel
 
 @{
-    ViewData["Title"] = $"Payroll Details for {new DateTime(Model.Year, Model.Month, 1).ToString("MMMM yyyy")}";
+    ViewData["Title"] = $"Payroll Details for {new DateTime(Model.PayrollRun.Year, Model.PayrollRun.Month, 1):MMMM yyyy}";
 }
+
+
 
 <form id="__af" method="post" style="display:none">
     @Html.AntiForgeryToken()
@@ -17,24 +18,145 @@
             <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
                 <div class="flex-grow-1">
                     <h4 class="fw-bold mb-0">@ViewData["Title"]</h4>
-                    <p class="text-muted mb-0">Run on: @Model.RunAt.ToString("dd MMM yyyy HH:mm")</p>
-                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    <p class="text-muted mb-0">Run on: @Model.PayrollRun.RunAt.ToString("dd MMM yyyy HH:mm")</p>
+                    @if (!string.IsNullOrEmpty(Model.PayrollRun.Notes))
                     {
-                        <p class="text-muted mb-0">Notes: @Model.Notes</p>
+                        <p class="text-muted mb-0">Notes: @Model.PayrollRun.Notes</p>
                     }
                 </div>
                 <div class="text-end">
                     <a asp-action="Index" class="btn btn-outline-secondary ms-2 fs-13 btn-md">
-                        Back to Payroll Runs
+                        <i class="ti ti-arrow-left me-1"></i>Back to Runs
                     </a>
-                    <a href="@Url.Action("ExportPayrollItemsCsv", "Payroll", new { runId = Model.Id })" class="btn btn-info ms-2 fs-13 btn-md">
+                    <a href="@Url.Action("SummaryReport", "Payroll", new { id = Model.PayrollRun.Id })" class="btn btn-info ms-2 fs-13 btn-md">
+                        <i class="ti ti-chart-bar me-1"></i>Summary Report
+                    </a>
+                    <a href="@Url.Action("ExportPayrollItemsCsv", "Payroll", new { id = Model.PayrollRun.Id })" class="btn btn-success ms-2 fs-13 btn-md">
                         <i class="ti ti-download me-1"></i>Export CSV
                     </a>
                 </div>
             </div>
 
+
+         
+
+            <!-- Summary Cards - Updated to match reference design -->
+             <div class="row mb-4">
+                <!-- Total Employees -->
+                <div class="col-xl-4 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <p class="mb-1">Total Employees</p>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h4 class="fw-bold mb-0" id="totalEmployees">0</h4>
+                                        <span class="badge fw-medium bg-success flex-shrink-0" id="employeesChangeTop">+0%</span>
+                                    </div>
+                                </div>
+                                <span class="avatar border border-success text-primary rounded-2 flex-shrink-0">
+                                    <i class="ti ti-users fs-20"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-end">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge fw-medium badge-soft-success mb-1" id="employeesChangeBottom">
+                                        +0% <i class="ti ti-arrow-up"></i>
+                                    </span>
+                                    <p class="fs-13 mb-0 text-muted">in this payroll run</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Net Pay -->
+                <div class="col-xl-4 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <p class="mb-1">Total Net Pay</p>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h4 class="fw-bold mb-0" id="totalNetPay">£0.00</h4>
+                                        <span class="badge fw-medium bg-primary flex-shrink-0" id="netPayChangeTop">+0%</span>
+                                    </div>
+                                </div>
+                                <span class="avatar border border-primary text-primary rounded-2 flex-shrink-0">
+                                    <i class="ti ti-currency-pound fs-20"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-end">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge fw-medium badge-soft-primary mb-1" id="netPayChangeBottom">
+                                        +0% <i class="ti ti-arrow-up ms-1"></i>
+                                    </span>
+                                    <p class="fs-13 mb-0 text-muted">total disbursement</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Allowances -->
+                <div class="col-xl-4 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <p class="mb-1">Total Allowances</p>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h4 class="fw-bold mb-0" id="totalAllowances">£0.00</h4>
+                                        <span class="badge fw-medium bg-warning flex-shrink-0" id="allowancesChangeTop">+0%</span>
+                                    </div>
+                                </div>
+                                <span class="avatar border border-warning text-warning rounded-2 flex-shrink-0">
+                                    <i class="ti ti-plus fs-20"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-end">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge fw-medium badge-soft-warning mb-1" id="allowancesChangeBottom">
+                                        +0% <i class="ti ti-arrow-up ms-1"></i>
+                                    </span>
+                                    <p class="fs-13 mb-0 text-muted">bonuses & benefits</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Deductions -->
+                <div class="c col-xl-4 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <p class="mb-1">Total Deductions</p>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h4 class="fw-bold mb-0" id="totalDeductions">£0.00</h4>
+                                        <span class="badge fw-medium bg-danger flex-shrink-0" id="deductionsChangeTop">+0%</span>
+                                    </div>
+                                </div>
+                                <span class="avatar border border-danger text-danger rounded-2 flex-shrink-0">
+                                    <i class="ti ti-minus fs-20"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-end">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge fw-medium badge-soft-danger mb-1" id="deductionsChangeBottom">
+                                        +0% <i class="ti ti-arrow-up ms-1"></i>
+                                    </span>
+                                    <p class="fs-13 mb-0 text-muted">taxes & contributions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
             <!-- Card -->
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body">
 
                     <!-- External controls -->
@@ -53,7 +175,7 @@
 
                         <!-- search -->
                         <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
-                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search employees..." />
                         </div>
                     </div>
 
@@ -63,11 +185,13 @@
                                 <tr>
                                     <th>Employee Code</th>
                                     <th>Employee Name</th>
-                                    <th>Base Salary</th>
-                                    <th>Allowances</th>
-                                    <th>Deductions</th>
-                                    <th>Net Pay</th>
-                                    <th>Actions</th>
+                                    <th>Designation</th>
+                                    <th class="text-end">Base Salary</th>
+                                    <th class="text-end">Allowances</th>
+                                    <th class="text-end">Deductions</th>
+                                    <th class="text-end">Net Pay</th>
+                                    <th>Attendance</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -111,6 +235,9 @@
                         <label for="recalcDeductions" class="form-label">Deductions</label>
                         <input type="number" step="0.01" class="form-control" id="recalcDeductions" name="deductions" required />
                     </div>
+                    <div class="alert alert-info">
+                        <small>Base salary is fixed. Net pay will be automatically recalculated as: Base Salary + Allowances - Deductions</small>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Recalculate</button>
@@ -121,54 +248,209 @@
     </div>
 </div>
 
+
+
 @section Scripts {
     <script>
         $(function () {
-            const table = myCodeDataTable(
-                'payrollItemList',
-                '@Url.Action("GetPayrollItems", "Payroll", new { runId = Model.Id })',
-                [
-                    { data: 'employeeCode', orderable: true },
-                    { data: 'employeeName', orderable: true },
-                    { data: 'baseSalary', orderable: true, render: d => `£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
-                    { data: 'allowances', orderable: true, render: d => `£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
-                    { data: 'deductions', orderable: true, render: d => `£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
-                    { data: 'netPay', orderable: true, render: d => `£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
-                    {
-                        data: null,
-                        orderable: false,
-                        className: 'text-center',
-                        render: function (_data, _type, row) {
-                            return `
-                                <div class="dropdown d-inline-block">
-                                    <a href="javascript:void(0);"
-                                       class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
-                                       data-bs-toggle="dropdown">
-                                        <i class="ti ti-dots-vertical"></i>
-                                    </a>
-                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
-                                        <li>
-                                            <a href="/Payroll/Payslip/${row.id}" class="dropdown-item d-flex align-items-center">
-                                                <i class="ti ti-file-text me-2"></i> View Payslip
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:void(0);"
-                                               class="dropdown-item d-flex align-items-center js-recalculate-item"
-                                               data-bs-toggle="modal" data-bs-target="#recalculateModal"
-                                               data-id="${row.id}"
-                                               data-allowances="${row.allowances}"
-                                               data-deductions="${row.deductions}">
-                                                <i class="ti ti-calculator me-2"></i> Recalculate
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>`;
-                        }
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+            const esc = s => s == null ? '' : String(s);
+
+            function safe(num, digits) {
+                if (num === null || num === undefined || isNaN(num)) return Number(0).toFixed(digits);
+                return Number(num).toFixed(digits);
+            }
+
+            function safePercent(val) {
+                if (val === null || val === undefined || isNaN(val)) return '0';
+                return parseFloat(val).toFixed(2);
+            }
+
+            function arrow(percent) { return percent >= 0 ? 'ti-arrow-up' : 'ti-arrow-down'; }
+            function sign(percent) { return percent >= 0 ? '+' : ''; }
+
+            function loadPayrollCardSummary(data) {
+                if (!data) return;
+
+                // Total Employees
+                $("#totalEmployees").text(safe(data.totalEmployees, 0));
+                $("#employeesChangeTop").text(sign(data.totalEmployeesChangePercent) + safePercent(data.totalEmployeesChangePercent) + '%');
+                $("#employeesChangeBottom").html(
+                    sign(data.totalEmployeesChangePercent) + safePercent(data.totalEmployeesChangePercent) + '% ' +
+                    '<i class="ti ' + arrow(data.totalEmployeesChangePercent) + '"></i>'
+                );
+
+                // Net Pay
+                $("#totalNetPay").text('£' + safe(data.totalNetPay, 2));
+                $("#netPayChangeTop").text(sign(data.totalNetPayChangePercent) + safePercent(data.totalNetPayChangePercent) + '%');
+                $("#netPayChangeBottom").html(
+                    sign(data.totalNetPayChangePercent) + safePercent(data.totalNetPayChangePercent) + '% ' +
+                    '<i class="ti ' + arrow(data.totalNetPayChangePercent) + ' ms-1"></i>'
+                );
+
+                // Allowances
+                $("#totalAllowances").text('£' + safe(data.totalAllowances, 2));
+                $("#allowancesChangeTop").text(sign(data.totalAllowancesChangePercent) + safePercent(data.totalAllowancesChangePercent) + '%');
+                $("#allowancesChangeBottom").html(
+                    sign(data.totalAllowancesChangePercent) + safePercent(data.totalAllowancesChangePercent) + '% ' +
+                    '<i class="ti ' + arrow(data.totalAllowancesChangePercent) + ' ms-1"></i>'
+                );
+
+                // Deductions
+                $("#totalDeductions").text('£' + safe(data.totalDeductions, 2));
+                $("#deductionsChangeTop").text(sign(data.totalDeductionsChangePercent) + safePercent(data.totalDeductionsChangePercent) + '%');
+                $("#deductionsChangeBottom").html(
+                    sign(data.totalDeductionsChangePercent) + safePercent(data.totalDeductionsChangePercent) + '% ' +
+                    '<i class="ti ' + arrow(data.totalDeductionsChangePercent) + ' ms-1"></i>'
+                );
+            }
+
+            // Load initial data
+            $.get('@Url.Action("GetPayrollCardSummary", "Payroll")', { runId: @Model.PayrollRun.Id }, function(response) {
+                if (response.success && response.data) {
+                    loadPayrollCardSummary(response.data);
+                }
+            });
+
+            // Initialize DataTable for payroll items
+            const table = $('#payrollItemList').DataTable({
+                processing: false,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetPayrollItems", "Payroll", new { runId = Model.PayrollRun.Id })',
+                    type: 'GET',
+                    data: function (d) {
+                        d.draw = d.draw;
+                        d.start = d.start;
+                        d.length = d.length;
+                        d.searchValue = d.search.value;
+                        d.sortColumnIndex = d.order[0]?.column;
+                        d.sortColumnDirection = d.order[0]?.dir;
+                        d.runId = @Model.PayrollRun.Id;
                     }
-                ],
-                [[1, 'asc']] // Default sort by Employee Name
-            );
+                },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[1, 'asc']],
+                autoWidth: false,
+                responsive: true,
+                columns: [
+                            {
+                                data: 'employeeCode',
+                                orderable: true,
+                                render: d => `<span class="fw-semibold">${esc(d)}</span>`
+                            },
+                            {
+                                data: 'employeeName',
+                                orderable: true,
+                                render: d => `<span class="text-primary">${esc(d)}</span>`
+                            },
+                            {
+                                data: 'designation',
+                                orderable: true,
+                                render: d => `<span class="text-muted">${esc(d)}</span>`
+                            },
+                            {
+                                data: 'baseSalary',
+                                orderable: true,
+                                className: 'text-end',
+                                render: d => `<span class="fw-semibold">£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+                            },
+                            {
+                                data: 'allowances',
+                                orderable: true,
+                                className: 'text-end',
+                                render: d => `<span class="text-warning">£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+                            },
+                            {
+                                data: 'deductions',
+                                orderable: true,
+                                className: 'text-end',
+                                render: d => `<span class="text-danger">£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+                            },
+                            {
+                                data: 'netPay',
+                                orderable: true,
+                                className: 'text-end',
+                                render: d => `<span class="text-success fw-bold">£${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+                            },
+                            {
+                                data: 'attendanceSummary',
+                                orderable: false,
+                                render: d => `<span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">${esc(d || 'N/A')}</span>`
+                            },
+                            {
+                                data: null,
+                                orderable: false,
+                                className: 'text-center',
+                                render: function (_data, _type, row) {
+                                    return `
+                                        <div class="dropdown d-inline-block">
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-sm btn-outline-secondary border-0"
+                                               data-bs-toggle="dropdown">
+                                                <i class="ti ti-dots-vertical"></i>
+                                            </a>
+                                            <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                                <li>
+                                                    <a href="/Payroll/Payslip/${row.id}" class="dropdown-item d-flex align-items-center">
+                                                        <i class="ti ti-file-text me-2"></i> View Payslip
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);"
+                                                       class="dropdown-item d-flex align-items-center js-recalculate-item"
+                                                       data-bs-toggle="modal" data-bs-target="#recalculateModal"
+                                                       data-id="${row.id}"
+                                                       data-allowances="${row.allowances}"
+                                                       data-deductions="${row.deductions}">
+                                                        <i class="ti ti-calculator me-2"></i> Recalculate
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>`;
+                                }
+                            }
+                        ],
+                drawCallback: function () {
+                    $('#payrollItemList tbody tr.pre-load').remove();
+                            const api = this.api();
+                            const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                            if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+                            $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                            $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+
+                            const info = api.page.info();
+                            const msg = info.recordsDisplay
+                                ? `Showing ${info.start+1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                                : (info.recordsTotal
+                                    ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
+                                    : 'No entries to show');
+                            $('#dt-info').text(msg);
+                        },
+                language: {
+                    emptyTable: "No payroll items found",
+                    infoEmpty: "No entries to show"
+                }
+            });
+
+
+          $('#payrollItemList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
+            // Search functionality
+            $('#globalSearch').on('input', function () {
+                table.search($(this).val()).draw();
+            });
+
+            // Page length change
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
 
             // Handle recalculate modal population
             $('#recalculateModal').on('show.bs.modal', function (event) {
@@ -206,6 +488,13 @@
                             Swal.fire('Success', response.message, 'success');
                             $('#recalculateModal').modal('hide');
                             table.ajax.reload(null, false);
+
+                            // Reload summary cards after recalculation
+                            $.get('@Url.Action("GetPayrollCardSummary", "Payroll")', { runId: @Model.PayrollRun.Id }, function(response) {
+                                if (response.success && response.data) {
+                                    loadPayrollCardSummary(response.data);
+                                }
+                            });
                         } else {
                             Swal.fire('Error', response.message, 'error');
                         }
@@ -219,3 +508,519 @@
     </script>
 }
 
+
+        *@
+
+
+@inject CMS.Services.ICurrencyService CurrencyService
+@model CMS.ViewModels.PayrollRunDetailsViewModel
+@{
+    ViewData["Title"] = $"Détails de paie pour {new DateTime(Model.PayrollRun.Year, Model.PayrollRun.Month, 1):MMMM yyyy}";
+    var currentCurrency = await CurrencyService.GetCurrentCurrencyAsync();
+    var currencySymbol = currentCurrency?.Symbol ?? "£";
+}
+
+
+
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="initialCurrencySymbol" value="@currencySymbol" />
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+
+            <!-- Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">@ViewData["Title"]</h4>
+                    <p class="text-muted mb-0">Exécuté le : @Model.PayrollRun.RunAt.ToString("dd MMM yyyy HH:mm")</p>
+                    @if (!string.IsNullOrEmpty(Model.PayrollRun.Notes))
+                    {
+                        <p class="text-muted mb-0">Notes : @Model.PayrollRun.Notes</p>
+                    }
+                </div>
+                <div class="text-end">
+                    <a asp-action="Index" class="btn btn-outline-secondary ms-2 fs-13 btn-md">
+                        <i class="ti ti-arrow-left me-1"></i>Retour aux exécutions
+                    </a>
+                    <a href="@Url.Action("SummaryReport", "Payroll", new { id = Model.PayrollRun.Id })" class="btn btn-info ms-2 fs-13 btn-md">
+                        <i class="ti ti-chart-bar me-1"></i>Rapport synthèse
+                    </a>
+                    <a href="@Url.Action("ExportPayrollItemsCsv", "Payroll", new { id = Model.PayrollRun.Id })" class="btn btn-success ms-2 fs-13 btn-md">
+                        <i class="ti ti-download me-1"></i>Exporter CSV
+                    </a>
+                </div>
+            </div>
+
+
+
+
+            <!-- Summary Cards - Updated to match reference design -->
+            <div class="row mb-4">
+                <!-- Total Employees -->
+                <div class="col-xl-4 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <p class="mb-1">Total Employés</p>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h4 class="fw-bold mb-0" id="totalEmployees">0</h4>
+                                        <span class="badge fw-medium bg-success flex-shrink-0" id="employeesChangeTop">+0%</span>
+                                    </div>
+                                </div>
+                                <span class="avatar border border-success text-primary rounded-2 flex-shrink-0">
+                                    <i class="ti ti-users fs-20"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-end">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge fw-medium badge-soft-success mb-1" id="employeesChangeBottom">
+                                        +0% <i class="ti ti-arrow-up"></i>
+                                    </span>
+                                    <p class="fs-13 mb-0 text-muted">dans cette exécution</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Net Pay -->
+                <div class="col-xl-4 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <p class="mb-1">Salaire Net Total</p>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h4 class="fw-bold mb-0" id="totalNetPay">£0.00</h4>
+                                        <span class="badge fw-medium bg-primary flex-shrink-0" id="netPayChangeTop">+0%</span>
+                                    </div>
+                                </div>
+                                <span class="avatar border border-primary text-primary rounded-2 flex-shrink-0">
+                                    <i class="ti ti-currency-pound fs-20"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-end">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge fw-medium badge-soft-primary mb-1" id="netPayChangeBottom">
+                                        +0% <i class="ti ti-arrow-up ms-1"></i>
+                                    </span>
+                                    <p class="fs-13 mb-0 text-muted">décaissement total</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Allowances -->
+                <div class="col-xl-4 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <p class="mb-1">Allocations Totales</p>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h4 class="fw-bold mb-0" id="totalAllowances">£0.00</h4>
+                                        <span class="badge fw-medium bg-warning flex-shrink-0" id="allowancesChangeTop">+0%</span>
+                                    </div>
+                                </div>
+                                <span class="avatar border border-warning text-warning rounded-2 flex-shrink-0">
+                                    <i class="ti ti-plus fs-20"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-end">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge fw-medium badge-soft-warning mb-1" id="allowancesChangeBottom">
+                                        +0% <i class="ti ti-arrow-up ms-1"></i>
+                                    </span>
+                                    <p class="fs-13 mb-0 text-muted">primes & avantages</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Deductions -->
+                <div class="c col-xl-4 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <p class="mb-1">Déductions Totales</p>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <h4 class="fw-bold mb-0" id="totalDeductions">£0.00</h4>
+                                        <span class="badge fw-medium bg-danger flex-shrink-0" id="deductionsChangeTop">+0%</span>
+                                    </div>
+                                </div>
+                                <span class="avatar border border-danger text-danger rounded-2 flex-shrink-0">
+                                    <i class="ti ti-minus fs-20"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-end">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge fw-medium badge-soft-danger mb-1" id="deductionsChangeBottom">
+                                        +0% <i class="ti ti-arrow-up ms-1"></i>
+                                    </span>
+                                    <p class="fs-13 mb-0 text-muted">taxes & cotisations</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <!-- External controls -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <!-- page-length -->
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Afficher</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entrées</span>
+                        </div>
+
+                        <!-- search -->
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Rechercher employés..." />
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="payrollItemList" class="table table-hover align-middle w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code Employé</th>
+                                    <th>Nom Employé</th>
+                                    <th>Poste</th>
+                                    <th class="text-end">Salaire de Base</th>
+                                    <th class="text-end">Allocations</th>
+                                    <th class="text-end">Déductions</th>
+                                    <th class="text-end">Salaire Net</th>
+                                    <th>Présence</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Recalculate -->
+<div class="modal fade" id="recalculateModal" tabindex="-1" aria-labelledby="recalculateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recalculateModalLabel">Recalculer l'élément de paie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="recalculateForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="recalcItemId" name="id" />
+                    <div class="mb-3">
+                        <label for="recalcAllowances" class="form-label">Allocations</label>
+                        <input type="number" step="0.01" class="form-control" id="recalcAllowances" name="allowances" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="recalcDeductions" class="form-label">Déductions</label>
+                        <input type="number" step="0.01" class="form-control" id="recalcDeductions" name="deductions" required />
+                    </div>
+                    <div class="alert alert-info">
+                        <small>Le salaire de base est fixe. Le salaire net sera automatiquement recalculé comme : Salaire de Base + Allocations - Déductions</small>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Recalculer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        $(function () {
+             let currentCurrencySymbol = $('#initialCurrencySymbol').val() || '£';
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+            const esc = s => s == null ? '' : String(s);
+
+            function safe(num, digits) {
+                if (num === null || num === undefined || isNaN(num)) return Number(0).toFixed(digits);
+                return Number(num).toFixed(digits);
+            }
+
+            function safePercent(val) {
+                if (val === null || val === undefined || isNaN(val)) return '0';
+                return parseFloat(val).toFixed(2);
+            }
+
+            function arrow(percent) { return percent >= 0 ? 'ti-arrow-up' : 'ti-arrow-down'; }
+            function sign(percent) { return percent >= 0 ? '+' : ''; }
+
+                    function loadPayrollCardSummary(data) {
+            if (!data) return;
+
+            // Total Employees
+            $("#totalEmployees").text(safe(data.totalEmployees, 0));
+            $("#employeesChangeTop").text(sign(data.totalEmployeesChangePercent) + safePercent(data.totalEmployeesChangePercent) + '%');
+            $("#employeesChangeBottom").html(
+                sign(data.totalEmployeesChangePercent) + safePercent(data.totalEmployeesChangePercent) + '% ' +
+                '<i class="ti ' + arrow(data.totalEmployeesChangePercent) + '"></i>'
+            );
+
+            // Net Pay
+            $("#totalNetPay").text(currentCurrencySymbol + safe(data.totalNetPay, 2));
+            $("#netPayChangeTop").text(sign(data.totalNetPayChangePercent) + safePercent(data.totalNetPayChangePercent) + '%');
+            $("#netPayChangeBottom").html(
+                sign(data.totalNetPayChangePercent) + safePercent(data.totalNetPayChangePercent) + '% ' +
+                '<i class="ti ' + arrow(data.totalNetPayChangePercent) + ' ms-1"></i>'
+            );
+
+            // Allowances
+            $("#totalAllowances").text(currentCurrencySymbol + safe(data.totalAllowances, 2));
+            $("#allowancesChangeTop").text(sign(data.totalAllowancesChangePercent) + safePercent(data.totalAllowancesChangePercent) + '%');
+            $("#allowancesChangeBottom").html(
+                sign(data.totalAllowancesChangePercent) + safePercent(data.totalAllowancesChangePercent) + '% ' +
+                '<i class="ti ' + arrow(data.totalAllowancesChangePercent) + ' ms-1"></i>'
+            );
+
+            // Deductions
+            $("#totalDeductions").text(currentCurrencySymbol + safe(data.totalDeductions, 2));
+            $("#deductionsChangeTop").text(sign(data.totalDeductionsChangePercent) + safePercent(data.totalDeductionsChangePercent) + '%');
+            $("#deductionsChangeBottom").html(
+                sign(data.totalDeductionsChangePercent) + safePercent(data.totalDeductionsChangePercent) + '% ' +
+                '<i class="ti ' + arrow(data.totalDeductionsChangePercent) + ' ms-1"></i>'
+            );
+        }
+            // Load initial data
+            $.get('@Url.Action("GetPayrollCardSummary", "Payroll")', { runId: @Model.PayrollRun.Id }, function(response) {
+                if (response.success && response.data) {
+                    loadPayrollCardSummary(response.data);
+                }
+            });
+
+            // Initialize DataTable for payroll items
+            const table = $('#payrollItemList').DataTable({
+                processing: false,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetPayrollItems", "Payroll", new { runId = Model.PayrollRun.Id })',
+                    type: 'GET',
+                    data: function (d) {
+                        d.draw = d.draw;
+                        d.start = d.start;
+                        d.length = d.length;
+                        d.searchValue = d.search.value;
+                        d.sortColumnIndex = d.order[0]?.column;
+                        d.sortColumnDirection = d.order[0]?.dir;
+                        d.runId = @Model.PayrollRun.Id;
+                    }
+                },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[1, 'asc']],
+                autoWidth: false,
+                responsive: true,
+                columns: [
+                            {
+                                data: 'employeeCode',
+                                orderable: true,
+                                render: d => `<span class="fw-semibold">${esc(d)}</span>`
+                            },
+                            {
+                                data: 'employeeName',
+                                orderable: true,
+                                render: d => `<span class="text-primary">${esc(d)}</span>`
+                            },
+                            {
+                                data: 'designation',
+                                orderable: true,
+                                render: d => `<span class="text-muted">${esc(d)}</span>`
+                            },
+                                {
+            data: 'baseSalary',
+            orderable: true,
+            className: 'text-end',
+            render: d => `<span class="fw-semibold">${currentCurrencySymbol}${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+        },
+        {
+            data: 'allowances',
+            orderable: true,
+            className: 'text-end',
+            render: d => `<span class="text-warning">${currentCurrencySymbol}${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+        },
+        {
+            data: 'deductions',
+            orderable: true,
+            className: 'text-end',
+            render: d => `<span class="text-danger">${currentCurrencySymbol}${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+        },
+        {
+            data: 'netPay',
+            orderable: true,
+            className: 'text-end',
+            render: d => `<span class="text-success fw-bold">${currentCurrencySymbol}${parseFloat(d).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+        },
+                            {
+                                data: 'attendanceSummary',
+                                orderable: false,
+                                render: d => `<span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">${esc(d || 'N/A')}</span>`
+                            },
+                            {
+                                data: null,
+                                orderable: false,
+                                className: 'text-center',
+                                render: function (_data, _type, row) {
+                                    return `
+                                        <div class="dropdown d-inline-block">
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-sm btn-outline-secondary border-0"
+                                               data-bs-toggle="dropdown">
+                                                <i class="ti ti-dots-vertical"></i>
+                                            </a>
+                                            <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                                <li>
+                                                    <a href="/Payroll/Payslip/${row.id}" class="dropdown-item d-flex align-items-center">
+                                                        <i class="ti ti-file-text me-2"></i> Voir bulletin
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);"
+                                                       class="dropdown-item d-flex align-items-center js-recalculate-item"
+                                                       data-bs-toggle="modal" data-bs-target="#recalculateModal"
+                                                       data-id="${row.id}"
+                                                       data-allowances="${row.allowances}"
+                                                       data-deductions="${row.deductions}">
+                                                        <i class="ti ti-calculator me-2"></i> Recalculer
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>`;
+                                }
+                            }
+                        ],
+                drawCallback: function () {
+                    $('#payrollItemList tbody tr.pre-load').remove();
+                            const api = this.api();
+                            const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                            if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+                            $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                            $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+
+                            const info = api.page.info();
+                            const msg = info.recordsDisplay
+                                ? `Affichage de ${info.start+1} à ${info.end} sur ${info.recordsDisplay.toLocaleString()} entrées`
+                                : (info.recordsTotal
+                                    ? `Affichage de 0 à 0 sur ${info.recordsTotal.toLocaleString()} entrées`
+                                    : 'Aucune entrée à afficher');
+                            $('#dt-info').text(msg);
+                        },
+                language: {
+                    emptyTable: "Aucun élément de paie trouvé",
+                    infoEmpty: "Aucune entrée à afficher"
+                }
+            });
+
+
+          $('#payrollItemList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
+            // Search functionality
+            $('#globalSearch').on('input', function () {
+                table.search($(this).val()).draw();
+            });
+
+            // Page length change
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Handle recalculate modal population
+            $('#recalculateModal').on('show.bs.modal', function (event) {
+                const button = $(event.relatedTarget);
+                const itemId = button.data('id');
+                const allowances = button.data('allowances');
+                const deductions = button.data('deductions');
+
+                const modal = $(this);
+                modal.find('#recalcItemId').val(itemId);
+                modal.find('#recalcAllowances').val(allowances);
+                modal.find('#recalcDeductions').val(deductions);
+            });
+
+            // Handle recalculate form submission
+            $('#recalculateForm').on('submit', function (e) {
+                e.preventDefault();
+                const form = $(this);
+                const itemId = form.find('#recalcItemId').val();
+                const allowances = form.find('#recalcAllowances').val();
+                const deductions = form.find('#recalcDeductions').val();
+                const token = $('form#__af input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '@Url.Action("RecalculateItem", "Payroll")',
+                    type: 'POST',
+                    data: {
+                        id: itemId,
+                        allowances: allowances,
+                        deductions: deductions,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire('Succès', response.message, 'success');
+                            $('#recalculateModal').modal('hide');
+                            table.ajax.reload(null, false);
+
+                            // Reload summary cards after recalculation
+                            $.get('@Url.Action("GetPayrollCardSummary", "Payroll")', { runId: @Model.PayrollRun.Id }, function(response) {
+                                if (response.success && response.data) {
+                                    loadPayrollCardSummary(response.data);
+                                }
+                            });
+                        } else {
+                            Swal.fire('Erreur', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Erreur', 'Une erreur est survenue lors du recalcul.', 'error');
+                    }
+                });
+            });
+        });
+    </script>
+}

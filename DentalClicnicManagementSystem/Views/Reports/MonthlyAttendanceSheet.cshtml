@@ -1,0 +1,276 @@
+﻿@* File: Views/Reports/MonthlyAttendanceSheet.cshtml *@
+@{
+    ViewData["Title"] = "Monthly Attendance Sheet";
+}
+
+<div class="content">
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3 pb-3 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Monthly Attendance Sheet</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export <i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item export-csv" href="javascript:void(0);" data-report="attendance">Download as CSV</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Total Staff</p>
+                            <h4 class="mb-0 fw-bold text-primary" id="totalStaff">0</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-primary text-primary rounded-2">
+                            <i class="ti ti-users fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Average Attendance</p>
+                            <h4 class="mb-0 fw-bold text-success" id="averageAttendance">0%</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-success text-success rounded-2">
+                            <i class="ti ti-chart-bar fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Total Absences</p>
+                            <h4 class="mb-0 fw-bold text-warning" id="totalAbsences">0</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-warning text-warning rounded-2">
+                            <i class="ti ti-user-off fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Late Arrivals</p>
+                            <h4 class="mb-0 fw-bold text-info" id="lateArrivals">0</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-info text-info rounded-2">
+                            <i class="ti ti-clock fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row row-gap-2">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Month</label>
+                        <input type="month" class="form-control" id="monthFilter" value="@DateTime.Today.ToString("yyyy-MM")">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="departmentFilter">
+                            <option value="">All Departments</option>
+                            <option value="Dental">Dental</option>
+                            <option value="Administration">Administration</option>
+                            <option value="Support">Support Staff</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Employee</label>
+                        <select class="form-select" id="employeeFilter">
+                            <option value="">All Employees</option>
+                            <option value="1">Dr. Sarah Wilson</option>
+                            <option value="2">Dr. Michael Chen</option>
+                            <option value="3">Lisa Rodriguez</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3 d-flex align-items-end">
+                        <button type="button" class="btn btn-dark w-100" id="applyFiltersBtn">
+                            <i class="ti ti-player-play me-1"></i>Run Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="attendanceTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Working Days</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                            <th>Late Arrivals</th>
+                            <th>Early Departures</th>
+                            <th>Attendance %</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Load initial data
+            loadAttendanceData();
+
+            // Apply filters when run button is clicked
+            $('#applyFiltersBtn').on('click', function () {
+                loadAttendanceData();
+            });
+
+            // Export to CSV
+            $('.export-csv').on('click', function () {
+                const params = getFilterParams();
+                const url = '@Url.Action("ExportMonthlyAttendanceCsv", "Reports")?' + $.param(params);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+
+            function loadAttendanceData() {
+                const params = getFilterParams();
+                $.ajax({
+                    url: '@Url.Action("GetMonthlyAttendanceData", "Reports")',
+                    type: 'GET',
+                    data: params,
+                    success: function (response) {
+                        if (response.summary && response.data) {
+                            updateSummary(response.summary);
+                            populateTable(response.data);
+                        } else {
+                            showError('Invalid data received from server');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Error loading attendance data: ' + error);
+                    }
+                });
+            }
+
+            function getFilterParams() {
+                return {
+                    month: $('#monthFilter').val(),
+                    department: $('#departmentFilter').val(),
+                    employeeId: $('#employeeFilter').val()
+                };
+            }
+
+            function updateSummary(summary) {
+                $('#totalStaff').text(summary.totalStaff);
+                $('#averageAttendance').text(summary.averageAttendance + '%');
+                $('#totalAbsences').text(summary.totalAbsences);
+                $('#lateArrivals').text(summary.lateArrivals);
+            }
+
+            function populateTable(data) {
+                const tbody = $('#attendanceTable tbody');
+                tbody.empty();
+
+                if (!data || data.length === 0) {
+                    tbody.append('<tr><td colspan="9" class="text-center">No attendance data found</td></tr>');
+                    return;
+                }
+
+                data.forEach(function (item) {
+                    const attendancePercentage = item.attendancePercentage !== undefined
+                        ? item.attendancePercentage
+                        : ((item.present / item.workingDays) * 100).toFixed(1);
+
+                    const statusBadge = attendancePercentage >= 95 ? 'success' :
+                                       attendancePercentage >= 90 ? 'warning' : 'danger';
+
+                    const row = `
+                        <tr>
+                            <td><strong>${escapeHtml(item.employeeName)}</strong></td>
+                            <td><span class="badge bg-soft-info">${escapeHtml(item.department)}</span></td>
+                            <td>${item.workingDays}</td>
+                            <td><span class="text-success fw-bold">${item.present}</span></td>
+                            <td><span class="text-danger">${item.absent}</span></td>
+                            <td>${item.lateArrivals}</td>
+                            <td>${item.earlyDepartures}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                        <div class="progress-bar bg-${statusBadge}" style="width: ${attendancePercentage}%"></div>
+                                    </div>
+                                    <span class="fw-bold text-${statusBadge}">${attendancePercentage}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-${statusBadge}">
+                                    ${attendancePercentage >= 95 ? 'Excellent' : attendancePercentage >= 90 ? 'Good' : 'Needs Improvement'}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
+
+            function escapeHtml(unsafe) {
+                if (!unsafe) return '';
+                return unsafe
+                    .toString()
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "'");
+            }
+
+            function showError(message) {
+                alert(message);
+            }
+        });
+    </script>
+}

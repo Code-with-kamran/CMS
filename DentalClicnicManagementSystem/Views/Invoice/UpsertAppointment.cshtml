@@ -1,0 +1,262 @@
+﻿@inject CMS.Services.ICurrencyService CurrencyService
+@model CMS.ViewModels.InvoiceUpsertViewModel
+
+@{
+    ViewData["Title"] = Model.Invoice.Id == 0 ? "Add Appointment Invoice" : "Edit Appointment Invoice";
+    var currencySymbol = await CurrencyService.GetCurrentCurrencySymbolAsync();
+}
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- Start Page Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-0 d-flex align-items-center">
+                        <a asp-action="Index"><i class="ti ti-chevron-left me-1 fs-14"></i>Invoices</a>
+                    </h6>
+                </div>
+            </div>
+            <!-- End Page Header -->
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="fw-bold m-0">@ViewData["Title"]</h5>
+                    <span class="badge bg-info">Appointment Invoice</span>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Upsert" method="post" id="invoiceForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Invoice.Id" />
+                        <input type="hidden" asp-for="Invoice.InvoiceType" value="@((int)InvoiceType.Appointment)" />
+                        <input type="hidden" asp-for="Invoice.AppointmentId" />
+
+                        <div class="row">
+                            <!-- Patient Info -->
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Invoice.CustomerName" class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Patient Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="Invoice.CustomerName" type="text" class="form-control" />
+                                    <span asp-validation-for="Invoice.CustomerName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Invoice.CustomerEmail" class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Email <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="Invoice.CustomerEmail" type="email" class="form-control" />
+                                    <span asp-validation-for="Invoice.CustomerEmail" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Doctor Selection -->
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Doctor <span class="text-danger">*</span>
+                                    </label>
+                                    <select asp-for="Invoice.DoctorId" asp-items="Model.Doctors" class="form-control" id="doctorDropdown">
+                                        <option value="">Select Doctor</option>
+                                    </select>
+                                    <span asp-validation-for="Invoice.DoctorId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Service Type -->
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Service Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control" id="serviceTypeDropdown">
+                                        <option value="">Select Service Type</option>
+                                        <option value="General">General Consultation</option>
+                                        <option value="Specialist">Specialist Consultation</option>
+                                        <option value="Emergency">Emergency Consultation</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Consultation Fee -->
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Consultation Fee <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" id="consultationFee"
+                                           asp-for="Invoice.Items[0].UnitPrice" step="0.01" readonly />
+                                </div>
+                            </div>
+
+                            <!-- Hidden fields for consultation item -->
+                            <input type="hidden" asp-for="Invoice.Items[0].Id" />
+                            <input type="hidden" asp-for="Invoice.Items[0].Description" id="serviceDescription" value="Consultation Fee" />
+                            <input type="hidden" asp-for="Invoice.Items[0].Quantity" value="1" />
+
+                            <!-- Date Fields -->
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Invoice.IssueDate" class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Invoice Date <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="Invoice.IssueDate" class="form-control" type="date" />
+                                    <span asp-validation-for="Invoice.IssueDate" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Invoice.DueDate" class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Due Date <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="Invoice.DueDate" class="form-control" type="date" />
+                                    <span asp-validation-for="Invoice.DueDate" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Address Fields -->
+                            <div class="col-lg-12 col-md-12">
+                                <div class="mb-3">
+                                    <label asp-for="Invoice.CustomerAddress" class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Patient Address <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea asp-for="Invoice.CustomerAddress" class="form-control" rows="3"></textarea>
+                                    <span asp-validation-for="Invoice.CustomerAddress" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Payment Status -->
+                            <div class="col-lg-6 col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Invoice.status" class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Payment Status <span class="text-danger">*</span>
+                                    </label>
+                                    <select asp-for="Invoice.status" class="form-control">
+                                        <option value="Draft">Draft</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Overdue">Overdue</option>
+                                    </select>
+                                    <span asp-validation-for="Invoice.status" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Totals -->
+                            <div class="col-lg-8"></div>
+                            <div class="col-lg-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h6 class="fs-14 fw-normal text-dark">SubTotal</h6>
+                                    <h6 class="fs-14 fw-semibold text-dark" id="subTotalDisplay">
+                                        @currencySymbol@Model.Invoice.SubTotal.ToString("N2")
+                                    </h6>
+                                    <input type="hidden" asp-for="Invoice.SubTotal" id="subTotalInput" />
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label asp-for="Invoice.Tax" class="fs-14 fw-normal text-dark">Tax</label>
+                                    <input asp-for="Invoice.Tax" type="number" step="0.01"
+                                           class="form-control w-auto text-end" style="max-width: 100px;" id="taxInput" />
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label asp-for="Invoice.Discount" class="fs-14 fw-normal text-dark">Discount</label>
+                                    <input asp-for="Invoice.Discount" type="number" step="0.01"
+                                           class="form-control w-auto text-end" style="max-width: 100px;" id="discountInput" />
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h6 class="fs-18 fw-bold">Total</h6>
+                                    <h6 class="fs-18 fw-bold" id="totalDisplay">
+                                        @currencySymbol@Model.Invoice.Total.ToString("N2")
+                                    </h6>
+                                    <input type="hidden" asp-for="Invoice.Total" id="totalInput" />
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-lg-12 col-md-12">
+                                <div class="mb-3">
+                                    <label asp-for="Invoice.Notes" class="form-label mb-1 text-dark fs-14 fw-medium">
+                                        Notes
+                                    </label>
+                                    <textarea asp-for="Invoice.Notes" rows="3" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex gap-2 align-items-center justify-content-end mb-0">
+                        <a asp-action="Index" class="btn btn-md bg-light text-dark fs-13 fw-medium rounded">Cancel</a>
+                        <button type="submit" form="invoiceForm" class="btn btn-md btn-primary fs-13 fw-medium rounded">
+                            Save Invoice
+                        </button>
+                        <button type="button" id="printThermalBtn" class="btn btn-md btn-success fs-13 fw-medium rounded">
+                            <i class="ti ti-printer me-1"></i>Print Thermal Receipt
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const currencySymbol = '@Html.Raw(currencySymbol)';
+            var doctorCharges = @Html.Raw(Json.Serialize(Model.ConsultationCharge));
+
+            // Doctor and service type handling
+            $('#doctorDropdown').on('change', function() {
+                var selectedDoctorId = parseInt($(this).val());
+                updateConsultationFee();
+            });
+
+            $('#serviceTypeDropdown').on('change', function() {
+                updateConsultationFee();
+            });
+
+            function updateConsultationFee() {
+                var selectedDoctorId = parseInt($('#doctorDropdown').val());
+                var selectedServiceType = $('#serviceTypeDropdown').val();
+
+                if (selectedDoctorId && selectedServiceType && doctorCharges[selectedDoctorId]) {
+                    var fee = doctorCharges[selectedDoctorId][selectedServiceType] || 0;
+                    $('#consultationFee').val(fee);
+                    $('#serviceDescription').val(selectedServiceType + ' Consultation Fee');
+                    calculateTotals();
+                }
+            }
+
+            // Calculate totals
+            function calculateTotals() {
+                var consultationFee = parseFloat($('#consultationFee').val()) || 0;
+                var tax = parseFloat($('#taxInput').val()) || 0;
+                var discount = parseFloat($('#discountInput').val()) || 0;
+                var total = consultationFee + tax - discount;
+
+                $('#subTotalDisplay').text(currencySymbol + consultationFee.toFixed(2));
+                $('#subTotalInput').val(consultationFee.toFixed(2));
+                $('#totalDisplay').text(currencySymbol + total.toFixed(2));
+                $('#totalInput').val(total.toFixed(2));
+            }
+
+            $('#taxInput, #discountInput').on('input', calculateTotals);
+
+            // Print thermal receipt
+            $('#printThermalBtn').click(function() {
+                var invoiceId = $('input[name="Invoice.Id"]').val();
+                if (invoiceId && invoiceId > 0) {
+                    window.open('/Invoice/ThermalReceipt/' + invoiceId, '_blank', 'width=400,height=600');
+                } else {
+                    alert('Please save the invoice first before printing.');
+                }
+            });
+
+            // Initial calculation
+            calculateTotals();
+        });
+    </script>
+}

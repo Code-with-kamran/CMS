@@ -163,6 +163,8 @@
         }
     </style>
  *@
+
+@* 
 @model CMS.ViewModels.SettingsViewModel
 
 <form id="__af" method="post" style="display:none">
@@ -208,8 +210,7 @@
                                         <select class="form-select" id="DefaultCurrency" name="DefaultCurrency" required>
                                             @foreach (var currency in Model.Currencies)
                                             {
-                                                @* var isSelected = Model.Settings.DefaultCurrency == currency.Name;
-                                                <option value="@currency.Name" selected="@isSelected">@currency.Name</option> *@
+                                                @
                                                 <option value="@currency.Name" selected="@(Model.Settings.DefaultCurrency == currency.Name)">@currency.Name</option>
 
                                             }
@@ -268,24 +269,7 @@
         </div>
     </div>
 </div>
-
-
-<!-- In any view -->
-<div class="current-settings">
-
-
-
-    <span class="badge bg-primary current-currency">Loading...</span>
-    <span class="badge bg-success current-payment">Loading...</span>
-    <span class="badge bg-info current-hours">Loading...</span>
-</div>
- <!-- Add this line to render the Styles section -->
-@await Component.InvokeAsync("DefaultSettings", new { displayType = "full" })
-@await Component.InvokeAsync("DefaultSettings", new { displayType = "compact" })
-@await Component.InvokeAsync("DefaultSettings", new { displayType = "inline" })
-
-
-    <style>
+<style>
         .settings-group {
             padding: 1.5rem;
             border: 1px solid #e9ecef;
@@ -321,8 +305,7 @@
             connection.start().then(() => {
                 connection.invoke("JoinSettingsGroup");
             });
-
-            // Listen for settings updates
+// Listen for settings updates
             connection.on("SettingsUpdated", function (settings) {
                 // Update all currency/payment displays across the page
                 $('.current-currency').text(settings.defaultCurrency);
@@ -376,6 +359,210 @@
                     },
                     error: function() {
                         Swal.fire('Error', 'Failed to save settings.', 'error');
+                    },
+                    complete: function() {
+                        spinner.hide();
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+} *@
+
+@model CMS.ViewModels.SettingsViewModel
+
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- En-tête de Page -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">@ViewData["Title"]</h4>
+                    <p class="text-muted mb-0 fs-14">Configurer les préférences par défaut du système</p>
+                </div>
+                <div class="text-end">
+                    <button type="button" class="btn btn-primary ms-2 fs-13 btn-md" id="saveSettingsBtn">
+                        <span class="spinner-border spinner-border-sm me-2" style="display: none;"></span>
+                        <i class="ti ti-device-floppy me-1"></i>Enregistrer les Paramètres
+                    </button>
+                </div>
+            </div>
+
+            <!-- Carte des Paramètres -->
+            <div class="card">
+                <div class="card-body">
+                    <form id="settingsForm">
+                        <div class="row g-4">
+                            <!-- Section Devise par Défaut -->
+                            <div class="col-md-6">
+                                <div class="settings-group">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="settings-icon me-3">
+                                            <i class="fas fa-money-bill-wave text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Devise par Défaut</h6>
+                                            <small class="text-muted">Devise principale pour les transactions</small>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="DefaultCurrency" class="form-label">Devise <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="DefaultCurrency" name="DefaultCurrency" required>
+                                            @foreach (var currency in Model.Currencies)
+                                            {
+                                                <option value="@currency.Name" selected="@(Model.Settings.DefaultCurrency == currency.Name)">@currency.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section Méthode de Paiement par Défaut -->
+                            <div class="col-md-6">
+                                <div class="settings-group">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="settings-icon me-3">
+                                            <i class="ti ti-credit-card text-success"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Méthode de Paiement par Défaut</h6>
+                                            <small class="text-muted">Méthode de paiement principale pour les transactions</small>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="DefaultPaymentMethod" class="form-label">Méthode de Paiement <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="DefaultPaymentMethod" name="DefaultPaymentMethod" required>
+                                            @foreach (var paymentMethod in Model.PaymentMethods)
+                                            {
+                                                var isSelected = Model.Settings.DefaultPaymentMethod == paymentMethod.Name;
+                                                <option value="@paymentMethod.Name" selected="@isSelected">@paymentMethod.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section Heures d'Ouverture -->
+                            <div class="col-12">
+                                <div class="settings-group">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="settings-icon me-3">
+                                            <i class="ti ti-clock text-info"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Heures d'Ouverture</h6>
+                                            <small class="text-muted">Heures d'ouverture par défaut de l'établissement</small>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="WorkingHours" class="form-label">Heures d'Ouverture <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="WorkingHours" name="WorkingHours" value="@Model.Settings.WorkingHours" required placeholder="ex: 09:00-17:00" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .settings-group {
+        padding: 1.5rem;
+        border: 1px solid #e9ecef;
+        border-radius: 0.5rem;
+        background: #fafbfc;
+        height: 100%;
+    }
+
+    .settings-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(var(--bs-primary-rgb), 0.1);
+        border-radius: 0.5rem;
+        font-size: 1.2rem;
+    }
+</style>
+
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script>
+        $(function () {
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+
+            // Connexion SignalR
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/settingsHub")
+                .build();
+
+            connection.start().then(() => {
+                connection.invoke("JoinSettingsGroup");
+            });
+
+            // Écouter les mises à jour des paramètres
+            connection.on("SettingsUpdated", function (settings) {
+                // Mettre à jour tous les affichages de devise/paiement sur la page
+                $('.current-currency').text(settings.defaultCurrency);
+                $('.current-payment').text(settings.defaultPaymentMethod);
+                $('.current-hours').text(settings.workingHours);
+
+                // Actualiser les DataTables s'ils existent
+                if ($.fn.DataTable.isDataTable('#currencyList')) {
+                    $('#currencyList').DataTable().ajax.reload();
+                }
+                if ($.fn.DataTable.isDataTable('#paymentMethodList')) {
+                    $('#paymentMethodList').DataTable().ajax.reload();
+                }
+
+                // Afficher la notification de succès
+                Swal.fire({
+                    title: 'Paramètres Mis à Jour !',
+                    text: 'Les paramètres par défaut ont été mis à jour dans tout le système.',
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            });
+
+            // Enregistrer les paramètres
+            $('#saveSettingsBtn').on('click', function() {
+                const submitBtn = $(this);
+                const spinner = submitBtn.find('.spinner-border');
+
+                spinner.show();
+                submitBtn.prop('disabled', true);
+
+                const formData = {
+                    DefaultCurrency: $('#DefaultCurrency').val(),
+                    DefaultPaymentMethod: $('#DefaultPaymentMethod').val(),
+                    WorkingHours: $('#WorkingHours').val().trim()
+                };
+
+                $.ajax({
+                    url: '@Url.Action("Index")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: { 'RequestVerificationToken': token },
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        if (response.status) {
+                            Swal.fire('Succès !', response.message, 'success');
+                        } else {
+                            Swal.fire('Erreur', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Erreur', 'Échec de l\'enregistrement des paramètres.', 'error');
                     },
                     complete: function() {
                         spinner.hide();

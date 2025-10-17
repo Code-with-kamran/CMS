@@ -1,4 +1,4 @@
-﻿@model CMS.ViewModels.PublicAppointmentVM
+﻿@* @model CMS.ViewModels.PublicAppointmentVM
 @{
     ViewData["Title"] = "Book Appointment";
     Layout = null;
@@ -186,6 +186,205 @@
                     <div class="col-12 mt-3 d-flex justify-content-between align-items-center">
                         <button type="submit" class="btn btn-primary">
                             Book Now
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html> *@
+
+
+@model CMS.ViewModels.PublicAppointmentVM
+@{
+    ViewData["Title"] = "Prendre Rendez-vous";
+    Layout = null;
+    var today = DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/assets/img/CABINET-DENTAIRE-CORVIL.png">
+    <!-- Apple Icon -->
+    <link rel="apple-touch-icon" href="~/assets/img/apple-icon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+    <!-- Datetimepicker CSS -->
+    <!-- Daterangepikcer CSS -->
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
+
+
+    <!-- Main CSS -->
+
+    <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6fa;
+        }
+
+        .appointment-container {
+            display: flex;
+            min-height: 100vh;
+            background-color: white;
+        }
+
+        .left-panel {
+            flex: 1;
+            min-height: 100%;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+        }
+
+        .submit-btn {
+            border-radius: 10px;
+            padding: 10px 25px;
+        }
+
+
+
+        @@media (max-width: 768px) {
+            .appointment-container {
+                flex-direction: column;
+            }
+
+            .left-panel {
+                height: 250px;
+            }
+
+            .right-panel {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="appointment-container">
+        <!-- Illustration côté gauche -->
+        <!-- Illustration côté gauche -->
+        <div class="col-12 col-md-4 d-flex justify-content-center align-items-center mx-auto mb-3 mb-md-0">
+            <img src="~/assets/img/CABINET-DENTAIRE-CORVIL.png"
+                 alt="Logo"
+                 class="img-fluid w-75" />
+        </div>
+
+
+        <!-- Formulaire côté droit -->
+        <div class="right-panel">
+
+
+
+            <h2 class="form-title">Planifiez Votre Rendez-vous avec des Experts de Confiance</h2>
+            <p class="form-subtitle">Nous avons les meilleurs spécialistes de votre région. Qualité, garantie et professionnalisme sont notre slogan !</p>
+
+            <form asp-action="Index" method="post" id="bookForm">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <!-- Nom Complet -->
+                    <div class="col-md-6">
+                        <input asp-for="FullName" class="form-control" placeholder="Votre nom complet" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <!-- Spécialisation Préférée (Type d'appareil) -->
+                    <div class="col-md-6">
+                        <select asp-for="PreferredSpecialization" asp-items="Model.SpecializationOptions" class="form-select">
+                            <option value="">Choisir le type d'appareil</option>
+                        </select>
+                        <span asp-validation-for="PreferredSpecialization" class="text-danger"></span>
+                    </div>
+
+                    <!-- Date Préférée -->
+                    <div class="col-md-6">
+                        <input asp-for="PreferredDate" type="date" class="form-control" min="@today" />
+                        <span asp-validation-for="PreferredDate" class="text-danger"></span>
+                    </div>
+
+                    <!-- Heure Préférée -->
+                    <div class="col-md-6">
+                        <input asp-for="PreferredTime" type="time" class="form-control" />
+                        <span asp-validation-for="PreferredTime" class="text-danger"></span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <input asp-for="Email" type="email" class="form-control" placeholder="Adresse email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <!-- Numéro de Téléphone -->
+                    <div class="col-md-6">
+                        <input asp-for="PhoneNumber" type="tel" class="form-control" placeholder="Numéro de téléphone" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <!-- Genre -->
+                    <div class="col-md-6">
+                        <select asp-for="Gender" asp-items="Model.GenderOptions" class="form-select">
+                            <option value="">Sélectionner le genre</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+
+                    <!-- Date de Naissance -->
+                    <div class="col-md-6">
+                        <input asp-for="DateOfBirth" type="date" class="form-control" max="@today" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+
+                    <!-- Adresse -->
+                    <div class="col-md-6">
+                        <input asp-for="Address" class="form-control" placeholder="Adresse" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <!-- Message / Notes -->
+                    <div class="col-12">
+                        <textarea asp-for="Notes" rows="3" class="form-control" placeholder="Veuillez décrire votre problème"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <!-- Soumettre -->
+                    <div class="col-12 mt-3 d-flex justify-content-between align-items-center">
+                        <button type="submit" class="btn btn-primary">
+                            Réserver Maintenant
                         </button>
                     </div>
                 </div>

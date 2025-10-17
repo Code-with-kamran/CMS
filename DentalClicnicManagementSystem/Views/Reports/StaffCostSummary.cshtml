@@ -1,0 +1,276 @@
+﻿@* File: Views/Reports/StaffCostSummary.cshtml *@
+@{
+    ViewData["Title"] = "Staff Cost Summary Report";
+}
+
+<div class="content">
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3 pb-3 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Staff Cost Summary Report</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export <i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item export-csv" href="javascript:void(0);" data-report="staffcostsummary">Download as CSV</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Total Monthly Cost</p>
+                            <h4 class="mb-0 fw-bold text-primary" id="totalMonthlyCost">$0.00</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-primary text-primary rounded-2">
+                            <i class="ti ti-calculator fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Total Staff</p>
+                            <h4 class="mb-0 fw-bold text-info" id="totalStaff">0</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-info text-info rounded-2">
+                            <i class="ti ti-users fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Average Salary</p>
+                            <h4 class="mb-0 fw-bold text-success" id="averageSalary">$0.00</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-success text-success rounded-2">
+                            <i class="ti ti-coin fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Benefits Cost</p>
+                            <h4 class="mb-0 fw-bold text-warning" id="benefitsCost">$0.00</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-warning text-warning rounded-2">
+                            <i class="ti ti-heart fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row row-gap-2">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Month</label>
+                        <input type="month" class="form-control" id="monthFilter" value="@DateTime.Today.ToString("yyyy-MM")">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="departmentFilter">
+                            <option value="">All Departments</option>
+                            <option value="Dental">Dental</option>
+                            <option value="Administration">Administration</option>
+                            <option value="Support">Support Staff</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Employment Type</label>
+                        <select class="form-select" id="employmentTypeFilter">
+                            <option value="">All Types</option>
+                            <option value="FullTime">Full Time</option>
+                            <option value="PartTime">Part Time</option>
+                            <option value="Contract">Contract</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3 d-flex align-items-end">
+                        <button type="button" class="btn btn-dark w-100" id="applyFiltersBtn">
+                            <i class="ti ti-player-play me-1"></i>Run Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="staffCostTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Staff Member</th>
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th>Employment Type</th>
+                            <th>Base Salary</th>
+                            <th>Benefits</th>
+                            <th>Bonuses</th>
+                            <th>Total Cost</th>
+                            <th>Cost %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Load initial data
+            loadStaffCostData();
+
+            // Apply filters
+            $('#applyFiltersBtn').on('click', function () {
+                loadStaffCostData();
+            });
+
+            function loadStaffCostData() {
+                const params = getFilterParams();
+
+                // For demo purposes - replace with actual API call
+                const demoData = getDemoStaffCostData();
+                updateSummary(demoData.summary);
+                populateTable(demoData.data);
+            }
+
+            function getFilterParams() {
+                return {
+                    month: $('#monthFilter').val(),
+                    department: $('#departmentFilter').val(),
+                    employmentType: $('#employmentTypeFilter').val()
+                };
+            }
+
+            function updateSummary(summary) {
+                $('#totalMonthlyCost').text('$' + summary.totalMonthlyCost.toFixed(2));
+                $('#totalStaff').text(summary.totalStaff);
+                $('#averageSalary').text('$' + summary.averageSalary.toFixed(2));
+                $('#benefitsCost').text('$' + summary.benefitsCost.toFixed(2));
+            }
+
+            function populateTable(data) {
+                const tbody = $('#staffCostTable tbody');
+                tbody.empty();
+
+                if (data.length === 0) {
+                    tbody.append('<tr><td colspan="9" class="text-center">No staff cost data found</td></tr>');
+                    return;
+                }
+
+                const totalCost = data.reduce((sum, item) => sum + item.totalCost, 0);
+
+                data.forEach(function (item) {
+                    const costPercentage = ((item.totalCost / totalCost) * 100).toFixed(1);
+                    const row = `
+                        <tr>
+                            <td><strong>${item.staffName}</strong></td>
+                            <td><span class="badge bg-soft-info">${item.department}</span></td>
+                            <td>${item.position}</td>
+                            <td><span class="badge bg-soft-${getEmploymentTypeBadge(item.employmentType)}">${item.employmentType}</span></td>
+                            <td>$${item.baseSalary.toFixed(2)}</td>
+                            <td>$${item.benefits.toFixed(2)}</td>
+                            <td>$${item.bonuses.toFixed(2)}</td>
+                            <td><strong class="text-primary">$${item.totalCost.toFixed(2)}</strong></td>
+                            <td><span class="badge bg-soft-dark">${costPercentage}%</span></td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
+
+            function getEmploymentTypeBadge(type) {
+                switch(type) {
+                    case 'FullTime': return 'success';
+                    case 'PartTime': return 'warning';
+                    case 'Contract': return 'info';
+                    default: return 'secondary';
+                }
+            }
+
+            // Demo data function
+            function getDemoStaffCostData() {
+                return {
+                    summary: {
+                        totalMonthlyCost: 45500.00,
+                        totalStaff: 8,
+                        averageSalary: 5687.50,
+                        benefitsCost: 8200.00
+                    },
+                    data: [
+                        {
+                            staffName: 'Dr. Sarah Wilson',
+                            department: 'Dental',
+                            position: 'Senior Dentist',
+                            employmentType: 'FullTime',
+                            baseSalary: 12000.00,
+                            benefits: 1800.00,
+                            bonuses: 1000.00,
+                            totalCost: 14800.00
+                        },
+                        {
+                            staffName: 'Dr. Michael Chen',
+                            department: 'Dental',
+                            position: 'Dentist',
+                            employmentType: 'FullTime',
+                            baseSalary: 8500.00,
+                            benefits: 1275.00,
+                            bonuses: 500.00,
+                            totalCost: 10275.00
+                        },
+                        {
+                            staffName: 'Lisa Rodriguez',
+                            department: 'Administration',
+                            position: 'Office Manager',
+                            employmentType: 'FullTime',
+                            baseSalary: 4500.00,
+                            benefits: 675.00,
+                            bonuses: 300.00,
+                            totalCost: 5475.00
+                        }
+                    ]
+                };
+            }
+        });
+    </script>
+}

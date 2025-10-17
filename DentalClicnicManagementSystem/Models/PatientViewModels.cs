@@ -1,25 +1,46 @@
 ﻿
 // File: Models/PatientViewModels/PatientProfileViewModel.cs
 using CMS.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 
 namespace CMS.ViewModels
 
 {
-   
+    public class PatientUpsertViewModel
+    {
+        public Patient Patient { get; set; } = new();
+
+        // For the Treatments card
+        public List<SelectListItem> AvailableTreatments { get; set; } = new();
+        public List<int> SelectedTreatmentIds { get; set; } = new();
+
+        // For the Medications card
+        public List<SelectListItem> AvailableMedications { get; set; } = new();
+        public List<InvoiceItem> InvoiceItems { get; set; } = new();
+    }
     public class PatientInfoViewModel
     {
         public int PatientId { get; set; }
         public string? FullName { get; set; }
         public string? Email { get; set; }
         public string? Gender { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateTimeOffset DateOfBirth { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
         public string? ProfileImageUrl { get; set; }
+        public DateTimeOffset VisitDate { get; set; }
+        public string MRN { get; set; } = string.Empty;
+        public string VisitId { get; set; } = string.Empty;
+        public string ChiefComplaint { get; set; } = string.Empty;
+        public List<string> HealthIndicators { get; set; } = new();
+        public int Age { get; internal set; }
     }
+
+
+
 
     // This is the main ViewModel for the entire page
     public class PatientProfileViewModel
@@ -43,7 +64,7 @@ namespace CMS.ViewModels
     public class DisplayNote
     {
         public string Content { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
         public string Source { get; set; } = string.Empty;
     }
 

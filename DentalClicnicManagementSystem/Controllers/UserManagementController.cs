@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//[Authorize(Roles = "Admin")] // Protect the entire controller
+[Authorize(Roles = "Admin")] // Protect the entire controller
 public class UserManagementController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -160,6 +160,11 @@ public class UserManagementController : Controller
 
         if (model.Id == 0) // Create
         {
+            if (string.IsNullOrEmpty(model.Password))
+            {
+                return Json(new { success = false, message = "Password is required." });
+            }
+
             var user = new User
             {
                 Username = model.Email,
@@ -167,21 +172,17 @@ public class UserManagementController : Controller
                 FullName = model.FullName,
                 Role = model.Role,
                 IsActive = model.IsActive,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                PasswordHash = model.Password  // Directly store the password
             };
-
-            var tempPassword = GenerateRandomPassword();
-            // WARNING: Storing plain text password as requested. This is NOT secure.
-            // In a real application, you would use a hashing library like BCrypt.Net.
-            user.PasswordHash = tempPassword;
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             await _emailSender.SendAsync(user.Email, "Your New Account",
-                $"Welcome! Your temporary password is: <strong>{tempPassword}</strong><br/>Please change it after your first login.");
+                $"Welcome! Your temporary password is: <strong>{model.Password}</strong><br/>Please change it after your first login.");
 
-            return Json(new { success = true, message = "User created successfully! Temporary password sent." });
+            return Json(new { success = true, message = "User created successfully! Password sent." });
         }
         else // Edit
         {
@@ -194,6 +195,11 @@ public class UserManagementController : Controller
             user.IsActive = model.IsActive;
             user.Role = model.Role;
             user.UpdatedAt = DateTime.UtcNow;
+
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                user.PasswordHash = model.Password;  // Update password if provided
+            }
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();

@@ -1,6 +1,7 @@
 ﻿using CMS.Data; // Your DbContext namespace
 using CMS.Models;
 using CMS.ViewModels; // Your ViewModels namespace
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,7 +24,7 @@ public class AdminController : Controller
             DoctorCount = await _context.Doctors.CountAsync(),
             PatientCount = await _context.Patients.CountAsync(),
             AppointmentCount = await _context.Appointments.Where(a => a.AppointmentDate.Month == DateTime.Now.Month).CountAsync(),
-            Revenue = await _context.Invoices.Where(i => i.Status != "Paid").SumAsync(i => i.Total)
+            Revenue = await _context.Invoices.Where(i => i.status != "Paid").SumAsync(i => i.Total)
         };
         return View(stats);
     }
@@ -181,7 +182,18 @@ public class AdminController : Controller
 
 
 
+    [HttpGet]
+    public async Task<IActionResult> GetDayAppointments(DateTime date)
+    {
+        var list = await _context.Appointments
+                                 .Include(a => a.Patient)
+                                 .Include(a => a.Doctor)
+                                 .Where(a => a.AppointmentDate.Date == date.Date)
+                                 .OrderBy(a => a.AppointmentDate)
+                                 .ToListAsync();
 
+        return PartialView("~/Views/Shared/Partials/_AppointmentList.cshtml", list);
+    }
 
     // In: Controllers/AdminDashboardController.cs
 

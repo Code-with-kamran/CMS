@@ -54,346 +54,6 @@
                                     <th>Phone</th>
                                     <th>Email</th>
                                     <th>Created On</th>
-                                    <th >Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-
-                    <!-- Footer: info + pager -->
-                    <div class="row align-items-center g-2 mt-2">
-                        <div class="col-12 col-sm-6">
-                            <div class="small text-muted" id="dt-info"></div>
-                        </div>
-                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
-                            <div id="dt-pager"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<style>
-    /* ===== Truncation helpers ===== */
-    .truncate {
-        display: inline-block;
-        vertical-align: middle;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .truncate-180 {
-        max-width: 180px;
-    }
-
-    .truncate-220 {
-        max-width: 220px;
-    }
-
-    .truncate-260 {
-        max-width: 260px;
-    }
-
-    /* Compact, stable headers */
-    #doctorList thead th {
-        white-space: nowrap;
-    }
-
-    .table tbody td {
-        vertical-align: middle;
-    }
-
-    /* Mobile tweaks */
-    @@media (max-width:576px) {
-        #doctorList td,#doctorList th
-
-    {
-        font-size: .92rem;
-    }
-
-    .avatar img {
-        width: 36px !important;
-        height: 36px !important;
-    }
-
-    }
-
-    /* Hide built-in DT controls (we use our own) */
-    .dataTables_length, .dataTables_filter {
-        display: none !important;
-    }
-
-    /* Pager cosmetics (Bootstrap 5 renderer) */
-    #dt-pager .pagination {
-        margin: 0;
-        gap: .25rem;
-        flex-wrap: wrap;
-    }
-
-    #dt-pager .page-item .page-link {
-        border-radius: .6rem;
-        padding: .4rem .65rem;
-        line-height: 1;
-        border-color: var(--bs-gray-300);
-    }
-
-        #dt-pager .page-item .page-link:focus {
-            box-shadow: none;
-        }
-
-    #dt-pager .page-item.active .page-link {
-        background: var(--primary);
-        border-color: var(--primary);
-        color: #fff;
-        box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb,13,110,253), .15);
-    }
-
-    #dt-pager .page-item.disabled .page-link {
-        opacity: .6;
-    }
-</style>
-
-@section Scripts {
-    <!-- DataTables core + Bootstrap 5 + Responsive -->
-    <script src="~/assets/js/jquery.dataTables.min.js"></script>
-    <script src="~/assets/js/dataTables.bootstrap5.min.js"></script>
-    <script src="~/assets/js/dataTables.responsive.min.js"></script>
-    <script src="~/assets/js/responsive.bootstrap5.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        $(function () {
-            const token = $('#__af input[name="__RequestVerificationToken"]').val();
-
-            // Tear down if already bound
-            if ($.fn.DataTable.isDataTable('#doctorList')) {
-                $('#doctorList').DataTable().destroy();
-            }
-
-            const esc = (s) => (s == null ? '' : String(s));
-
-            const table = $('#doctorList').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: { url: '@Url.Action("GetDoctorsData", "Doctor")', type: 'GET' },
-
-                // Build table + info + pager (we will move them)
-                dom: 'rtip',
-                paging: true,
-                pagingType: 'simple_numbers',     // cleaner: Prev 1 2 3 Next (no First/Last)
-                info: true,
-                order: [[0, 'asc']],
-                autoWidth: false,
-
-                responsive: {
-                    details: { type: 'inline', target: 'tr' },
-                    breakpoints: [
-                        { name: 'desktop', width: Infinity },
-                        { name: 'laptop',  width: 1200 },
-                        { name: 'tablet',  width: 992  },
-                        { name: 'phablet', width: 768  },
-                        { name: 'phone',   width: 576  },
-                        { name: 'tiny',    width: 0    }
-                    ]
-                },
-
-                columnDefs: [
-                    { targets: 0, responsivePriority: 1 },
-                    { targets: 5, responsivePriority: 2, className: 'text-center' },
-                    { targets: [2,3], responsivePriority: 3 },
-                    { targets: [1,4], responsivePriority: 4 }
-                ],
-                        columns: [
-            /* 0 Name & Designation */
-            {
-                data: 'fullName',
-                orderable: true,
-                render: function (data, type, row) {
-                    const img = row.profileImageUrl || '/uploads/doctors/default.jpg';
-                    return `
-                      <div class="d-flex align-items-center min-w-0">
-                        <a href="/Doctor/Details/${row.id}" class="avatar me-2">
-                          <img src="${img}" class="rounded-circle" style="width:40px;height:40px;" alt="Doctor">
-                        </a>
-                        <div class="min-w-0">
-                          <div class="fw-semibold text-truncate d-block">
-                            <a href="/Doctor/Details/${row.id}" class="text-primary">${esc(row.fullName)}</a>
-                          </div>
-                          <small class="text-muted small text-truncate d-block">${esc(row.designation || '')}</small>
-                        </div>
-                      </div>`;
-                }
-            },
-            /* 1 Specialty */
-            {
-                data: 'specialty',
-                orderable: true,
-                render: d => `<span class="text-truncate" title="${esc(d)}">${esc(d)}</span>`
-            },
-            /* 2 Phone */
-            {
-                data: 'phone',
-                orderable: false,
-                render: d => `<span class="text-truncate" title="${esc(d)}">${esc(d)}</span>`
-            },
-            /* 3 Email */
-            {
-                data: 'email',
-                orderable: false,
-                render: d => `<span class="text-truncate" title="${esc(d)}">${esc(d)}</span>`
-            },
-            /* 4 Created On */
-            {
-                data: 'addedDateTime',
-                orderable: true,
-                render: function (data) {
-                    if (!data || String(data).startsWith('0001-01-01')) return '';
-                    const d = new Date(data);
-                    return isNaN(d) ? '' :
-                           d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                }
-            },
-            /* 5 Actions (dropdown) */
-            {
-                data: null,
-                orderable: false,
-                className: 'text-center',
-                render: function (_data, _type, row) {
-                    return `
-                        <div class="dropdown d-inline-block">
-                            <a href="javascript:void(0);"
-                               class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
-                               data-bs-toggle="dropdown">
-                                <i class="ti ti-dots-vertical"></i>
-                            </a>
-                            <ul class="dropdown-menu p-2 dropdown-menu-end">
-                                <li>
-                                    <a href="/Doctor/Upsert/${row.id}" class="dropdown-item d-flex align-items-center">
-                                        <i class="ti ti-edit me-2"></i> Edit
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);"
-                                       class="dropdown-item d-flex align-items-center js-delete delete-btn-doctor"
-                                       data-url="/Doctor/Delete"
-                                       data-table="doctorList"
-                                       data-id="${row.id}"
-                                       data-name="${esc(row.fullName)}">
-                                        <i class="ti ti-trash me-2"></i> Delete
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>`;
-                }
-            }
-        ],
-       
-
-                // Move pager; write our own info string so it always shows
-                drawCallback: function () {
-                    const api = this.api();
-
-                    // move DT pager to our container
-                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
-                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
-
-                    // replace Prev/Next labels with chevrons (safer here after render)
-                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
-                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
-
-                    // robust info text
-                    const info = api.page.info(); // {start,end,recordsTotal,recordsDisplay,...}
-                    const msg = info.recordsDisplay
-                      ? `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
-                      : (info.recordsTotal
-                          ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
-                          : 'No entries to show');
-                    $('#dt-info').text(msg);
-                },
-
-                language: {
-                    emptyTable: "No doctors found",
-                    processing: "Loading..."
-                }
-            });
-
-            // External controls
-            $('#globalSearch').on('input', function () {
-                table.search(this.value).draw();
-            });
-            $('#pageLength').on('change', function () {
-                table.page.len(parseInt(this.value, 10)).draw();
-            });
-
-
-        
-         });
-    </script>
-} *@
-@{
-    ViewData["Title"] = "Doctors";
-}
-<form id="__af" method="post" style="display:none">
-    @Html.AntiForgeryToken()
-</form>
-
-<div class="main-wrapper">
-    <div class="page-wrapper m-0">
-        <div class="content">
-
-            <!-- Header -->
-            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
-                <div class="flex-grow-1">
-                    <h4 class="fw-bold mb-0">Doctor Grid</h4>
-                </div>
-                <div class="text-end">
-                    <a asp-controller="Doctor" asp-action="Upsert" class="btn btn-primary ms-2 fs-13 btn-md">
-                        <i class="ti ti-plus me-1"></i>New Doctor
-                    </a>
-                </div>
-            </div>
-
-            <!-- Card -->
-            <div class="card">
-                <div class="card-body">
-
-                    <!-- External controls -->
-                    <div class="row g-2 mb-3 align-items-center">
-                        <!-- page-length: hidden on mobile -->
-                        <div class="col-auto d-none d-sm-flex align-items-center">
-                            <label class="me-2 mb-0">Show</label>
-                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
-                                <option value="10" selected>10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                            <span class="ms-2">entries</span>
-                        </div>
-
-                        <!-- search: full width on mobile -->
-                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
-                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table id="doctorList" class="table table-hover align-middle w-100">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Name &amp; Designation</th>
-                                    <th>Specialty</th>
-                                    <th>Phone</th>
-                                    <th>Email</th>
-                                    <th>Created On</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -500,7 +160,6 @@
 </style>
 
 @section Scripts {
-   
 
     <script>
         $(function () {
@@ -514,7 +173,7 @@
             const esc = (s) => (s == null ? '' : String(s));
 
             const table = $('#doctorList').DataTable({
-                processing: true,
+                processing: false,
                 serverSide: true,
                 ajax: { url: '@Url.Action("GetDoctorsData", "Doctor")', type: 'GET' },
 
@@ -556,12 +215,12 @@
                             const img = row.profileImageUrl || '/uploads/doctors/default.jpg';
                             return `
                               <div class="d-flex align-items-center min-w-0">
-                                <a href="/Doctor/Details/${row.id}" class="avatar me-2">
+                                <a href="/Doctor/Profile/${row.id}" class="avatar me-2">
                                   <img src="${img}" class="rounded-circle" style="width:40px;height:40px;" alt="Doctor">
                                 </a>
                                 <div class="min-w-0">
                                   <div class="fw-semibold text-truncate d-block">
-                                    <a href="/Doctor/Details/${row.id}" class="text-primary">${esc(row.fullName)}</a>
+                                    <a href="/Doctor/Profile/${row.id}" class="text-primary">${esc(row.fullName)}</a>
                                   </div>
                                   <small class="text-muted small text-truncate d-block">${esc(row.designation || '')}</small>
                                 </div>
@@ -618,7 +277,7 @@
                                         </li>
                                         <li>
                                             <a href="javascript:void(0);"
-                                               class="dropdown-item d-flex align-items-center js-delete delete-btn-doctor"
+                                               class="dropdown-item d-flex align-items-center js-delete "
                                                data-url="/Doctor/Delete"
                                                data-table="doctorList"
                                                data-id="${row.id}"
@@ -634,6 +293,7 @@
 
                 // Move pager; write our own info string so it always shows
                 drawCallback: function () {
+                    $('#doctorList tbody tr.pre-load').remove()
                     const api = this.api();
 
                     // move DT pager to our container
@@ -655,11 +315,17 @@
                 },
 
                 language: {
-                    emptyTable: "No doctors found",
-                    processing: "Loading..."
+                    emptyTable: "No doctors found"
+                    
                 }
             });
 
+
+        $('#doctorList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
             // External controls
             $('#globalSearch').on('input', function () {
                 table.search(this.value).draw();
@@ -702,4 +368,373 @@
             });
         });
     </script>
+} *@
+@{
+    ViewData["Title"] = "Médecins";
 }
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+
+            <!-- Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Liste des Médecins</h4>
+                </div>
+                <div class="text-end">
+                    <a asp-controller="Doctor" asp-action="Upsert" class="btn btn-primary ms-2 fs-13 btn-md">
+                        <i class="ti ti-plus me-1"></i>Nouveau Médecin
+                    </a>
+                </div>
+            </div>
+
+            <!-- Card -->
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- External controls -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <!-- page-length: hidden on mobile -->
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Afficher</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entrées</span>
+                        </div>
+
+                        <!-- search: full width on mobile -->
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Rechercher" />
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="doctorList" class="table table-hover align-middle w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom &amp; Désignation</th>
+                                    <th>Spécialité</th>
+                                    <th>Téléphone</th>
+                                    <th>Email</th>
+                                    <th>Créé Le</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer: info + pager -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ===== Truncation helpers ===== */
+    .truncate {
+        display: inline-block;
+        vertical-align: middle;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .truncate-180 {
+        max-width: 180px;
+    }
+
+    .truncate-220 {
+        max-width: 220px;
+    }
+
+    .truncate-260 {
+        max-width: 260px;
+    }
+
+    /* Compact, stable headers */
+    #doctorList thead th {
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+    }
+
+    /* Mobile tweaks - FIXED SYNTAX */
+    @@media (max-width:576px) {
+        #doctorList td, #doctorList th {
+            font-size: .92rem;
+        }
+
+        .avatar img {
+            width: 36px !important;
+            height: 36px !important;
+        }
+    }
+
+    /* Hide built-in DT controls (we use our own) */
+    .dataTables_length, .dataTables_filter {
+        display: none !important;
+    }
+
+    /* Pager cosmetics (Bootstrap 5 renderer) */
+    #dt-pager .pagination {
+        margin: 0;
+        gap: .25rem;
+        flex-wrap: wrap;
+    }
+
+    #dt-pager .page-item .page-link {
+        border-radius: .6rem;
+        padding: .4rem .65rem;
+        line-height: 1;
+        border-color: var(--bs-gray-300);
+    }
+
+        #dt-pager .page-item .page-link:focus {
+            box-shadow: none;
+        }
+
+    #dt-pager .page-item.active .page-link {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+        box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb,13,110,253), .15);
+    }
+
+    #dt-pager .page-item.disabled .page-link {
+        opacity: .6;
+    }
+</style>
+
+@section Scripts {
+
+    <script>
+        $(function () {
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+
+            // Tear down if already bound
+            if ($.fn.DataTable.isDataTable('#doctorList')) {
+                $('#doctorList').DataTable().destroy();
+            }
+
+            const esc = (s) => (s == null ? '' : String(s));
+
+            const table = $('#doctorList').DataTable({
+                processing: false,
+                serverSide: true,
+                ajax: { url: '@Url.Action("GetDoctorsData", "Doctor")', type: 'GET' },
+
+                // Build table + info + pager (we will move them)
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',     // cleaner: Prev 1 2 3 Next (no First/Last)
+                info: true,
+                order: [[0, 'asc']],
+                autoWidth: false,
+
+                       responsive: {
+            details: { type: 'inline', target: 'tr' },
+            breakpoints: [
+                { name: 'desktop', width: Infinity },
+                { name: 'laptop',  width: 1200 },
+                { name: 'tablet',  width: 992  },
+                { name: 'phablet', width: 768  },
+                { name: 'phone',   width: 576  },
+                { name: 'tiny',    width: 0    }
+            ]
+        },
+
+
+
+                columnDefs: [
+                    { targets: 0, responsivePriority: 1 },
+                    { targets: 5, responsivePriority: 2, className: 'text-center' },
+                    { targets: [2,3], responsivePriority: 3 },
+                    { targets: [1,4], responsivePriority: 4 }
+                ],
+
+                columns: [
+                    /* 0 Name & Designation */
+                    {
+                        data: 'fullName',
+                        orderable: true,
+                        render: function (data, type, row) {
+                            const img = row.profileImageUrl || '/uploads/doctors/default.jpg';
+                            return `
+                              <div class="d-flex align-items-center min-w-0">
+                                <a href="/Doctor/Profile/${row.id}" class="avatar me-2">
+                                  <img src="${img}" class="rounded-circle" style="width:40px;height:40px;" alt="Doctor">
+                                </a>
+                                <div class="min-w-0">
+                                  <div class="fw-semibold text-truncate d-block">
+                                    <a href="/Doctor/Profile/${row.id}" class="text-primary">${esc(row.fullName)}</a>
+                                  </div>
+                                  <small class="text-muted small text-truncate d-block">${esc(row.designation || '')}</small>
+                                </div>
+                              </div>`;
+                        }
+                    },
+                    /* 1 Specialty */
+                    {
+                        data: 'specialty',
+                        orderable: true,
+                        render: d => `<span class="text-truncate" title="${esc(d)}">${esc(d)}</span>`
+                    },
+                    /* 2 Phone */
+                    {
+                        data: 'phone',
+                        orderable: false,
+                        render: d => `<span class="text-truncate" title="${esc(d)}">${esc(d)}</span>`
+                    },
+                    /* 3 Email */
+                    {
+                        data: 'email',
+                        orderable: false,
+                        render: d => `<span class="text-truncate" title="${esc(d)}">${esc(d)}</span>`
+                    },
+                    /* 4 Created On */
+                    {
+                        data: 'addedDateTime',
+                        orderable: true,
+                        render: function (data) {
+                            if (!data || String(data).startsWith('0001-01-01')) return '';
+                            const d = new Date(data);
+                            return isNaN(d) ? '' :
+                                   d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                        }
+                    },
+                    /* 5 Actions (dropdown) */
+                    {
+                        data: null,
+                        orderable: false,
+                        className: 'text-center',
+                        render: function (_data, _type, row) {
+                            return `
+                                <div class="dropdown d-inline-block">
+                                    <a href="javascript:void(0);"
+                                       class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
+                                       data-bs-toggle="dropdown">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                        <li>
+                                            <a href="/Doctor/Upsert/${row.id}" class="dropdown-item d-flex align-items-center">
+                                                <i class="ti ti-edit me-2"></i> Modifier
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);"
+                                               class="dropdown-item d-flex align-items-center js-delete "
+                                               data-url="/Doctor/Delete"
+                                               data-table="doctorList"
+                                               data-id="${row.id}"
+                                               data-name="${esc(row.fullName)}">
+                                                <i class="ti ti-trash me-2"></i> Supprimer
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    }
+                ],
+
+                // Move pager; write our own info string so it always shows
+                drawCallback: function () {
+                    $('#doctorList tbody tr.pre-load').remove()
+                    const api = this.api();
+
+                    // move DT pager to our container
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+
+                    // replace Prev/Next labels with chevrons (safer here after render)
+                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+
+                    // robust info text
+                    const info = api.page.info(); // {start,end,recordsTotal,recordsDisplay,...}
+                    const msg = info.recordsDisplay
+                      ? `Affichage de ${info.start + 1} à ${info.end} sur ${info.recordsDisplay.toLocaleString()} entrées`
+                      : (info.recordsTotal
+                          ? `Affichage de 0 à 0 sur ${info.recordsTotal.toLocaleString()} entrées`
+                          : 'Aucune entrée à afficher');
+                    $('#dt-info').text(msg);
+                },
+
+                language: {
+                    emptyTable: "Aucun médecin trouvé"
+
+                }
+            });
+
+        $('#doctorList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
+            // External controls
+            $('#globalSearch').on('input', function () {
+                table.search(this.value).draw();
+            });
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // DELETE HANDLER - THIS WAS MISSING IN YOUR DOCTOR VIEW
+            $(document).on('click', '.js-delete', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name') || 'ce médecin';
+
+                Swal.fire({
+                    title: `Supprimer ${name}?`,
+                    text: 'Vous ne pourrez pas revenir en arrière!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Oui, supprimer!'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        $.ajax({
+                            url: `/Doctor/Delete/${id}`,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            success: r => {
+                                if (r.status) {
+                                    Swal.fire('Supprimé', r.message, 'success');
+                                    table.ajax.reload(null, false);
+                                } else {
+                                    Swal.fire('Erreur', r.message || 'La suppression a échoué', 'error');
+                                }
+                            },
+                            error: () => Swal.fire('Erreur', 'Quelque chose s\'est mal passé', 'error')
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+

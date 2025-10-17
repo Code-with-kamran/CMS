@@ -5,18 +5,18 @@
 <form id="__af" method="post" style="display:none">
     @Html.AntiForgeryToken()
 </form>
-
 <div class="main-wrapper">
     <div class="page-wrapper m-0">
         <div class="content">
-
             <!-- Header -->
             <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
                 <div class="flex-grow-1">
                     <h4 class="fw-bold mb-0">Attendance Records</h4>
                 </div>
                 <div class="text-end">
-                    <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="modal" data-bs-target="#attendanceModal" data-url="@Url.Action("Upsert", "Attendance")">
+                    <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md"
+                       data-bs-toggle="modal" data-bs-target="#attendanceModal"
+                       data-url="@Url.Action("Upsert", "Attendance")">
                         <i class="ti ti-plus me-1"></i>New Record
                     </a>
                 </div>
@@ -25,10 +25,10 @@
             <!-- Card -->
             <div class="card">
                 <div class="card-body">
-
+                    <!-- Status Filter Tabs -->
+                    
                     <!-- External controls -->
                     <div class="row g-2 mb-3 align-items-center">
-                        <!-- page-length -->
                         <div class="col-auto d-none d-sm-flex align-items-center">
                             <label class="me-2 mb-0">Show</label>
                             <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
@@ -39,14 +39,40 @@
                             </select>
                             <span class="ms-2">entries</span>
                         </div>
-
-                        <!-- search -->
                         <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
                             <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
                         </div>
                     </div>
 
                     <div class="table-responsive">
+                        <ul class="nav nav-tabs nav-solid-primary mb-3">
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link active js-status-filter" data-status="all">
+                                    <i class="ti ti-list me-1"></i> All
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link js-status-filter" data-status="Present">
+                                    <i class="ti ti-check me-1"></i> Present
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link js-status-filter" data-status="Late">
+                                    <i class="ti ti-clock me-1"></i> Late
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link js-status-filter" data-status="Absent">
+                                    <i class="ti ti-x me-1"></i> Absent
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link js-status-filter" data-status="Leave">
+                                    <i class="ti ti-x me-1"></i> Leave
+                                </a>
+                            </li>
+                        </ul>
+
                         <table id="attendanceList" class="table table-hover align-middle w-100">
                             <thead class="table-light">
                                 <tr>
@@ -55,6 +81,7 @@
                                     <th>Date</th>
                                     <th>Check-in</th>
                                     <th>Check-out</th>
+                                    <th>Total Hours</th>
                                     <th>Status</th>
                                     <th>Note</th>
                                     <th>Actions</th>
@@ -73,10 +100,8 @@
                             <div id="dt-pager"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -90,66 +115,151 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Partial view content will be loaded here -->
+                <!-- partial view injected here -->
             </div>
         </div>
     </div>
 </div>
 
+
+    <style>
+        #attendanceList_processing {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+      /*   .nav-tabs .nav-link.active {
+            background-color: #405189;
+            border-color: #405189;
+            color: white;
+        }
+
+        .nav-tabs .nav-link {
+            color: #405189;
+            cursor: pointer;
+        }
+
+        .total-hours {
+            font-weight: 600;
+            color: #405189;
+        } */
+    </style>
+
+
 @section Scripts {
     <script>
         $(function () {
-            const table = myCodeDataTable(
-                'attendanceList',
-                '@Url.Action("GetAttendanceRecords", "Attendance")',
-                [
+            function esc(str) {
+                if (str == null) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#x27;');
+            }
+
+            function calculateTotalHours(checkIn, checkOut) {
+                if (!checkIn || !checkOut) return '-';
+                const checkInTime = new Date(`2000-01-01T${checkIn}`);
+                const checkOutTime = new Date(`2000-01-01T${checkOut}`);
+                const diffMs = checkOutTime - checkInTime;
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                return `${hours}h ${minutes}m`;
+            }
+
+            let currentStatus = 'all';
+
+            const attTable = $('#attendanceList').DataTable({
+                processing: false,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetAttendanceRecords", "Attendance")',
+                    type: 'GET',
+                    data: function (d) {
+                         return {
+                        draw: d.draw,
+                        start: d.start,
+                        length: d.length,
+                        search: d.search.value,
+                        orderColumn: d.order[0]?.column,
+                        orderDirection: d.order[0]?.dir,
+                        status: currentStatus  // Your custom parameter
+                    };
+                    }
+                },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[2, 'desc']],
+                autoWidth: false,
+                responsive: { details: { type: 'inline', target: 'tr' } },
+                columns: [
                     { data: 'employeeCode', orderable: true },
                     { data: 'employeeName', orderable: true },
-                    { data: 'date', orderable: true },
-                    { data: 'checkIn', orderable: false },
-                    { data: 'checkOut', orderable: false },
+                    {
+                        data: 'date',
+                        orderable: true,
+                        render: d => {
+                            if (!d) return '';
+                            const dt = new Date(d);
+                            return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                        }
+                    },
+                    { data: 'checkIn', orderable: false, render: d => d || '-' },
+                    { data: 'checkOut', orderable: false, render: d => d || '-' },
+                    {
+                        data: null,
+                        orderable: false,
+                        className: 'text-center total-hours',
+                        render: function (data, type, row) {
+                            return calculateTotalHours(row.checkIn, row.checkOut);
+                        }
+                    },
                     {
                         data: 'status',
                         orderable: true,
                         render: d => {
-                            let badgeClass = '';
-                            switch (d) {
-                                case 'Present': badgeClass = 'bg-success'; break;
-                                case 'Late': badgeClass = 'bg-warning'; break;
-                                case 'Absent': badgeClass = 'bg-danger'; break;
-                                default: badgeClass = 'bg-secondary'; break;
-                            }
-                            return `<span class="badge ${badgeClass}">${esc(d)}</span>`;
+                            let badge = 'bg-secondary';
+                            if (d === 'Present') badge = 'bg-success';
+                            else if (d === 'Late') badge = 'bg-warning';
+                            else if (d === 'Absent') badge = 'bg-danger';
+                            return `<span class="badge ${badge}">${esc(d)}</span>`;
                         }
                     },
-                    { data: 'note', orderable: false, render: d => `<span class="truncate truncate-220">${esc(d)}</span>` },
+                    {
+                        data: 'note',
+                        orderable: false,
+                        render: d => `<span class="truncate truncate-220">${esc(d || '')}</span>`
+                    },
                     {
                         data: null,
                         orderable: false,
                         className: 'text-center',
-                        render: function (_data, _type, row) {
+                        render: function (data, type, row) {
                             return `
                                 <div class="dropdown d-inline-block">
-                                    <a href="javascript:void(0);"
-                                       class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
-                                       data-bs-toggle="dropdown">
-                                        <i class="ti ti-dots-vertical"></i>
-                                    </a>
+                                    <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
+                                       data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></a>
                                     <ul class="dropdown-menu p-2 dropdown-menu-end">
                                         <li>
-                                            <a href="javascript:void(0);"
-                                               class="dropdown-item d-flex align-items-center"
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
                                                data-bs-toggle="modal" data-bs-target="#attendanceModal"
                                                data-url="@Url.Action("Upsert", "Attendance")/${row.id}">
                                                 <i class="ti ti-edit me-2"></i> Edit
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="javascript:void(0);"
-                                               class="dropdown-item d-flex align-items-center js-delete"
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-delete-att"
                                                data-url="/Attendance/Delete/${row.id}"
-                                               data-table="attendanceList"
-                                               data-id="${row.id}"
                                                data-name="record for ${esc(row.employeeName)} on ${esc(row.date)}">
                                                 <i class="ti ti-trash me-2"></i> Delete
                                             </a>
@@ -159,58 +269,94 @@
                         }
                     }
                 ],
-                [[2, 'desc']] // Default sort by Date descending
-            );
+                drawCallback: function () {
+                    $('#attendanceList tbody tr.pre-load').remove();
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
+                    $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                    $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
 
-            // Handle modal loading
-            $('#attendanceModal').on('show.bs.modal', function (event) {
-                const button = $(event.relatedTarget); // Button that triggered the modal
-                const url = button.data('url'); // Extract info from data-* attributes
-                const modal = $(this);
+                    const info = api.page.info();
+                    const statusText = currentStatus === 'all' ? 'records' : currentStatus.toLowerCase() + ' records';
+                    const msg = info.recordsDisplay
+                        ? `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} ${statusText}`
+                        : (info.recordsTotal
+                            ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} ${statusText}`
+                            : `No ${statusText} found`);
+                    $('#dt-info').text(msg);
+                },
+                language: {
+                    emptyTable: function () {
+                        return currentStatus === 'all'
+                            ? "No attendance records found"
+                            : `No ${currentStatus.toLowerCase()} records found`;
+                    }
+                }
+            });
 
-                modal.find('.modal-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
 
-                $.get(url, function (data) {
-                    modal.find('.modal-body').html(data);
-                    // Re-apply unobtrusive validation after content is loaded
-                    $.validator.unobtrusive.parse(modal.find('form'));
-                }).fail(function () {
-                    modal.find('.modal-body').html('<div class="alert alert-danger">Error loading content.</div>');
+                    $('#attendanceList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
+            // Status filter handler
+            $('.js-status-filter').on('click', function () {
+                $('.js-status-filter').removeClass('active');
+                $(this).addClass('active');
+                currentStatus = $(this).data('status');
+                attTable.ajax.reload();
+            });
+
+            /* Global search & page-length */
+            $('#globalSearch').on('input', () => attTable.search($('#globalSearch').val()).draw());
+            $('#pageLength').on('change', () => attTable.page.len(parseInt($('#pageLength').val(), 10)).draw());
+
+            /* Delete handler */
+            $(document).on('click', '.js-delete-att', function () {
+                const url = $(this).data('url'),
+                      name = $(this).data('name');
+
+                Swal.fire({
+                    title: `Delete ${name}?`,
+                    text: 'You will not be able to revert this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, delete!'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        const token = $('form#__af input[name="__RequestVerificationToken"]').val();
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            success: r => {
+                                if (r.status) {
+                                    Swal.fire('Deleted', r.message, 'success');
+                                    attTable.ajax.reload(null, false);
+                                } else {
+                                    Swal.fire('Error', r.message || 'Delete failed', 'error');
+                                }
+                            },
+                            error: () => Swal.fire('Error', 'Something went wrong', 'error')
+                        });
+                    }
                 });
             });
 
-            // Handle form submission within the modal
-            $(document).on('submit', '#attendanceFormModal', function (e) {
-                e.preventDefault();
-                const form = $(this);
-                if (!form.valid()) { // Check client-side validation
-                    return;
-                }
-
-                const formData = new FormData(form[0]);
-                const token = $('form#__af input[name="__RequestVerificationToken"]').val();
-                formData.append('__RequestVerificationToken', token);
-
-                $.ajax({
-                    url: form.attr('action'),
-                    type: form.attr('method'),
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        if (response.status) {
-                            Swal.fire('Success', response.message, 'success');
-                            $('#attendanceModal').modal('hide');
-                            table.ajax.reload(null, false);
-                        } else {
-                            Swal.fire('Error', response.message, 'error');
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        Swal.fire('Error', 'An error occurred while saving the record.', 'error');
-                        console.error(xhr.responseText);
-                    }
-                });
+            /* Modal loader */
+            $('#attendanceModal').on('show.bs.modal', function (e) {
+                const btn = $(e.relatedTarget), url = btn.data('url'), modal = $(this);
+                modal.find('.modal-body').html('<div class="text-center py-5"><div class="spinner-border avatar-lg text-primary m-2" role="status"></div></div>');
+                $.get(url)
+                    .done(data => {
+                        modal.find('.modal-body').html(data);
+                        $.validator.unobtrusive.parse(modal.find('form'));
+                    })
+                    .fail(() => modal.find('.modal-body').html('<div class="alert alert-danger">Error loading content.</div>'));
             });
         });
     </script>

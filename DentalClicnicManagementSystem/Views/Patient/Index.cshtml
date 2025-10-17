@@ -14,7 +14,7 @@
                 </div>
                 <div class="text-end">
                     <a asp-controller="Patient" asp-action="Upsert" class="btn btn-primary ms-2 fs-13 btn-md">
-                        <i class="ti ti-plus me-1"></i>New Patient
+                        <i class="ti ti-plus me-1"></i>Nouveau patient
                     </a>
                 </div>
             </div>
@@ -24,30 +24,30 @@
                     <!-- External controls -->
                     <div class="row g-2 mb-3 align-items-center">
                         <div class="col-auto d-none d-sm-flex align-items-center">
-                            <label class="me-2 mb-0">Show</label>
+                            <label class="me-2 mb-0">Afficher</label>
                             <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
                                 <option value="10" selected>10</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                             </select>
-                            <span class="ms-2">entries</span>
+                            <span class="ms-2">entrées</span>
                         </div>
                         <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
-                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search" />
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Rechercher" />
                         </div>
                     </div>
                     <div class="table-responsive">
                         <table id="patientList" class="table table-hover align-middle w-100 nowrap" style="min-width: 900px;">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Name</th>
+                                    <th>Nom</th>
                                     <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>DOB</th>
-                                    <th>Gender</th>
-                                    <th>Created</th>
-                                    <th>Status</th>
+                                    <th>Téléphone</th>
+                                    <th>Date de naissance</th>
+                                    <th>Sexe</th>
+                                    <th>Créé</th>
+                                    <th>Statut</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -70,17 +70,17 @@
 </div>
 <style>
     /* Keep headers on one line */
-    
+
 
     #patientList thead th,
     #patientList tbody td {
         white-space: nowrap !important;
     }
     /* Allow only body cells to wrap
-    #patientList tbody td {
-        white-space: normal !important;
-        word-break: break-word;
-    } */
+        #patientList tbody td {
+            white-space: normal !important;
+            word-break: break-word;
+        } */
     /* Scoped truncation helpers */
     .truncate-180, .truncate-220 {
         display: inline-block;
@@ -121,7 +121,7 @@
           }
           const esc = s => s == null ? '' : String(s);
           const table = $('#patientList').DataTable({
-            processing: true,
+            processing: false,
             serverSide: true,
             ajax: { url: '@Url.Action("GetPatientList", "Patient")', type: 'GET' },
             dom: 'rtip',
@@ -135,21 +135,24 @@
               { targets: 0, responsivePriority: 1 },
               { targets: 6, responsivePriority: 2, className: 'text-center' }
             ],
-            columns: [
-              {
-                data: null,
-                orderable: true,
-                render: row => `
-                  <div class="d-flex align-items-center gap-2" style="flex-wrap: nowrap;">
-                    <img src="${esc(row.imageUrl)}" alt="avatar"
-                         class="rounded-circle"
-                         style="width:40px;height:40px;object-fit:cover;">
-                    <div style="min-width: 110px;">
-                      <span class="fw-semibold">${esc(row.firstName)} ${esc(row.lastName)}</span><br>
-                      <small class="text-muted">${esc(row.age)}, ${esc(row.gender)}</small>
-                    </div>
-                  </div>`
-              },
+                  columns: [
+        {
+          data: null,
+          orderable: true,
+          render: row => `
+            <div class="d-flex align-items-center gap-2" style="flex-wrap: nowrap;">
+              <img src="${esc(row.imageUrl)}" alt="avatar"
+                   class="rounded-circle"
+                   style="width:40px;height:40px;object-fit:cover;">
+              <div style="min-width: 110px;">
+                <!-- Make the name clickable and redirect to patient profile -->
+                <a href="/Patient/Profile/${row.id}" class="fw-semibold" title="View Profile">
+                  ${esc(row.firstName)} ${esc(row.lastName)}
+                </a><br>
+                <small class="text-muted">${esc(row.age)}, ${esc(row.gender)}</small>
+              </div>
+            </div>`
+        },
               {
                 data: 'email',
                 orderable: false,
@@ -165,7 +168,7 @@
                 orderable: true,
                 render: d => {
                   if (!d || String(d).startsWith('0001-01-01')) return '';
-                  return new Date(d).toLocaleDateString('en-GB');
+                  return new Date(d).toLocaleDateString('fr-FR');
                 }
               },
               {
@@ -176,7 +179,7 @@
               {
                 data: 'createdDate',
                 orderable: true,
-                render: d => new Date(d).toLocaleDateString('en-GB', {
+                render: d => new Date(d).toLocaleDateString('fr-FR', {
                   day: '2-digit', month: 'short', year: 'numeric'
                 })
               },
@@ -184,7 +187,7 @@
                 data: null,
                 orderable: false,
                 className: 'text-center',
-                render: _ => `<span>Available</span>`
+                render: _ => `<span>Disponible</span>`
               },
               {
                 data: null,
@@ -201,7 +204,7 @@
                         <li>
                           <a href="/Patient/Upsert/${row.id}"
                              class="dropdown-item d-flex align-items-center">
-                            <i class="ti ti-edit me-2"></i> Edit
+                            <i class="ti ti-edit me-2"></i> Modifier
                           </a>
                         </li>
                         <li>
@@ -211,7 +214,7 @@
                              data-table="PatientList"
                              data-id="${row.id}"
                              data-name="${esc(row.fullName)}">
-                            <i class="ti ti-trash me-2"></i> Delete
+                            <i class="ti ti-trash me-2"></i> Supprimer
                           </a>
                         </li>
                       </ul>
@@ -220,6 +223,7 @@
               }
             ],
             drawCallback() {
+                $('#patientList tbody tr.pre-load').remove();
               const api = this.api();
               const pagerEl = $(api.table().container()).find('.dataTables_paginate');
               if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
@@ -227,30 +231,37 @@
               $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
               const info = api.page.info();
               const msg = info.recordsDisplay
-                ? `Showing ${info.start+1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries`
+                ? `Affichage de ${info.start+1} à ${info.end} sur ${info.recordsDisplay.toLocaleString()} entrées`
                 : (info.recordsTotal
-                    ? `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries`
-                    : 'No entries to show');
+                    ? `Affichage de 0 à 0 sur ${info.recordsTotal.toLocaleString()} entrées`
+                    : 'Aucune entrée à afficher');
               $('#dt-info').text(msg);
             },
-            language: { emptyTable: "No patients found", processing: "Loading..." }
+            language: { emptyTable: "Aucun patient trouvé"}
           });
           $('#globalSearch').on('input', () => table.search($('#globalSearch').val()).draw());
           $('#pageLength').on('change', function () {
             table.page.len(parseInt(this.value,10)).draw();
           });
+
+
+         $('#patientList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
           // Delete handler (SweetAlert2)
           $(document).on('click', '.js-delete', function () {
             const id   = $(this).data('id');
             const name = $(this).data('name');
             Swal.fire({
-              title: `Delete ${name}?`,
-              text: 'You will not be able to revert this!',
+              title: `Supprimer ${name}?`,
+              text: 'Vous ne pourrez pas revenir en arrière!',
               icon: 'warning',
               showCancelButton: true,
               confirmButtonColor: '#d33',
               cancelButtonColor: '#aaa',
-              confirmButtonText: 'Yes, delete!'
+              confirmButtonText: 'Oui, supprimer!'
             }).then(res => {
               if (!res.isConfirmed) return;
               $.ajax({
@@ -259,13 +270,14 @@
                 headers: { 'RequestVerificationToken': token },
                 success: r => {
                   if (r.status) {
-                    Swal.fire('Deleted', r.message, 'success');
+                    toastr.success('Supprimé', r.message, 'success');
+                    // Swal.fire('Supprimé', r.message, 'success');
                     table.ajax.reload(null,false);
                   } else {
-                    Swal.fire('Error', r.message || 'Delete failed', 'error');
+                    Swal.fire('Erreur', r.message || 'La suppression a échoué', 'error');
                   }
                 },
-                error: () => Swal.fire('Error', 'Something went wrong', 'error')
+                error: () => Swal.fire('Erreur', 'Quelque chose a mal tourné', 'error')
               });
             });
           });

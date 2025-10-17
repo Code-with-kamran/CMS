@@ -1,4 +1,4 @@
-﻿@* Views/Shared/Components/LowStock/Default.cshtml *@
+﻿@* Views/Shared/Components/LowStock/Default.cshtml
 @model IEnumerable<dynamic>
 <div class="card shadow-md rounded-3">
     <div class="card-header bg-gradient-danger text-white">
@@ -9,6 +9,34 @@
             <thead>
                 <tr>
                     <th>Item</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ItemName</td>
+                        <td>@item.Stock</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div> *@
+
+
+@* Views/Shared/Components/LowStock/Default.cshtml *@
+@model IEnumerable<dynamic>
+<div class="card shadow-md rounded-3">
+    <div class="card-header bg-gradient-danger text-white">
+        <h6 class="mb-0">Stock Faible <span class="badge bg-light text-dark ms-2">@ViewBag.Count</span></h6>
+    </div>
+    <div class="card-body p-2">
+        <table class="table table-themed mb-0">
+            <thead>
+                <tr>
+                    <th>Article</th>
                     <th>Stock</th>
                 </tr>
             </thead>

@@ -1,23 +1,20 @@
-﻿@model CMS.Models.Patient
+﻿@model CMS.ViewModels.PatientUpsertViewModel
 
 @{
-    ViewData["Title"] = Model.PatientId == 0 ? "Add Patient" : "Edit Patient";
-    
-    var currentImage = string.IsNullOrEmpty(Model?.ProfileImageUrl) ? "/uploads/doctors/patient_default.jpg" : Model.ProfileImageUrl;
+    ViewData["Title"] = Model.Patient.PatientId == 0 ? "Ajouter un patient" : "Modifier un patient";
+
+    var currentImage = string.IsNullOrEmpty(Model?.Patient.ProfileImageUrl) ? "/uploads/doctors/patient_default.jpg" : Model.Patient.ProfileImageUrl;
 }
 
 <form id="patientForm" asp-action="Upsert" asp-controller="Patient" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="PatientId" />
+    <input type="hidden" asp-for="Patient.PatientId" />
 
     <div class="content py-3">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
             <h4 class="mb-0">@ViewData["Title"]</h4>
             <div class="d-flex gap-2">
-                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back</a>
-                <button type="submit" class="btn btn-primary btn-sm">
-                    @(Model.PatientId == 0 ? "Create" : "Update")
-                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Retour</a>
             </div>
         </div>
 
@@ -28,78 +25,77 @@
             <div class="col-12 col-lg-7">
                 <div class="card shadow-sm mb-3">
                     <div class="card-body">
-                        <h6 class="text-muted mb-3">Personal Information</h6>
+                        <h6 class="text-muted mb-3">Informations personnelles</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label asp-for="FirstName" class="form-label"></label>
-                                <input asp-for="FirstName" class="form-control" />
-                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                                <label asp-for="Patient.FirstName" class="form-label">Prénom</label>
+                                <input asp-for="Patient.FirstName" class="form-control" placeholder="Entrez le prénom" />
+                                <span asp-validation-for="Patient.FirstName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="LastName" class="form-label"></label>
-                                <input asp-for="LastName" class="form-control" />
-                                <span asp-validation-for="LastName" class="text-danger"></span>
+                                <label asp-for="Patient.LastName" class="form-label">Nom de famille</label>
+                                <input asp-for="Patient.LastName" class="form-control" placeholder="Entrez le nom de famille" />
+                                <span asp-validation-for="Patient.LastName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Email" class="form-label"></label>
-                                <input asp-for="Email" class="form-control" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
+                                <label asp-for="Patient.Email" class="form-label">Email</label>
+                                <input asp-for="Patient.Email" class="form-control" placeholder="Entrez l'email" />
+                                <span asp-validation-for="Patient.Email" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="PhoneNumber" class="form-label"></label>
-                                <input asp-for="PhoneNumber" class="form-control" />
-                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                <label asp-for="Patient.PhoneNumber" class="form-label">Numéro de téléphone</label>
+                                <input asp-for="Patient.PhoneNumber" class="form-control" placeholder="Entrez le numéro de téléphone" />
+                                <span asp-validation-for="Patient.PhoneNumber" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                    <label asp-for="Gender" class="form-label"></label>
-                                <select asp-for="Gender" class="form-select" required>
-                                    <option value="">-- Select Gender --</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
+                                <label asp-for="Patient.Gender" class="form-label">Sexe</label>
+                                <select asp-for="Patient.Gender" class="form-select" required>
+                                    <option value="">-- Sélectionnez le sexe --</option>
+                                    <option value="Male">Homme</option>
+                                    <option value="Female">Femme</option>
+                                    <option value="Other">Autre</option>
                                 </select>
-                                <span asp-validation-for="Gender" class="text-danger"></span>
-
-                                </div>
+                                <span asp-validation-for="Patient.Gender" class="text-danger"></span>
+                            </div>
                             <div class="col-md-6">
-                                <label asp-for="DateOfBirth" class="form-label"></label>
-                                <input asp-for="DateOfBirth" type="date" class="form-control" />
-                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                <label asp-for="Patient.DateOfBirth" class="form-label">Date de naissance</label>
+                                <input asp-for="Patient.DateOfBirth" type="date" class="form-control" />
+                                <span asp-validation-for="Patient.DateOfBirth" class="text-danger"></span>
                             </div>
                             <div class="col-12">
-                                <label asp-for="Address" class="form-label"></label>
-                                <input asp-for="Address" class="form-control" />
-                                <span asp-validation-for="Address" class="text-danger"></span>
+                                <label asp-for="Patient.Address" class="form-label">Adresse</label>
+                                <input asp-for="Patient.Address" class="form-control" placeholder="Entrez l'adresse" />
+                                <span asp-validation-for="Patient.Address" class="text-danger"></span>
                             </div>
                         </div>
 
                         <hr class="my-4" />
-                        <h6 class="text-muted mb-3">Medical Details</h6>
+                        <h6 class="text-muted mb-3">Détails médicaux</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label asp-for="InsuranceProvider" class="form-label"></label>
-                                <input asp-for="InsuranceProvider" class="form-control" />
-                                <span asp-validation-for="InsuranceProvider" class="text-danger"></span>
+                                <label asp-for="Patient.InsuranceProvider" class="form-label">Fournisseur d'assurance</label>
+                                <input asp-for="Patient.InsuranceProvider" class="form-control" placeholder="Entrez le fournisseur d'assurance" />
+                                <span asp-validation-for="Patient.InsuranceProvider" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="InsuranceNumber" class="form-label"></label>
-                                <input asp-for="InsuranceNumber" class="form-control" />
-                                <span asp-validation-for="InsuranceNumber" class="text-danger"></span>
+                                <label asp-for="Patient.InsuranceNumber" class="form-label">Numéro d'assurance</label>
+                                <input asp-for="Patient.InsuranceNumber" class="form-control" placeholder="Entrez le numéro d'assurance" />
+                                <span asp-validation-for="Patient.InsuranceNumber" class="text-danger"></span>
                             </div>
                             <div class="col-12">
-                                <label asp-for="Allergies" class="form-label"></label>
-                                <textarea asp-for="Allergies" class="form-control" rows="2"></textarea>
-                                <span asp-validation-for="Allergies" class="text-danger"></span>
+                                <label asp-for="Patient.Allergies" class="form-label">Allergies</label>
+                                <textarea asp-for="Patient.Allergies" class="form-control" rows="2" placeholder="Entrez les allergies"></textarea>
+                                <span asp-validation-for="Patient.Allergies" class="text-danger"></span>
                             </div>
                             <div class="col-12">
-                                <label asp-for="DentalHistory" class="form-label"></label>
-                                <textarea asp-for="DentalHistory" class="form-control" rows="2"></textarea>
-                                <span asp-validation-for="DentalHistory" class="text-danger"></span>
+                                <label asp-for="Patient.DentalHistory" class="form-label">Antécédents dentaires</label>
+                                <textarea asp-for="Patient.DentalHistory" class="form-control" rows="2" placeholder="Entrez les antécédents dentaires"></textarea>
+                                <span asp-validation-for="Patient.DentalHistory" class="text-danger"></span>
                             </div>
                             <div class="col-12">
-                                <label asp-for="Notes" class="form-label"></label>
-                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
-                                <span asp-validation-for="Notes" class="text-danger"></span>
+                                <label asp-for="Patient.Notes" class="form-label">Notes</label>
+                                <textarea asp-for="Patient.Notes" class="form-control" rows="2" placeholder="Ajoutez des notes"></textarea>
+                                <span asp-validation-for="Patient.Notes" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -111,26 +107,31 @@
 
                 <div class="card shadow-sm mb-3">
                     <div class="card-body">
-                        <h6 class="text-muted mb-3">Profile</h6>
+                        <h6 class="text-muted mb-3">Profil</h6>
                         <div class="col-lg-12">
                             <div class="mb-3">
-                                <label class="form-label">Profile Image</label>
+                                <label class="form-label">Image de profil</label>
                                 <input type="file" name="ProfileImage" id="ProfileImage" class="form-control" accept="image/*" />
                                 <div class="mt-3">
                                     <img id="imagePreview"
                                          src="@currentImage"
-                                         alt="Image Preview"
+                                         alt="Aperçu de l'image"
                                          class="img-thumbnail"
                                          style="max-height: 200px;" />
                                 </div>
-                                <div class="subtle mt-1">PNG/JPG up to 1 MB recommended. A default image shows until you choose a file.</div>
+                                <div class="subtle mt-1">PNG/JPG jusqu'à 1 Mo recommandé. Une image par défaut s'affiche jusqu'à ce que vous choisissiez un fichier.</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                
             </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">
+                @(Model.Patient.PatientId == 0 ? "Créer" : "Mettre à jour")
+            </button>
         </div>
     </div>
 </form>
@@ -154,6 +155,56 @@
             });
         })();
 
+        // --- NEW SCRIPT FOR TREATMENTS CARD ---
+        $('#treatmentSelector').on('change', function () {
+            const selectedId = $(this).val();
+            if (!selectedId) return;
+
+            const selectedText = $(this).find('option:selected').text();
+
+            // Prevent duplicates
+            if ($('#selectedTreatmentsList').find(`li[data-id='${selectedId}']`).length > 0) {
+                alert('Ce traitement a déjà été ajouté.');
+                return;
+            }
+
+            const listItem = `
+                <li class="list-group-item d-flex justify-content-between align-items-center" data-id="${selectedId}">
+                    ${selectedText}
+                    <button type="button" class="btn-close remove-treatment-btn"></button>
+                    <input type="hidden" name="SelectedTreatmentIds" value="${selectedId}" />
+                </li>`;
+            $('#selectedTreatmentsList').append(listItem);
+            $(this).val(''); // Reset dropdown
+        });
+
+        $(document).on('click', '.remove-treatment-btn', function () {
+            $(this).closest('li').remove();
+        });
+
+        // --- NEW SCRIPT FOR MEDICATIONS CARD ---
+        let medIndex = @Model.Patient.InvoiceItems.Count;
+        const medicationOptions = `@Html.Raw(string.Join("", Model.AvailableMedications.Select(m => $"<option value=\'{m.Value}\'>{m.Text}</option>")))`;
+
+        $('#addMedicationRow').on('click', function () {
+            const newRow = `
+                <tr>
+                    <td>
+                        <select name="PatientMedications[${medIndex}].InventoryItemId" class="form-select medication-select">
+                            <option value="">-- Sélectionner un médicament --</option>
+                            ${medicationOptions}
+                        </select>
+                    </td>
+                    <td><input type="number" name="PatientMedications[${medIndex}].Quantity" class="form-control" min="1" value="1" /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger remove-med-row-btn">X</button></td>
+                </tr>`;
+            $('#medicationsTbody').append(newRow);
+            medIndex++;
+        });
+
+        $(document).on('click', '.remove-med-row-btn', function () {
+            $(this).closest('tr').remove();
+        });
 
         // -------------------Image Preview-----------------------
         const currentImage = '@currentImage';

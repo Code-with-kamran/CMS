@@ -30,6 +30,7 @@ namespace CMS.ViewModels
 
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = true;
+        public string Password { get; set; }
 
         // This will hold the list of roles for the dropdown
         public IEnumerable<SelectListItem> RoleList { get; set; } = new List<SelectListItem>();

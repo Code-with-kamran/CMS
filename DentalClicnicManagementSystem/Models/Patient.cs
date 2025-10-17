@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CMS.Models
@@ -7,7 +6,7 @@ namespace CMS.Models
     public class Patient
     {
         public int PatientId { get; set; }
-        public string PatientIdNumber { get; set; } // e.g., #PT0025
+        public string? PatientIdNumber { get; set; } // e.g., #PT0025
         [Required]
         [StringLength(100)]
         public string FirstName { get; set; }
@@ -26,15 +25,15 @@ namespace CMS.Models
 
         public string? FollowUpInterval { get; set; } // e.g., "1_week", "1_month"
 
-        public DateTime? FollowUpScheduledAt { get; set; } // The exact UTC date the follow-up is due
+        public DateTimeOffset? FollowUpScheduledAt { get; set; } // The exact UTC date the follow-up is due
 
       
-        public DateTime? FollowUpSentAt { get; set; }
+        public DateTimeOffset? FollowUpSentAt { get; set; }
 
-        public DateTime? DateOfBirth { get; set; }
+        public DateTimeOffset? DateOfBirth { get; set; }
         public string? BloodGroup { get; set; }
        
-        public DateTime? RegistrationDate { get; set; } // Added from UI
+        public DateTimeOffset? RegistrationDate { get; set; } // Added from UI
         public string Gender { get; set; }
         public string? Address { get; set; }
         public string? InsuranceProvider { get; set; }
@@ -43,16 +42,17 @@ namespace CMS.Models
         public string? DentalHistory { get; set; }
         public string? Notes { get; set; }
         public string? ProfileImageUrl { get; set; } 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
-        public DateTime? LastVisited { get; set; }
+        public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.Now;
+        public DateTimeOffset? LastVisited { get; set; }
 
 
         // Navigation properties
-        public virtual ICollection<Document> Documents { get; set; } // Assuming the Patient has many Documents
-        public virtual ICollection<FollowUp> FollowUps { get; set; } // Assuming the Patient has many FollowUps
+        public virtual ICollection<Document>? Documents { get; set; } // Assuming the Patient has many Documents
+        public virtual ICollection<FollowUp>? FollowUps { get; set; } // Assuming the Patient has many FollowUps
 
         public virtual ICollection<Treatment>? Treatments { get; set; } = new List<Treatment>();
         public virtual ICollection<Appointment>? Appointments { get; set; } = new List<Appointment>();
+        public virtual ICollection<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
     }
 }
 

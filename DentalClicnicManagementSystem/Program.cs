@@ -16,24 +16,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 
 // Register custom email sender
-builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
-
 builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+
 builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
+builder.Logging.AddConsole();
 
-builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<FileHelper>();
 builder.Services.AddScoped<SlotBuilder>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
                 options.LoginPath = "/Auth/Login";
                 options.LogoutPath = "/Auth/Logout";
-                options.AccessDeniedPath = "/Account/AccessDenied"; // optional
+                options.AccessDeniedPath = "/Auth/Login";
             });
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -43,7 +45,7 @@ builder.Services.AddControllersWithViews(o =>
     o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 builder.Services.AddRazorPages();
-builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddSession();
 
 var app = builder.Build();

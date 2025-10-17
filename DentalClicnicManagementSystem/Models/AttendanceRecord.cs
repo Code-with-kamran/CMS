@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CMS.Models
 {
-    public enum AttendanceStatus { Present, Late, Absent }
+    public enum AttendanceStatus { Present, Late, Absent,leave,HalfDay }
     public class AttendanceRecord
     {
         public int Id { get; set; }
@@ -16,6 +16,7 @@ namespace CMS.Models
         public TimeOnly? CheckIn { get; set; }
         public TimeOnly? CheckOut { get; set; }
         public AttendanceStatus Status { get; set; }
+        public decimal? OvertimeHours { get; set; }
         [StringLength(500)] public string? Note { get; set; }
     }
 }

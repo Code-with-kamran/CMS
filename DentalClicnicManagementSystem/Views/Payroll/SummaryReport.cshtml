@@ -1,0 +1,191 @@
+﻿@* @inject CMS.Services.ICurrencyService CurrencyService
+@model CMS.ViewModels.PayrollSummaryViewModel
+@{
+    ViewData["Title"] = $"Payroll Summary - {new DateTime(Model.PayrollRun.Year, Model.PayrollRun.Month, 1).ToString("MMMM yyyy")}";
+    var currentCurrency = await CurrencyService.GetCurrentCurrencyAsync();
+    var currencySymbol = currentCurrency?.Symbol ?? "£";
+}
+
+
+
+<div class="content py-3">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <h4 class="mb-0">@ViewData["Title"]</h4>
+        <div class="d-flex gap-2">
+            <a asp-action="RunDetails" asp-route-id="@Model.PayrollRun.Id" class="btn btn-outline-secondary btn-sm">
+                <i class="ti ti-arrow-left me-1"></i>Back to Details
+            </a>
+            <button class="btn btn-primary btn-sm" onclick="window.print()">
+                <i class="ti ti-printer me-1"></i>Print Report
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Payroll Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td><strong>Total Employees:</strong></td>
+                                    <td>@Model.TotalEmployees</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Base Salary:</strong></td>
+                                    <td>@currencySymbol@Model.TotalBaseSalary.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Allowances:</strong></td>
+                                    <td>@currencySymbol@Model.TotalAllowances.ToString("N2")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td><strong>Total Deductions:</strong></td>
+                                    <td>@currencySymbol@Model.TotalDeductions.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Net Pay:</strong></td>
+                                    <td class="text-success fw-bold">@currencySymbol@Model.TotalNetPay.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Average Net Pay:</strong></td>
+                                    <td>@currencySymbol@Model.AverageNetPay.ToString("N2")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Run Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Period:</strong> @(new DateTime(Model.PayrollRun.Year, Model.PayrollRun.Month, 1).ToString("MMMM yyyy"))</p>
+                    <p><strong>Run Date:</strong> @Model.PayrollRun.RunAt.DateTime.ToString("dd MMM yyyy HH:mm")</p>
+                    @if (!string.IsNullOrEmpty(Model.PayrollRun.Notes))
+                    {
+                        <p><strong>Notes:</strong> @Model.PayrollRun.Notes</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .btn {
+            display: none !important;
+        }
+
+        .card {
+            border: 1px solid #ddd !important;
+        }
+    }
+</style> *@
+
+@inject CMS.Services.ICurrencyService CurrencyService
+@model CMS.ViewModels.PayrollSummaryViewModel
+@{
+    ViewData["Title"] = $"Résumé de paie - {new DateTime(Model.PayrollRun.Year, Model.PayrollRun.Month, 1).ToString("MMMM yyyy")}";
+    var currentCurrency = await CurrencyService.GetCurrentCurrencyAsync();
+    var currencySymbol = currentCurrency?.Symbol ?? "£";
+}
+
+<div class="content py-3">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <h4 class="mb-0">@ViewData["Title"]</h4>
+        <div class="d-flex gap-2">
+            <a asp-action="RunDetails" asp-route-id="@Model.PayrollRun.Id" class="btn btn-outline-secondary btn-sm">
+                <i class="ti ti-arrow-left me-1"></i>Retour aux détails
+            </a>
+            <button class="btn btn-primary btn-sm" onclick="window.print()">
+                <i class="ti ti-printer me-1"></i>Imprimer le rapport
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Statistiques de paie</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td><strong>Total employés :</strong></td>
+                                    <td>@Model.TotalEmployees</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Salaires de base totaux :</strong></td>
+                                    <td>@currencySymbol@Model.TotalBaseSalary.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Allocations totales :</strong></td>
+                                    <td>@currencySymbol@Model.TotalAllowances.ToString("N2")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td><strong>Déductions totales :</strong></td>
+                                    <td>@currencySymbol@Model.TotalDeductions.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Net à payer total :</strong></td>
+                                    <td class="text-success fw-bold">@currencySymbol@Model.TotalNetPay.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Net à payer moyen :</strong></td>
+                                    <td>@currencySymbol@Model.AverageNetPay.ToString("N2")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Informations du traitement</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Période :</strong> @(new DateTime(Model.PayrollRun.Year, Model.PayrollRun.Month, 1).ToString("MMMM yyyy"))</p>
+                    <p><strong>Date d'exécution :</strong> @Model.PayrollRun.RunAt.DateTime.ToString("dd MMM yyyy HH:mm")</p>
+                    @if (!string.IsNullOrEmpty(Model.PayrollRun.Notes))
+                    {
+                        <p><strong>Notes :</strong> @Model.PayrollRun.Notes</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .btn {
+            display: none !important;
+        }
+
+        .card {
+            border: 1px solid #ddd !important;
+        }
+    }
+</style>

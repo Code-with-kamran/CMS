@@ -3,8 +3,8 @@ Author       : Dreamstechnologies
 Template Name: Preclinic - Bootstrap Admin Template
 */
 
-(function () {
-    "use strict";
+$(document).ready(function () {
+	"use strict";
 
 	// Variables declarations
 	var $wrapper = $('.main-wrapper');
@@ -13,16 +13,16 @@ Template Name: Preclinic - Bootstrap Admin Template
 	// Mobile menu sidebar overlay
 	$('body').append('<div class="sidebar-overlay"></div>');
 
-	$(document).on('click', '#mobile_btn', function() {
+	$(document).on('click', '#mobile_btn', function () {
 		$wrapper.toggleClass('slide-nav');
 		$('.sidebar-overlay').toggleClass('opened');
 		$('html').addClass('menu-opened');
 		return false;
 	});
-	$(".sidebar-close").on("click", function () { 
+	$(".sidebar-close").on("click", function () {
 		$wrapper.removeClass('slide-nav');
 		$('.sidebar-overlay').removeClass('opened');
-		$('html').removeClass('menu-opened');             
+		$('html').removeClass('menu-opened');
 	});
 
 	$(".sidebar-overlay").on("click", function () {
@@ -33,22 +33,22 @@ Template Name: Preclinic - Bootstrap Admin Template
 	});
 
 	// Sidebar
-	var Sidemenu = function() {
+	var Sidemenu = function () {
 		this.$menuItem = $('.sidebar-menu a');
 	};
 
 	function init() {
 		var $this = Sidemenu;
-		$('.sidebar-menu a').on('click', function(e) {
-			if($(this).parent().hasClass('submenu')) {
+		$('.sidebar-menu a').on('click', function (e) {
+			if ($(this).parent().hasClass('submenu')) {
 				e.preventDefault();
 			}
-			if(!$(this).hasClass('subdrop')) {
+			if (!$(this).hasClass('subdrop')) {
 				$('ul', $(this).parents('ul:first')).slideUp(250);
 				$('a', $(this).parents('ul:first')).removeClass('subdrop');
 				$(this).next('ul').slideDown(350);
 				$(this).addClass('subdrop');
-			} else if($(this).hasClass('subdrop')) {
+			} else if ($(this).hasClass('subdrop')) {
 				$(this).removeClass('subdrop');
 				$(this).next('ul').slideUp(350);
 			}
@@ -56,45 +56,45 @@ Template Name: Preclinic - Bootstrap Admin Template
 		$('.sidebar-menu ul li.submenu a.active').parents('li:last').children('a:first').addClass('active').trigger('click');
 	}
 
-		//Trial Item
-		if($('.trial-item').length > 0) {
-			$(".trial-item .close-icon").on("click", function () {
-				$(this).closest(".trial-item").hide(); 
-			});
-		}
-			
-	
+	//Trial Item
+	if ($('.trial-item').length > 0) {
+		$(".trial-item .close-icon").on("click", function () {
+			$(this).closest(".trial-item").hide();
+		});
+	}
+
+
 	// Sidebar Initiate
 	init();
-	$(document).on('mouseover', function(e) {
-        e.stopPropagation();
-        if ($('body').hasClass('mini-sidebar') && $('#toggle_btn').is(':visible')) {
-            var targ = $(e.target).closest('.sidebar, .header-left').length;
-            if (targ) {
-               $('body').addClass('expand-menu');
-                $('.subdrop + ul').slideDown();
-            } else {
-               $('body').removeClass('expand-menu');
-                $('.subdrop + ul').slideUp();
-            }
-            return false;
-        }
-    });
+	$(document).on('mouseover', function (e) {
+		e.stopPropagation();
+		if ($('body').hasClass('mini-sidebar') && $('#toggle_btn').is(':visible')) {
+			var targ = $(e.target).closest('.sidebar, .header-left').length;
+			if (targ) {
+				$('body').addClass('expand-menu');
+				$('.subdrop + ul').slideDown();
+			} else {
+				$('body').removeClass('expand-menu');
+				$('.subdrop + ul').slideUp();
+			}
+			return false;
+		}
+	});
 
 	var selectAllItems = "#select-all";
 	var checkboxItem = ".form-check.form-check-md :checkbox";
-	$(selectAllItems).on('click', function(){	
+	$(selectAllItems).on('click', function () {
 		if (this.checked) {
-		$(checkboxItem).each(function() {
-			this.checked = true;
-		});
+			$(checkboxItem).each(function () {
+				this.checked = true;
+			});
 		} else {
-		$(checkboxItem).each(function() {
-			this.checked = false;
-		});
+			$(checkboxItem).each(function () {
+				this.checked = false;
+			});
 		}
 
-		
+
 	});
 
 
@@ -105,7 +105,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 		const isMini = $body.hasClass('mini-sidebar');
 		const isFullWidth = $html.attr('data-layout') === 'full-width';
 		const isHidden = $html.attr('data-layout') === 'hidden';
-	
+
 		if (isMini) {
 			$body.removeClass('mini-sidebar');
 			$(this).addClass('active');
@@ -121,7 +121,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 				$(".header-left").removeClass("active");
 			}, 100);
 		}
-	
+
 		// If <html> has data-layout="full-width", apply full-width class to <body>
 		if (isFullWidth) {
 			$body.addClass('full-width').removeClass('mini-sidebar');
@@ -140,64 +140,64 @@ Template Name: Preclinic - Bootstrap Admin Template
 			$(document).on('click', '.sidebar-close', function () {
 				$('body').removeClass('full-width');
 			});
-		} 
-	
+		}
+
 		return false;
 	});
 
-		// Toggle Button
-		$(document).on('click', '#toggle_btn2', function () {
-			const $body = $('body');
-			const $html = $('html');
-			const isMini = $body.hasClass('mini-sidebar');
-			const isFullWidth = $html.attr('data-layout') === 'full-width';
-			const isHidden = $html.attr('data-layout') === 'hidden';
-		
-			if (isMini) {
-				$body.removeClass('mini-sidebar');
-				$(this).addClass('active');
-				localStorage.setItem('screenModeNightTokenState', 'night');
-				setTimeout(function () {
-					$(".header-left").addClass("active");
-				}, 100);
-			} else {
-				$body.addClass('mini-sidebar');
-				$(this).removeClass('active');
-				localStorage.removeItem('screenModeNightTokenState');
-				setTimeout(function () {
-					$(".header-left").removeClass("active");
-				}, 100);
-			}
-		
-			// If <html> has data-layout="full-width", apply full-width class to <body>
-			if (isFullWidth) {
-				$body.addClass('full-width').removeClass('mini-sidebar');
-				$('.sidebar-overlay').addClass('opened');
-				$(document).on('click', '.sidebar-close', function () {
-					$('body').removeClass('full-width');
-				});
-			} else {
-				$body.removeClass('full-width');
-			}
-	
-			// If <html> has data-layout="hidden", apply hidden-layout class to <body>
-			if (isHidden) {
-				$body.toggleClass('hidden-layout');
-				$body.removeClass('mini-sidebar');
-				$(document).on('click', '.sidebar-close', function () {
-					$('body').removeClass('full-width');
-				});
-			} 
-		
-			return false;
-		});
-	
-/*	document.addEventListener("DOMContentLoaded", function () {
-		const appStyle = document.getElementById("app-style");
-		if (appStyle && appStyle.href.includes("rtl.min.css")) {
-		  document.documentElement.setAttribute("dir", "rtl");
+	// Toggle Button
+	$(document).on('click', '#toggle_btn2', function () {
+		const $body = $('body');
+		const $html = $('html');
+		const isMini = $body.hasClass('mini-sidebar');
+		const isFullWidth = $html.attr('data-layout') === 'full-width';
+		const isHidden = $html.attr('data-layout') === 'hidden';
+
+		if (isMini) {
+			$body.removeClass('mini-sidebar');
+			$(this).addClass('active');
+			localStorage.setItem('screenModeNightTokenState', 'night');
+			setTimeout(function () {
+				$(".header-left").addClass("active");
+			}, 100);
+		} else {
+			$body.addClass('mini-sidebar');
+			$(this).removeClass('active');
+			localStorage.removeItem('screenModeNightTokenState');
+			setTimeout(function () {
+				$(".header-left").removeClass("active");
+			}, 100);
 		}
-	});*/
+
+		// If <html> has data-layout="full-width", apply full-width class to <body>
+		if (isFullWidth) {
+			$body.addClass('full-width').removeClass('mini-sidebar');
+			$('.sidebar-overlay').addClass('opened');
+			$(document).on('click', '.sidebar-close', function () {
+				$('body').removeClass('full-width');
+			});
+		} else {
+			$body.removeClass('full-width');
+		}
+
+		// If <html> has data-layout="hidden", apply hidden-layout class to <body>
+		if (isHidden) {
+			$body.toggleClass('hidden-layout');
+			$body.removeClass('mini-sidebar');
+			$(document).on('click', '.sidebar-close', function () {
+				$('body').removeClass('full-width');
+			});
+		}
+
+		return false;
+	});
+
+	/*	document.addEventListener("DOMContentLoaded", function () {
+			const appStyle = document.getElementById("app-style");
+			if (appStyle && appStyle.href.includes("rtl.min.css")) {
+			  document.documentElement.setAttribute("dir", "rtl");
+			}
+		});*/
 
 	// Select 2	
 	if ($('.select2').length > 0) {
@@ -205,41 +205,61 @@ Template Name: Preclinic - Bootstrap Admin Template
 	}
 
 	// Select 2    
-    if ($('.select').length > 0) {
-        $('.select').select2({
-            minimumResultsForSearch: -1,
-            width: '100%'
-        });
-    }
-	
+	if ($('.select').length > 0) {
+		$('.select').select2({
+			minimumResultsForSearch: -1,
+			width: '100%'
+		});
+	}
+
 	// Filter Close
 
 	document.addEventListener("DOMContentLoaded", function () {
 		if (document.querySelector('.filter-dropdown')) {
 			const closeBtn = document.getElementById("close-filter");
 			const filterDropdown = document.getElementById("filter-dropdown");
-	
+
 			if (closeBtn && filterDropdown) {
 				closeBtn.addEventListener("click", function () {
 					filterDropdown.classList.remove("show");
 				});
 			}
 		}
-	});	
+	});
 
 	// Quill Editor
 
-    if($('.editor').length > 0) {
-        document.querySelectorAll('.editor').forEach((editor) => {
-            new Quill(editor, {
-              theme: 'snow'
-            });
-        });
-    }
+	if ($('.editor').length > 0) {
+		document.querySelectorAll('.editor').forEach((editor) => {
+			new Quill(editor, {
+				theme: 'snow'
+			});
+		});
+	}
 
 	// toggle-password
-	if($('.toggle-password').length > 0) {
-		$(document).on('click', '.toggle-password', function() {
+
+
+	// Eye-icon inside the login page
+	$(document).on('click', '.toggle-password', function () {
+		console.log("hello")
+		const $icon = $(this);
+		const $input = $icon.closest('.pass-group').find('.pass-input'); // <— the field next to the icon
+
+		if ($input.attr('type') === 'password') {
+			$input.attr('type', 'text');
+			$icon.removeClass('ti-eye-off').addClass('ti-eye-slash');
+		} else {
+			$input.attr('type', 'password');
+			$icon.removeClass('ti-eye-slash').addClass('ti-eye-off');
+		}
+	});
+
+
+	// Password toggle functionality
+	if ($('.toggle-password').length > 0) {
+		$(document).on('click', '.toggle-password', function () {
+			console.log("toggleclicked");
 			$(this).toggleClass("ti-eye-off ti-eye-slash");
 			var input = $(".pass-input");
 			if (input.attr("type") == "password") {
@@ -249,8 +269,10 @@ Template Name: Preclinic - Bootstrap Admin Template
 			}
 		});
 	}
-	if($('.toggle-passwords').length > 0) {
-		$(document).on('click', '.toggle-passwords', function() {
+
+
+	if ($('.toggle-passwords').length > 0) {
+		$(document).on('click', '.toggle-passwords', function () {
 			$(this).toggleClass("ti-eye-off ti-eye-slash");
 			var input = $(".pass-inputs");
 			if (input.attr("type") == "password") {
@@ -260,35 +282,38 @@ Template Name: Preclinic - Bootstrap Admin Template
 			}
 		});
 	}
-	if($('.toggle-passworda').length > 0) {
-		$(document).on('click', '.toggle-passworda', function() {
+	if ($('.toggle-passworda').length > 0) {
+		$(document).on('click', '.toggle-passworda', function () {
 			$(this).toggleClass("ti-eye-off ti-eye-slash");
 			var input = $(".pass-inputa");
 			if (input.attr("type") == "password") {
 				input.attr("type", "text");
-			} else {setTimeout
+			} else {
+				setTimeout
 				input.attr("type", "password");
 			}
 		});
 	}
-	if($('.toggle-passwordb').length > 0) {
-		$(document).on('click', '.toggle-passwordb', function() {
+	if ($('.toggle-passwordb').length > 0) {
+		$(document).on('click', '.toggle-passwordb', function () {
 			$(this).toggleClass("ti-eye-off ti-eye-slash");
 			var input = $(".pass-inputb");
 			if (input.attr("type") == "password") {
 				input.attr("type", "text");
-			} else {setTimeout
+			} else {
+				setTimeout
 				input.attr("type", "password");
 			}
 		});
 	}
-	if($('.toggle-password').length > 0) {
-		$(document).on('click', '.toggle-passwordc', function() {
+	if ($('.toggle-password').length > 0) {
+		$(document).on('click', '.toggle-password', function () {
 			$(this).toggleClass("ti-eye-off ti-eye-slash");
 			var input = $(".pass-input");
 			if (input.attr("type") == "password") {
 				input.attr("type", "text");
-			} else {setTimeout
+			} else {
+				setTimeout
 				input.attr("type", "password");
 			}
 		});
@@ -306,14 +331,14 @@ Template Name: Preclinic - Bootstrap Admin Template
 			}
 		});
 	});
-	
-	
+
+
 	// filter dropdown
 	document.addEventListener("DOMContentLoaded", function () {
 		if (document.querySelector('.filter-dropdown')) {
 			const closeBtn = document.getElementById("close-filter");
 			const filterDropdown = document.getElementById("filter-dropdown");
-	
+
 			if (closeBtn && filterDropdown) {
 				closeBtn.addEventListener("click", function () {
 					filterDropdown.classList.remove("show");
@@ -350,94 +375,94 @@ Template Name: Preclinic - Bootstrap Admin Template
 	document.addEventListener('DOMContentLoaded', function () {
 		const profileSection = document.getElementById('profilePage');
 		if (profileSection) {
-		  const uploadTrigger = document.getElementById('uploadTrigger');
-		  const fileInput = document.getElementById('profileUpload');
-	
-		  if (uploadTrigger && fileInput) {
-			uploadTrigger.addEventListener('click', function () {
-			  fileInput.click();
-			});
-		  }
+			const uploadTrigger = document.getElementById('uploadTrigger');
+			const fileInput = document.getElementById('profileUpload');
+
+			if (uploadTrigger && fileInput) {
+				uploadTrigger.addEventListener('click', function () {
+					fileInput.click();
+				});
+			}
 		}
-	  });
+	});
 
 	document.addEventListener('DOMContentLoaded', function () {
 		const profileSection = document.getElementById('profilePage');
 		if (profileSection) {
-		  const uploadTrigger = document.getElementById('uploadTrigger1');
-		  const fileInput = document.getElementById('profileUpload1');
-	
-		  if (uploadTrigger && fileInput) {
-			uploadTrigger.addEventListener('click', function () {
-			  fileInput.click();
-			});
-		  }
+			const uploadTrigger = document.getElementById('uploadTrigger1');
+			const fileInput = document.getElementById('profileUpload1');
+
+			if (uploadTrigger && fileInput) {
+				uploadTrigger.addEventListener('click', function () {
+					fileInput.click();
+				});
+			}
 		}
-	  });
+	});
 
 	document.addEventListener('DOMContentLoaded', function () {
 		const profileSection = document.getElementById('profilePage');
 		if (profileSection) {
-		  const uploadTrigger = document.getElementById('uploadTrigger2');
-		  const fileInput = document.getElementById('profileUpload2');
-	
-		  if (uploadTrigger && fileInput) {
-			uploadTrigger.addEventListener('click', function () {
-			  fileInput.click();
-			});
-		  }
+			const uploadTrigger = document.getElementById('uploadTrigger2');
+			const fileInput = document.getElementById('profileUpload2');
+
+			if (uploadTrigger && fileInput) {
+				uploadTrigger.addEventListener('click', function () {
+					fileInput.click();
+				});
+			}
 		}
-	  });
+	});
 
 	document.addEventListener('DOMContentLoaded', function () {
 		const profileSection = document.getElementById('profilePage');
 		if (profileSection) {
-		  const uploadTrigger = document.getElementById('uploadTrigger3');
-		  const fileInput = document.getElementById('profileUpload3');
-	
-		  if (uploadTrigger && fileInput) {
-			uploadTrigger.addEventListener('click', function () {
-			  fileInput.click();
-			});
-		  }
+			const uploadTrigger = document.getElementById('uploadTrigger3');
+			const fileInput = document.getElementById('profileUpload3');
+
+			if (uploadTrigger && fileInput) {
+				uploadTrigger.addEventListener('click', function () {
+					fileInput.click();
+				});
+			}
 		}
-	  });
+	});
 
 	document.addEventListener('DOMContentLoaded', function () {
 		const profileSection = document.getElementById('profilePage');
 		if (profileSection) {
-		  const uploadTrigger = document.getElementById('uploadTrigger4');
-		  const fileInput = document.getElementById('profileUpload4');
-	
-		  if (uploadTrigger && fileInput) {
-			uploadTrigger.addEventListener('click', function () {
-			  fileInput.click();
-			});
-		  }
+			const uploadTrigger = document.getElementById('uploadTrigger4');
+			const fileInput = document.getElementById('profileUpload4');
+
+			if (uploadTrigger && fileInput) {
+				uploadTrigger.addEventListener('click', function () {
+					fileInput.click();
+				});
+			}
 		}
-	  });
+	});
 
 	document.addEventListener('DOMContentLoaded', function () {
 		const profileSection = document.getElementById('profilePage');
 		if (profileSection) {
-		  const uploadTrigger = document.getElementById('uploadTrigger5');
-		  const fileInput = document.getElementById('profileUpload5');
-	
-		  if (uploadTrigger && fileInput) {
-			uploadTrigger.addEventListener('click', function () {
-			  fileInput.click();
-			});
-		  }
+			const uploadTrigger = document.getElementById('uploadTrigger5');
+			const fileInput = document.getElementById('profileUpload5');
+
+			if (uploadTrigger && fileInput) {
+				uploadTrigger.addEventListener('click', function () {
+					fileInput.click();
+				});
+			}
 		}
-	  });
+	});
 
 	//  Profile upload
 
-	// Datetimepicker
-	if($('.datepic').length > 0 ){
+	//// Datetimepicker
+	if ($('.datepic').length > 0) {
 		$('.datepic').datetimepicker({
 			format: 'DD-MM-YYYY',
-			keepOpen: true,inline: true,
+			keepOpen: true, inline: true,
 			icons: {
 				up: "fas fa-angle-up",
 				down: "fas fa-angle-down",
@@ -447,11 +472,11 @@ Template Name: Preclinic - Bootstrap Admin Template
 		});
 	}
 
-		// Datatable
-	if($('.datatable').length > 0) {
+	// Datatable
+	if ($('.datatable').length > 0) {
 		$('.datatable').DataTable({
 			"bFilter": true,
-			"sDom": 'fBtlpi',  
+			"sDom": 'fBtlpi',
 			"ordering": false,
 			"language": {
 				search: ' ',
@@ -468,15 +493,15 @@ Template Name: Preclinic - Bootstrap Admin Template
 			// "scrollCollapse": true,  // Adjust table size when the scroll is used
 			"responsive": true,
 			"autoWidth": false,
-			initComplete: (settings, json)=>{
+			initComplete: (settings, json) => {
 				$('.dataTables_filter').appendTo('#tableSearch');
 				$('.dataTables_filter').appendTo('.search-input');
-			},	
+			},
 		});
-	}	
+	}
 
 	// Datetimepicker
-	if($('.datetimepicker').length > 0 ){
+	if ($('.datetimepicker').length > 0) {
 		$('.datetimepicker').datetimepicker({
 			format: 'DD-MM-YYYY',
 			icons: {
@@ -503,7 +528,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 	}
 
 	// Date Range Picker
-	if($('#reportrange').length > 0) {
+	if ($('#reportrange').length > 0) {
 		var start = moment().subtract(29, "days"),
 			end = moment();
 
@@ -524,29 +549,29 @@ Template Name: Preclinic - Bootstrap Admin Template
 		}, report_range), report_range(end, end);
 	}
 
-		// Date Range Picker
-		if($('.reportrange').length > 0) {
-			var start = moment().subtract(29, "days"),
-				end = moment();
-	
-			function report_range(start, end) {
-				$(".reportrange span").html(start.format("D MMM YY") + " - " + end.format("D MMM YY"))
-			}
-			$(".reportrange").daterangepicker({
-				startDate: start,
-				endDate: end,
-				ranges: {
-					'Today': [moment(), moment()],
-					'Yesterday': [moment().subtract(1, "days"), moment().subtract(1, "days")],
-					"Last 7 Days": [moment().subtract(6, "days"), moment()],
-					"Last 30 Days": [moment().subtract(29, "days"), moment()],
-					"This Month": [moment().startOf("month"), moment().endOf("month")],
-					"Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
-				}
-			}, report_range), report_range(end, end);
-		}
+	// Date Range Picker
+	if ($('.reportrange').length > 0) {
+		var start = moment().subtract(29, "days"),
+			end = moment();
 
-	if($('.bookingrange').length > 0) {
+		function report_range(start, end) {
+			$(".reportrange span").html(start.format("D MMM YY") + " - " + end.format("D MMM YY"))
+		}
+		$(".reportrange").daterangepicker({
+			startDate: start,
+			endDate: end,
+			ranges: {
+				'Today': [moment(), moment()],
+				'Yesterday': [moment().subtract(1, "days"), moment().subtract(1, "days")],
+				"Last 7 Days": [moment().subtract(6, "days"), moment()],
+				"Last 30 Days": [moment().subtract(29, "days"), moment()],
+				"This Month": [moment().startOf("month"), moment().endOf("month")],
+				"Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+			}
+		}, report_range), report_range(end, end);
+	}
+
+	if ($('.bookingrange').length > 0) {
 		var start = moment().subtract(6, 'days');
 		var end = moment();
 		function booking_range(start, end) {
@@ -569,7 +594,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 	}
 
 
-	if($('.daterange').length > 0) {
+	if ($('.daterange').length > 0) {
 		$('.daterange').daterangepicker({
 			autoUpdateInput: false,  // Prevents immediate update of input field
 			ranges: {
@@ -584,18 +609,18 @@ Template Name: Preclinic - Bootstrap Admin Template
 				cancelLabel: 'Clear'
 			}
 		});
-		$('#daterange').on('input', function() {
+		$('#daterange').on('input', function () {
 			var textLength = $(this).val().length;
 			$(this).css('width', (textLength + 10) + 'px'); // 10ch adds space for padding
 		});
 
 		// Event when the user selects a date
-		$('.daterange').on('apply.daterangepicker', function(ev, picker) {
+		$('.daterange').on('apply.daterangepicker', function (ev, picker) {
 			$(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
 		});
 
 		// Event for clearing the selected date
-		$('.daterange').on('cancel.daterangepicker', function(ev, picker) {
+		$('.daterange').on('cancel.daterangepicker', function (ev, picker) {
 			$(this).val('');  // Resets to placeholder
 		});
 	}
@@ -603,7 +628,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 	// Add new complaint input on '+' click
 	$(document).on('click', '.add-complaint', function (e) {
 		e.preventDefault();
-	
+
 		const newComplaint = `
 		<div class="mb-3 complaint-list-item">
 			<div class="input-group">
@@ -614,11 +639,11 @@ Template Name: Preclinic - Bootstrap Admin Template
 			</div>
 		</div>
 		`;
-	
+
 		// Insert before the add button row
 		$(this).closest('.complaint-list-item').before(newComplaint);
 	});
-  
+
 	// Remove complaint input on trash icon click
 	$(document).on('click', '.remove-complaint', function (e) {
 		e.preventDefault();
@@ -628,7 +653,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 	// Add new Advices input on '+' click
 	$(document).on('click', '.add-advices', function (e) {
 		e.preventDefault();
-	
+
 		const newComplaint = `
 			<div class="mb-3 advices-list-item">
 				<label class="form-label mb-1 text-dark fs-14 fw-medium">Advice</label>
@@ -638,11 +663,11 @@ Template Name: Preclinic - Bootstrap Admin Template
 				</div>
 			</div>
 		`;
-	
+
 		// Insert before the add button row
 		$(this).closest('.advices-list-item').before(newComplaint);
 	});
-  
+
 	// Remove complaint input on trash icon click
 	$(document).on('click', '.remove-advices', function (e) {
 		e.preventDefault();
@@ -653,7 +678,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 	// Add new invest input on '+' click
 	$(document).on('click', '.add-invest', function (e) {
 		e.preventDefault();
-	
+
 		const newComplaint = `
 			<div class="mb-3 invest-list-item">
 				<label class="form-label mb-1 text-dark fs-14 fw-medium">Investigation & Procedure</label>
@@ -663,11 +688,11 @@ Template Name: Preclinic - Bootstrap Admin Template
 				</div>
 			</div>
 		`;
-	
+
 		// Insert before the add button row
 		$(this).closest('.invest-list-item').before(newComplaint);
 	});
-  
+
 	// Remove invest input on trash icon click
 	$(document).on('click', '.remove-invest', function (e) {
 		e.preventDefault();
@@ -680,7 +705,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 		// Ensure no duplicate bindings
 		$(document).off('click', '.add-diagnosis').on('click', '.add-diagnosis', function (e) {
 			e.preventDefault();
-	
+
 			const newDiagnosis = `
 				<div class="row diagnosis-list-item">
 					<div class="col-lg-6">
@@ -710,18 +735,18 @@ Template Name: Preclinic - Bootstrap Admin Template
 			`;
 
 			setTimeout(function () {
-            $('.select');
-            setTimeout(function () {
-                $('.select').select2({
-                    minimumResultsForSearch: -1,
-                    width: '100%'
-                });
-            }, 100);
-              }, 100);
-	
+				$('.select');
+				setTimeout(function () {
+					$('.select').select2({
+						minimumResultsForSearch: -1,
+						width: '100%'
+					});
+				}, 100);
+			}, 100);
+
 			$('.diagnosis-list').append(newDiagnosis);
 		});
-	
+
 		// Remove a diagnosis input row
 		$(document).off('click', '.remove-diagnosis').on('click', '.remove-diagnosis', function (e) {
 			e.preventDefault();
@@ -735,7 +760,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 		// Ensure no duplicate bindings
 		$(document).off('click', '.add-reminder').on('click', '.add-reminder', function (e) {
 			e.preventDefault();
-	
+
 			const newDiagnosis = `
 					<div class="row d-flex align-items-center mb-3 reminder-list-item">
 						<div class="col-md-2">
@@ -781,19 +806,19 @@ Template Name: Preclinic - Bootstrap Admin Template
 					</div>
 			`;
 
-			  setTimeout(function () {
-            $('.select');
-            setTimeout(function () {
-                $('.select').select2({
-                    minimumResultsForSearch: -1,
-                    width: '100%'
-                });
-            }, 100);
-              }, 100);
-	
+			setTimeout(function () {
+				$('.select');
+				setTimeout(function () {
+					$('.select').select2({
+						minimumResultsForSearch: -1,
+						width: '100%'
+					});
+				}, 100);
+			}, 100);
+
 			$('.reminder-list').append(newDiagnosis);
 		});
-	
+
 		// Remove a diagnosis input row
 		$(document).off('click', '.remove-reminder').on('click', '.remove-reminder', function (e) {
 			e.preventDefault();
@@ -805,7 +830,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 	// Add new invoice input on '+' click
 	$(document).on('click', '.add-invoice', function (e) {
 		e.preventDefault();
-	
+
 		const newComplaint = `
 			<div class="row invoice-list-item">
 				<div class="col-lg-8">
@@ -833,20 +858,20 @@ Template Name: Preclinic - Bootstrap Admin Template
 			<!-- end row -->
 		`;
 
-		setTimeout(function () {
-            $('.select');
-            setTimeout(function () {
-                $('.select').select2({
-                    minimumResultsForSearch: -1,
-                    width: '100%'
-                });
-            }, 100);
-              }, 100);
-	
+		//setTimeout(function () {
+		//          $('.select');
+		//          setTimeout(function () {
+		//              $('.select').select2({
+		//                  minimumResultsForSearch: -1,
+		//                  width: '100%'
+		//              });
+		//          }, 100);
+		//            }, 100);
+
 		// Insert before the add button row
 		$(this).closest('.invoice-list-item').before(newComplaint);
 	});
-	
+
 	// Remove invest input on trash icon click
 	$(document).on('click', '.remove-invoice', function (e) {
 		e.preventDefault();
@@ -857,7 +882,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 	// Add new medication input on '+' click
 	$(document).on('click', '.add-medication', function (e) {
 		e.preventDefault();
-	
+
 		const newComplaint = `
 			<!-- start row -->
 			<div class="row medication-list-item">
@@ -931,11 +956,11 @@ Template Name: Preclinic - Bootstrap Admin Template
 			</div>
 			<!-- end row -->
 		`;
-	
+
 		// Insert before the add button row
 		$(this).closest('.medication-list-item').before(newComplaint);
 	});
-	
+
 	// Remove invest input on trash icon click
 	$(document).on('click', '.remove-medication', function (e) {
 		e.preventDefault();
@@ -945,7 +970,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 
 	$(document).on('click', '.add-invoices', function (e) {
 		e.preventDefault();
-	
+
 		const newInvoice = `
 			<tr class="invoices-list-item">
 				<td><input type="text" class="form-control" /></td>
@@ -958,26 +983,26 @@ Template Name: Preclinic - Bootstrap Admin Template
 				</button></td>
 			</tr>
 		`;
-	
+
 		// Insert before the last row (the add button row)
 		$('.invoices-list tr:last').before(newInvoice);
 	});
-	
+
 	// Remove Invoices input on trash icon click
 	$(document).on('click', '.remove-invoices', function (e) {
 		e.preventDefault();
 		$(this).closest('.invoices-list-item').remove();
 	});
-  
+
 	//   Language Settings
-	document.querySelectorAll('.toggle-star').forEach(function(button) {
-		button.addEventListener('click', function() {
-		this.classList.toggle('active');
+	document.querySelectorAll('.toggle-star').forEach(function (button) {
+		button.addEventListener('click', function () {
+			this.classList.toggle('active');
 		});
 	});
-	
+
 	// Tooltip
-	if($('[data-bs-toggle="tooltip"]').length > 0) {
+	if ($('[data-bs-toggle="tooltip"]').length > 0) {
 		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 			return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -985,14 +1010,14 @@ Template Name: Preclinic - Bootstrap Admin Template
 	}
 
 	/* Invoice Template */
-	$('.invoice-template').on('click', function(){
+	$('.invoice-template').on('click', function () {
 		$('.invoice-template').removeClass('active');
 		$(this).addClass('active');
 	});
 
 
 	// add break
-	document.addEventListener("DOMContentLoaded", function () { 
+	document.addEventListener("DOMContentLoaded", function () {
 		const section = document.getElementById("break-hours-section");
 		if (!section) return;
 
@@ -1035,10 +1060,10 @@ Template Name: Preclinic - Bootstrap Admin Template
 	function initChoices() {
 		document.querySelectorAll('[data-choices]').forEach(item => {
 			const config = {
-				allowHTML: true  
+				allowHTML: true
 			};
 			const attrs = item.attributes;
-	
+
 			if (attrs['data-choices-groups']) {
 				config.placeholderValue = 'This is a placeholder set in the config';
 			}
@@ -1075,15 +1100,15 @@ Template Name: Preclinic - Bootstrap Admin Template
 			if (attrs['data-choices-text-disabled-true']) {
 				config.addItems = false;
 			}
-	
+
 			const instance = new Choices(item, config);
-	
+
 			if (attrs['data-choices-text-disabled-true']) {
 				instance.disable();
 			}
 		});
 	}
-		
+
 	// Call it when the DOM is ready
 	document.addEventListener('DOMContentLoaded', initChoices);
 
@@ -1240,12 +1265,12 @@ Template Name: Preclinic - Bootstrap Admin Template
 	}
 
 	// Select 2    
-    if ($('.select').length > 0) {
-        $('.select').select2({
-            minimumResultsForSearch: -1,
-            width: '100%'
-        });
-    }
+	if ($('.select').length > 0) {
+		$('.select').select2({
+			minimumResultsForSearch: -1,
+			width: '100%'
+		});
+	}
 
 	// Sticky Sidebar
 
@@ -1259,7 +1284,7 @@ Template Name: Preclinic - Bootstrap Admin Template
 	}
 
 	// Date Range Picker
-	if($('.daterangepick').length > 0) {
+	if ($('.daterangepick').length > 0) {
 		var start = moment().subtract(29, "days"),
 			end = moment();
 
@@ -1280,8 +1305,8 @@ Template Name: Preclinic - Bootstrap Admin Template
 		}, report_range), report_range(end, end);
 	}
 
-	
-})();
+
+});
 
 
 

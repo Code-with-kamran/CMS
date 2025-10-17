@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CMS.Models.Appointment>
+﻿@* @model IEnumerable<CMS.Models.Appointment>
 
 <div class="table-responsive table-nowrap">
     <table class="table border">
@@ -38,6 +38,53 @@
                         </div>
                     </td>
                     <td>@appt.AppointmentDate.ToString("dd MMM yyyy - hh:mm tt")</td>
+                    <td>Mode</td>
+                    <td><span class="badge fs-13 py-1 badge-soft-success border border-success rounded text-success fw-medium">@appt.Status</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div> *@
+@model IEnumerable<CMS.Models.Appointment>
+
+<div class="table-responsive table-nowrap">
+    <table class="table border">
+        <thead class="thead-light">
+            <tr>
+                <th>Médecin</th>
+                <th>Patient</th>
+                <th>Date & Heure</th>
+                <th>Mode</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appt in Model)
+            {
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a href="#" class="avatar me-2">
+                                <img src="~/@appt.Doctor?.ProfileImageUrl" alt="img" class="rounded-circle">
+                            </a>
+                            <div>
+                                <h6 class="fs-14 mb-1"><a href="#" class="fw-semibold">@appt.Doctor?.FullName</a></h6>
+                                <p class="mb-0 fs-13">@appt.Doctor?.Specialty</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a href="#" class="avatar me-2">
+                                <img src="~/@appt.Patient?.ProfileImageUrl" alt="img" class="rounded-circle">
+                            </a>
+                            <div>
+                                <h6 class="fs-14 mb-1"><a href="#" class="fw-medium">@appt.Patient?.FirstName</a></h6>
+                                <p class="mb-0 fs-13">@appt.Patient?.PhoneNumber</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>@appt.AppointmentDate.ToString("dd MMM yyyy - HH:mm")</td>
                     <td>Mode</td>
                     @* <td>@appt.Mode</td> *@
                     <td><span class="badge fs-13 py-1 badge-soft-success border border-success rounded text-success fw-medium">@appt.Status</span></td>

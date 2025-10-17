@@ -1,4 +1,4 @@
-﻿@* // File: Views/Payroll/CreateRun.cshtml *@
+﻿@* // File: Views/Payroll/CreateRun.cshtml
 @{
     ViewData["Title"] = "Generate Payroll Run";
     var currentMonth = DateTime.Now.Month;
@@ -54,6 +54,78 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         // bootstrap client-side validation
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', e => {
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+} *@
+
+@* // File: Views/Payroll/CreateRun.cshtml *@
+@{
+    ViewData["Title"] = "Générer une exécution de paie";
+    var currentMonth = DateTime.Now.Month;
+}
+<form id="generatePayrollForm" asp-action="GeneratePayrollRun" asp-controller="Payroll" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="content py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h4 class="mb-0">@ViewData["Title"]</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Retour aux exécutions de paie</a>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    Générer la paie
+                </button>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Période de paie</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="year" class="form-label">Année</label>
+                        <input type="number" id="year" name="year" class="form-control" value="@DateTime.Now.Year" required min="2000" max="2100" />
+                        <div class="invalid-feedback">Veuillez entrer une année valide.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="month" class="form-label">Mois</label>
+                        <select id="month" name="month" class="form-select" required>
+                            <option value="">-- Sélectionner un mois --</option>
+                            @for (int i = 1; i <= 12; i++)
+                            {
+                                var monthName = new DateTime(1, i, 1).ToString("MMMM");
+                                <option value="@i" selected="@(i == currentMonth ? "selected" : null)">@monthName</option>
+                            }
+                        </select>
+                        <div class="invalid-feedback">Veuillez sélectionner un mois.</div>
+                    </div>
+                    <div class="col-12">
+                        <label for="notes" class="form-label">Notes (Optionnel)</label>
+                        <textarea id="notes" name="notes" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // validation côté client bootstrap
         (() => {
             'use strict';
             const forms = document.querySelectorAll('.needs-validation');

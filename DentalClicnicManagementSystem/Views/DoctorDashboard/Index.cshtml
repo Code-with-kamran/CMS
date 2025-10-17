@@ -1,13 +1,12 @@
 ﻿@model CMS.ViewModels.DoctorDashboardViewModel
-@inject CMS.Services.ICurrencyService CurrencyService
 @{
     ViewData["Title"] = "Doctor Dashboard";
     Layout = "_Layout";
-    var currencySymbol = await CurrencyService.GetCurrentCurrencySymbolAsync();
+   
 }
 
 <div class="content pb-0">
-    <!-- Page Header -->
+    
     <div class="d-flex align-items-sm-center justify-content-between flex-wrap gap-2 mb-4">
         <div>
             <h4 class="fw-bold mb-0">Welcome, Dr. @Model.Doctor.FullName</h4>
@@ -23,8 +22,11 @@
         </div>
     </div>
 
-    <!-- Stats Cards Row -->
+    <!-- Top Stats Cards Row -->
     <div class="row">
+
+
+        
         <!-- Total Appointments -->
         <div class="col-xl-4 d-flex">
             <div class="card shadow-sm flex-fill w-100">
@@ -33,20 +35,24 @@
                         <div>
                             <p class="mb-1">Total Appointments</p>
                             <div class="d-flex align-items-center gap-1">
-                                <h3 class="fw-bold mb-0" id="total-appointments-today">0</h3>
-                                <span class="badge fw-medium bg-success flex-shrink-0" id="total-appointments-change-top">--%</span>
+                                <h3 class="fw-bold mb-0" id="total-appointments-today">658</h3>
+                                <span class="badge fw-medium bg-success flex-shrink-0" id="total-appointments-change-top">+95%</span>
                             </div>
                         </div>
-                        <span class="avatar border border-primary text-primary rounded-2 flex-shrink-0">
+                        <span class="avatar border border-success text-primary rounded-2 flex-shrink-0">
                             <i class="ti ti-calendar-heart fs-20"></i>
                         </span>
+                       </div>
+
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="total-appointments-change-bottom">
+                                +21% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">in last 7 Days</p>
+                        </div>
                     </div>
-                    <div class="d-flex align-items-end">
-                        <div id="s-col-5" class="chart-set"></div>
-                        <span class="badge fw-medium badge-soft-success flex-shrink-0 ms-2" id="total-appointments-change-bottom">--%</span>
-                        <p class="ms-1 fs-13 text-truncate">in last 7 Days</p>
                     </div>
-                </div>
             </div>
         </div>
 
@@ -56,21 +62,25 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div>
-                            <p class="mb-1">Online Consultations</p>
+                            <p class="mb-1">Completed Appointments</p>
                             <div class="d-flex align-items-center gap-1">
-                                <h3 class="fw-bold mb-0" id="online-consultations-today">0</h3>
-                                <span class="badge fw-medium bg-danger flex-shrink-0" id="online-consultations-change-top">--%</span>
+                                <h3 class="fw-bold mb-0" id="online-consultations-today">125</h3>
+                                <span class="badge fw-medium bg-danger flex-shrink-0" id="online-consultations-change-top">-15%</span>
                             </div>
                         </div>
                         <span class="avatar border border-danger text-danger rounded-2 flex-shrink-0">
                             <i class="ti ti-users fs-20"></i>
                         </span>
                     </div>
-                    <div class="d-flex align-items-end">
-                        <div id="s-col-6" class="chart-set"></div>
-                        <span class="badge fw-medium badge-soft-danger flex-shrink-0 ms-2" id="online-consultations-change-bottom">--%</span>
-                        <p class="ms-1 fs-13 text-truncate">in last 7 Days</p>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="online-consultations-change-bottom">
+                                +21% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">in last 7 Days</p>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -83,19 +93,23 @@
                         <div>
                             <p class="mb-1">Cancelled Appointments</p>
                             <div class="d-flex align-items-center gap-1">
-                                <h3 class="fw-bold mb-0" id="cancelled-appointments-today">0</h3>
-                                <span class="badge fw-medium bg-success flex-shrink-0" id="cancelled-appointments-change-top">--%</span>
+                                <h3 class="fw-bold mb-0" id="cancelled-appointments-today">35</h3>
+                                <span class="badge fw-medium bg-success flex-shrink-0" id="cancelled-appointments-change-top">+45%</span>
                             </div>
                         </div>
                         <span class="avatar border border-success text-success rounded-2 flex-shrink-0">
                             <i class="ti ti-versions fs-20"></i>
                         </span>
                     </div>
-                    <div class="d-flex align-items-end">
-                        <div id="s-col-7" class="chart-set"></div>
-                        <span class="badge fw-medium badge-soft-success flex-shrink-0 ms-2" id="cancelled-appointments-change-bottom">--%</span>
-                        <p class="ms-1 fs-13 text-truncate">in last 7 Days</p>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="cancelled-appointments-change-bottom">
+                                +21% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">in last 7 Days</p>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -103,44 +117,82 @@
 
     <!-- Main Content Row -->
     <div class="row mt-4">
-        <!-- Next Patient Details -->
+        <!-- Upcoming Appointments -->
         <div class="col-xl-4 d-flex">
             <div class="card shadow-sm flex-fill w-100">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="fw-bold mb-0 text-truncate">Upcoming Appointments</h5>
-                    <div class="dropdown">
-                        <a href="javascript:void(0);" class="btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
-                            Today <i class="ti ti-chevron-down ms-1"></i>
+                    <div class="dropdown" data-target-id="upcoming-appointments">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                            Today 
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Today</a></li>
-                            <li><a class="dropdown-item" href="#">This Week</a></li>
-                            <li><a class="dropdown-item" href="#">This Month</a></li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center "
+                                   href="#" data-filter="today">
+                                    Today
+                                    <i class="ti ti-check fs-16 ms-auto"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#" data-filter="weekly">
+                                    This Week
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#" data-filter="monthly">
+                                    This Month
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
                 <div class="card-body" id="next-patient-container">
+                    <!-- Dynamic content will be loaded here -->
                     <div class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p class="mt-2">Loading data...</p>
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading appointments...</p>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Today's Appointments -->
+        <!-- Appointments Chart -->
         <div class="col-xl-8 d-flex">
             <div class="card shadow-sm flex-fill w-100">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="fw-bold mb-0">Appointments</h5>
-                    <div class="dropdown">
-                        <a href="javascript:void(0);" class="btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
-                            Monthly <i class="ti ti-chevron-down ms-1"></i>
+                    <div class="dropdown" id="appointments-chart">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                            Monthly 
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Monthly</a></li>
-                            <li><a class="dropdown-item" href="#">Weekly</a></li>
-                            <li><a class="dropdown-item" href="#">Yearly</a></li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center "
+                                   href="#" data-filter="today">
+                                    Today
+                                    <i class="ti ti-check fs-16 ms-auto"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#" data-filter="weekly">
+                                    This Week
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#" data-filter="monthly">
+                                    This Month
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -155,42 +207,8 @@
         </div>
     </div>
 
-
-
-  
-    <!-- For Recent Appointments Table -->
-    <tbody id="recent-appointments-tbody">
-        <!-- Dynamic content will be loaded here -->
-    </tbody>
-
-    <!-- For Top Patients -->
-    <div class="card-body" id="top-patients-container">
-        <!-- Dynamic content will be loaded here -->
-    </div>
-
-    <!-- For Availability -->
-    <div class="card-body" id="availability-container">
-        <!-- Dynamic content will be loaded here -->
-    </div>
-
-    <!-- For Statistics Numbers -->
-    <div class="d-flex align-items-center justify-content-center gap-2 mt-3">
-        <div class="text-center">
-            <p class="d-flex align-items-center mb-1 fs-13"><i class="ti ti-circle-filled text-success fs-10 me-1"></i>Completed</p>
-            <h5 class="fw-bold mb-0" id="completed-count">260</h5>
-        </div>
-        <div class="text-center">
-            <p class="d-flex align-items-center mb-1 fs-13"><i class="ti ti-circle-filled text-warning fs-10 me-1"></i>Pending</p>
-            <h5 class="fw-bold mb-0" id="pending-count">21</h5>
-        </div>
-        <div class="text-center">
-            <p class="d-flex align-items-center mb-1 fs-13"><i class="ti ti-circle-filled text-danger fs-10 me-1"></i>Cancelled</p>
-            <h5 class="fw-bold mb-0" id="cancelled-count">50</h5>
-        </div>
-    </div>
-
-    <!-- For Statistics Cards Row -->
-    <div class="row row-cols-1 row-cols-xl-6 row-cols-md-3 row-cols-sm-2">
+    <!-- Statistics Cards Row -->
+    <div class="row row-cols-1 row-cols-xl-6 row-cols-md-3 row-cols-sm-2 mt-4">
         <div class="col">
             <div class="card shadow-sm">
                 <div class="card-body">
@@ -201,475 +219,759 @@
                 </div>
             </div>
         </div>
-        <!-- Add similar cards for other statistics -->
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-secondary rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-video"></i></span>
+                    <p class="mb-1 text-truncate">Video Consultation</p>
+                    <h3 class="fw-bold mb-2" id="video-consultations">256</h3>
+                    <p class="mb-0 text-danger text-truncate">-21% Last Week</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-success rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-calendar-up"></i></span>
+                    <p class="mb-1 text-truncate">Rescheduled</p>
+                    <h3 class="fw-bold mb-2" id="rescheduled">141</h3>
+                    <p class="mb-0 text-success text-truncate">+64% Last Week</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-danger rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-checklist"></i></span>
+                    <p class="mb-1 text-truncate">Pre Visit Bookings</p>
+                    <h3 class="fw-bold mb-2" id="pre-visit-bookings">524</h3>
+                    <p class="mb-0 text-success text-truncate">+38% Last Week</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-info rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-calendar-share"></i></span>
+                    <p class="mb-1 text-truncate">Walkin Bookings</p>
+                    <h3 class="fw-bold mb-2" id="walkin-bookings">21</h3>
+                    <p class="mb-0 text-success text-truncate">+95% Last Week</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-soft-success text-success rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-carousel-vertical"></i></span>
+                    <p class="mb-1 text-truncate">Follow Ups</p>
+                    <h3 class="fw-bold mb-2" id="follow-ups">451</h3>
+                    <p class="mb-0 text-success text-truncate">+76% Last Week</p>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Recent Appointments Table -->
+    <div class="row mt-4">
+        <div class="col-12 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Recent Appointments</h5>
+                    <div class="dropdown" data-target-id="recent-appointments-table">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                            Weekly 
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center "
+                                   href="#" data-filter="today">
+                                    Today
+                                    <i class="ti ti-check fs-16 ms-auto"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#" data-filter="weekly">
+                                    This Week
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#" data-filter="monthly">
+                                    This Month
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive table-nowrap">
+                        <table class="table border">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Date & Time</th>
+                                    <th>Mode</th>
+                                    <th>Status</th>
+                                    <th>Consultation Fees</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-appointments-tbody">
+                                <!-- Dynamic content will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Row Cards -->
+    <div class="row mt-4">
+        <!-- Availability -->
+        <div class="col-xl-4 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Availability</h5>
+                   
+                </div>
+                <div class="card-body" id="availability-container">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Statistics -->
+        <div class="col-xl-4 col-lg-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0 text-truncate">Appointment Statistics</h5>
+                    <div class="dropdown" id="appointment-statistics">
+                        <a href="javascript:void(0);" class=" dropdown-toggle btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                            Monthly 
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#"
+                                   data-filter="monthly">
+                                    Monthly
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#"
+                                   data-filter="weekly">
+                                    Weekly
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   href="#"
+                                   data-filter="yearly">
+                                    Yearly
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="circle-chart-2" class="chart-set"></div>
+                    <div class="d-flex align-items-center justify-content-center gap-2 mt-3">
+                        <div class="text-center">
+                            <p class="d-flex align-items-center mb-1 fs-13"><i class="ti ti-circle-filled text-success fs-10 me-1"></i>Completed</p>
+                            <h5 class="fw-bold mb-0" id="completed-count">260</h5>
+                        </div>
+                        <div class="text-center">
+                            <p class="d-flex align-items-center mb-1 fs-13"><i class="ti ti-circle-filled text-warning fs-10 me-1"></i>Pending</p>
+                            <h5 class="fw-bold mb-0" id="pending-count">21</h5>
+                        </div>
+                        <div class="text-center">
+                            <p class="d-flex align-items-center mb-1 fs-13"><i class="ti ti-circle-filled text-danger fs-10 me-1"></i>Cancelled</p>
+                            <h5 class="fw-bold mb-0" id="cancelled-count">50</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Patients -->
+        <!-- Top Patients Dropdown - Add data-target-id <i class="ti ti-chevron-down ms-1"></i>-->
+        <div class="col-xl-4 col-lg-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Top Patients</h5>
+                    <div class="dropdown" data-target-id="top-patients">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                            Weekly 
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-filter="monthly">Monthly</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="weekly">Weekly</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="yearly">Yearly</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body" id="top-patients-container">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+      
+    </div>
 </div>
+
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            // Initialize charts first
-            initializeCharts();
+        // New function to handle upcoming appointments
+                // Updated function to handle upcoming appointments with card + list layout
+                        $(document).on('click', '.dropdown-item[data-filter]', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-            // Load all dashboard data
+            const $item     = $(this);
+            const $dropdown = $item.closest('.dropdown');
+            const $toggle   = $dropdown.find('.dropdown-toggle');   // ① the button
+            const $menu     = $item.closest('.dropdown-menu');
+
+            // 1.  update the visible text
+            const newText = $item.text().trim();
+            $toggle.html(newText + ' ');
+
+            // 2.  move the check-mark
+            $menu.find('.ti-check').addClass('d-none');
+            $item.find('.ti-check').removeClass('d-none');
+
+            // 3.  read the filter and call the loader
+            const filter = $item.data('filter') || newText.toLowerCase();
+            const target = $dropdown.data('target-id');
+
+            if (target === 'upcoming-appointments')   loadUpcomingAppointments(filter);
+            else if (target === 'appointments-chart') loadAppointmentsChart(filter);
+            else if (target === 'appointment-statistics') loadAppointmentStatistics(filter);
+            else if (target === 'recent-appointments-table') loadRecentAppointments(filter);
+            else if (target === 'top-patients')       loadTopPatients(filter);
+
+            // 4.  close the dropdown
+            $dropdown.removeClass('show');
+            $menu.removeClass('show');
+        });
+
+
+                        // Alternative version with clearer visual separation
+        function loadUpcomingAppointments(filter = 'today') {
+            $.ajax({
+                url: '/DoctorDashboard/GetUpcomingAppointments',
+                type: 'GET',
+                data: { filter: filter },
+                        success: function (data) {
+            const container = $('#next-patient-container');
+
+            /* ---------- NEW :  max 5 records ---------- */
+            data = (data || []).slice(0, 5);
+
+            if (data.length) {
+                let html = '';
+
+                /* ---- first card ---- */
+                const main = data[0];
+                html += `
+                <div class="main-appointment-card bg-light rounded p-3 mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="${main.patientImage}" alt="img" class="rounded-circle me-2" width="48" height="48"
+                             onerror="this.src='/assets/img/patients/patient.jpg'">
+                        <div>
+                            <h6 class="fs-14 mb-1 fw-semibold">${main.patientName}</h6>
+                            <p class="mb-0 fs-13 text-muted">${main.appointmentNumber}</p>
+                        </div>
+                    </div>
+                    <h6 class="fs-14 fw-semibold mb-1">${main.serviceType}</h6>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+                        <p class="mb-0"><i class="ti ti-calendar-time me-1"></i>${main.appointmentDate}</p>
+                        <p class="mb-0"><i class="ti ti-clock me-1"></i>${main.appointmentTime}</p>
+                    </div>
+                    <div class="row">
+                        <div class="col"><h6 class="fs-13 fw-semibold mb-1">Department</h6><p>${main.department}</p></div>
+                        <div class="col"><h6 class="fs-13 fw-semibold mb-1">Status</h6><p>${main.status}</p></div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="/Appointment/Details/${main.appointmentId}" class="btn btn-primary w-100">Start Appointment</a>
+                    </div>
+                </div>`;
+
+                /* ---- other 4 ---- */
+                if (data.length > 1) {
+                    html += `<div class="other-appointments-section"><h6 class="fw-semibold mb-3 border-bottom pb-2">Other Upcoming</h6>`;
+                    data.slice(1).forEach(a => {
+                        html += `
+                        <div class="d-flex align-items-center justify-content-between mb-3 p-2 border rounded bg-white">
+                            <div class="d-flex align-items-center">
+                                <img src="${a.patientImage}" alt="img" class="rounded-circle me-2" width="36" height="36"
+                                     onerror="this.src='/assets/img/patients/patient.jpg'">
+                                <div>
+                                    <h6 class="fs-13 mb-0 fw-medium">${a.patientName}</h6>
+                                    <p class="mb-0 fs-12 text-muted"><i class="ti ti-clock me-1"></i>${a.appointmentTime}</p>
+                                </div>
+                            </div>
+                            <a href="/Appointment/Details/${a.appointmentId}" class="btn btn-sm btn-outline-primary">Start</a>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                container.html(html);
+            } else {
+                container.html(`
+                    <div class="text-center py-5">
+                        <i class="ti ti-calendar-off fs-40 text-muted"></i>
+                        <h6 class="fw-semibold text-muted mt-3">No Upcoming Appointments</h6>
+                        <p class="text-muted mb-0">You don't have any appointments for the selected period.</p>
+                    </div>`);
+            }
+        },
+                error: function() {
+                    console.error('Failed to load upcoming appointments');
+                    $('#next-patient-container').html(`
+                        <div class="text-center py-5 text-danger">
+                            <i class="ti ti-alert-circle fs-40 mb-2"></i>
+                            <p>Failed to load appointments</p>
+                        </div>
+                    `);
+                }
+            });
+        }
+
+
+
+
+       // function setupDropdownFilters() {
+       //      Remove any existing handlers
+       //      $(document).off('click', '.dropdown-item[data-filter]');
+
+       //      Single handler for all dropdown items with data-filter
+       //      $(document).on('click', '.dropdown-item[data-filter]', function(e) {
+       //          e.preventDefault();
+       //          e.stopPropagation();
+
+       //          const $item = $(this);
+       //          const $dropdown = $item.closest('.dropdown');
+       //          const $toggle = $dropdown.find('.dropdown-toggle');
+       //          const $menu = $item.closest('.dropdown-menu');
+
+       //          Get the target ID from the dropdown
+       //          const targetId = $dropdown.data('target-id');
+
+       //          If no target-id, try to determine from card title
+       //          let cardContext = '';
+       //          if (!targetId) {
+       //              const cardTitle = $dropdown.closest('.card').find('.card-header h5').text();
+       //              cardContext = cardTitle.toLowerCase();
+       //          }
+
+       //          Update dropdown button text
+       //          const newText = $item.text().trim();
+       //          $toggle.html(newText + ' ');
+
+       //          Update checkmarks
+       //          $menu.find('.ti-check').addClass('d-none');
+       //          $item.find('.ti-check').removeClass('d-none');
+
+       //          Get filter type
+       //          const filter = $item.data('filter') || newText.toLowerCase();
+
+       //          console.log('Filter changed:', filter, 'Target ID:', targetId, 'Card context:', cardContext);
+
+       //          Route based on target-id or card context
+       //          if (targetId === 'upcoming-appointments' || cardContext.includes('upcoming')) {
+       //              loadUpcomingAppointments(filter);
+       //          } else if (targetId === 'appointments-chart' || (cardContext.includes('appointments') && !cardContext.includes('recent') && !cardContext.includes('upcoming'))) {
+       //              loadAppointmentsChart(filter);
+       //          } else if (targetId === 'appointment-statistics' || cardContext.includes('statistics')) {
+       //              loadAppointmentStatistics(filter);
+       //          } else if (targetId === 'recent-appointments-table' || cardContext.includes('recent')) {
+       //              loadRecentAppointments(filter);
+       //          } else if (targetId === 'top-patients' || cardContext.includes('top patients')) {
+       //              loadTopPatients(filter);
+       //          } else {
+       //              console.log('No handler for dropdown:', targetId, cardContext);
+       //          }
+
+       //          Close the dropdown
+       //          $dropdown.removeClass('show');
+       //          $menu.removeClass('show');
+       //      });
+
+       //      Prevent default behavior for all dropdown items (even without data-filter)
+       //      $(document).on('click', '.dropdown-item:not([data-filter])', function(e) {
+       //          e.preventDefault();
+       //          e.stopPropagation();
+
+       //          const $item = $(this);
+       //          const $dropdown = $item.closest('.dropdown');
+       //          const $toggle = $dropdown.find('.dropdown-toggle');
+
+       //          Just update the text for non-filter dropdowns
+       //          const newText = $item.text().trim();
+       //          $toggle.html(newText + ' ');
+
+       //          Close the dropdown
+       //          $dropdown.removeClass('show');
+       //          $item.closest('.dropdown-menu').removeClass('show');
+       //      });
+       //  }
+
+        window.loadAppointmentStatistics = function (filter = 'monthly') {
+            $.ajax({
+                url: '/DoctorDashboard/GetAppointmentStatistics',
+                type: 'GET',
+                data: { filter: filter },
+                success: function(data) {
+                    if (window.statisticsChart && data) {
+                        window.statisticsChart.updateSeries([
+                            data.completed || 0,
+                            data.pending || 0,
+                            data.cancelled || 0
+                        ]);
+                    }
+
+                    // Update statistics numbers from database
+                    $('#completed-count').text(data.completed || 0);
+                    $('#pending-count').text(data.pending || 0);
+                    $('#cancelled-count').text(data.cancelled || 0);
+                },
+                error: function() {
+                    console.error('Failed to load appointment statistics');
+                }
+            });
+        }
+
+        window.loadAvailability = function () {
+            $.ajax({
+                url: '/DoctorDashboard/GetAvailability',
+                type: 'GET',
+                success: function(data) {
+                    let html = '';
+                    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+                    days.forEach((day, index) => {
+                        const availability = data.find(a => a.dayOfWeek === index + 1);
+                        const borderClass = index < 6 ? 'border-bottom pb-2' : 'pb-2';
+
+                        if (availability && availability.isAvailable) {
+                            html += `
+                                <div class="d-flex align-items-center justify-content-between mb-2 ${borderClass}">
+                                    <p class="text-dark fw-semibold mb-0">${day}</p>
+                                    <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-clock me-1"></i>${availability.startTime} - ${availability.endTime}</p>
+                                </div>`;
+                        } else {
+                            html += `
+                                <div class="d-flex align-items-center justify-content-between mb-2 ${borderClass}">
+                                    <p class="text-dark fw-semibold mb-0">${day}</p>
+                                    <p class="mb-0 d-inline-flex align-items-center text-danger"><i class="ti ti-clock me-1"></i>Closed</p>
+                                </div>`;
+                        }
+                    });
+
+                    html += '<a href="javascript:void(0);" class="btn btn-light w-100 mt-2 fs-13">Edit Availability</a>';
+                    $('#availability-container').html(html);
+                },
+                error: function() {
+                    console.error('Failed to load availability');
+                }
+            });
+        }
+
+        window.loadTopPatients = function (filter = 'weekly') {
+            $.ajax({
+                url: '/DoctorDashboard/GetTopPatients',
+                type: 'GET',
+                data: { filter: filter },
+                success: function(data) {
+                    let html = '';
+
+                    if (data && data.length > 0) {
+                        data.forEach(patient => {
+                            html += `
+                                <div class="d-flex align-items-center justify-content-between mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <a href="javascript:void(0);" class="avatar me-2 flex-shrink-0">
+                                            <img src="${patient.patientImage}" alt="img" class="rounded-circle">
+                                        </a>
+                                        <div>
+                                            <h6 class="fs-14 mb-1 text-truncate"><a href="javascript:void(0);" class="fw-medium">${patient.patientName}</a></h6>
+                                            <p class="mb-0 fs-13 text-truncate">${patient.phoneNumber}</p>
+                                        </div>
+                                    </div>
+                                    <span class="badge fw-medium badge-soft-primary border border-primary flex-shrink-0">${patient.appointmentCount} Appointments</span>
+                                </div>`;
+                        });
+                    } else {
+                        html = '<div class="text-center py-4">No patient data found</div>';
+                    }
+
+                    $('#top-patients-container').html(html);
+                },
+                error: function() {
+                    console.error('Failed to load top patients');
+                    $('#top-patients-container').html('<div class="text-center py-4 text-danger">Failed to load patient data</div>');
+                }
+            });
+        }
+
+        window.loadStatistics = function () {
+            $.ajax({
+                url: '/DoctorDashboard/GetStatistics',
+                type: 'GET',
+                success: function (data) {
+                    // Update all statistics from database
+                    $('#total-patients').text(data.totalPatients || 0);
+                    $('#video-consultations').text(data.videoConsultations || 0);
+                    $('#rescheduled').text(data.rescheduled || 0);
+                    $('#pre-visit-bookings').text(data.preVisitBookings || 0);
+                    $('#walkin-bookings').text(data.walkinBookings || 0);
+                    $('#follow-ups').text(data.followUps || 0);
+                },
+                error: function () {
+                    console.error('Failed to load statistics');
+                }
+            });
+        };
+
+        // ---- helpers used by many loaders (GLOBAL) ----
+        window.updateBadge = function (element, value, isTopBadge) {
+            const formattedValue = (value >= 0 ? '+' : '') + Math.abs(value) + '%';
+            element.text(formattedValue);
+
+            if (isTopBadge) {
+                element.removeClass('bg-success bg-danger bg-secondary')
+                    .addClass(value >= 0 ? 'bg-success' : 'bg-danger');
+            } else {
+                element.removeClass('badge-soft-success badge-soft-danger')
+                    .addClass(value >= 0 ? 'badge-soft-success' : 'badge-soft-danger');
+                const arrow = value >= 0 ? '<i class="ti ti-arrow-up ms-1"></i>' : '<i class="ti ti-arrow-down ms-1"></i>';
+                element.html(formattedValue + ' ' + arrow);
+            }
+        };
+
+        window.getStatusClass = function (status) {
+            switch ((status || '').toLowerCase()) {
+                case 'completed':
+                case 'checked out': return 'bg-success';
+                case 'pending':
+                case 'checked in': return 'bg-warning';
+                case 'cancelled': return 'bg-danger';
+                case 'scheduled': return 'bg-info';
+                default: return 'bg-secondary';
+            }
+        };
+
+        // ---- table loader (GLOBAL) ----
+        window.loadRecentAppointments = function (filter = 'weekly') {
+            $.ajax({
+                url: '/DoctorDashboard/GetRecentAppointments',
+                type: 'GET',
+                data: { filter },
+                success: function (data) {
+                    let html = '';
+
+                    if (data && data.length > 0) {
+                        data.forEach(appointment => {
+                            const statusClass = window.getStatusClass(appointment.status);
+                            html += `
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <a href="javascript:void(0);" class="avatar me-2">
+                                                <img src="${appointment.patientImage}" alt="img" class="rounded-circle">
+                                            </a>
+                                            <div>
+                                                <h6 class="fs-14 mb-1">
+                                                    <a href="javascript:void(0);" class="fw-medium">${appointment.patientName}</a>
+                                                </h6>
+                                                <p class="mb-0 fs-13">${appointment.phoneNumber}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${appointment.appointmentDate}</td>
+                                    <td>${appointment.mode}</td>
+                                    <td><span class="badge ${statusClass} fw-medium">${appointment.status}</span></td>
+                                    <td class="fw-semibold text-dark">$${appointment.consultationFees}</td>
+                                    <td>
+                                        <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1 me-1">
+                                            <i class="ti ti-calendar-plus"></i>
+                                        </a>
+                                        <a href="javascript:void(0);" data-bs-toggle="dropdown" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1">
+                                            <i class="ti ti-dots-vertical"></i>
+                                        </a>
+                                        <ul class="dropdown-menu p-2">
+                                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"><i class="ti ti-edit me-2"></i>Edit</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"><i class="ti ti-trash me-2"></i>Delete</a></li>
+                                        </ul>
+                                    </td>
+                                </tr>`;
+                        });
+                    } else {
+                        html = '<tr><td colspan="6" class="text-center py-4">No appointments found</td></tr>';
+                    }
+
+                    $('#recent-appointments-tbody').html(html);
+                },
+                error: function () {
+                    console.error('Failed to load recent appointments');
+                    $('#recent-appointments-tbody')
+                        .html('<tr><td colspan="6" class="text-center py-4 text-danger">Failed to load appointments</td></tr>');
+                }
+            });
+        };
+
+        // ------- chart functions -------
+        window.initializeCharts = function () {
+            if (typeof ApexCharts === 'undefined') {
+                console.error('ApexCharts missing');
+                return;
+            }
+
+            // Main appointments chart
+            window.appointmentsMainChart = new ApexCharts(document.querySelector("#s-col-20"), {
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: { show: false },
+                    zoom: { enabled: false },
+                    animations: { enabled: true }
+                },
+                series: [
+                    { name: 'Total Appointments', data: [] },
+                    { name: 'Completed Appointments', data: [] }
+                ],
+                colors: ['#0d6efd', '#198754'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                },
+                stroke: { curve: 'smooth', width: 2 },
+                xaxis: {
+                    categories: [],
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: { style: { colors: '#6c757d' } }
+                },
+                yaxis: {
+                    show: true,
+                    labels: { style: { colors: '#6c757d' } }
+                },
+                grid: {
+                    show: true,
+                    borderColor: '#f1f1f1',
+                    strokeDashArray: 3
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                    horizontalAlign: 'right'
+                },
+                dataLabels: { enabled: false }
+            });
+
+            // Statistics donut chart
+            window.statisticsChart = new ApexCharts(document.querySelector("#circle-chart-2"), {
+                chart: {
+                    type: 'donut',
+                    height: 200,
+                    animations: { enabled: true }
+                },
+                series: [0, 0, 0],
+                labels: ['Completed', 'Pending', 'Cancelled'],
+                colors: ['#198754', '#ffc107', '#dc3545'],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '70%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'Total',
+                                    color: '#6c757d'
+                                }
+                            }
+                        }
+                    }
+                },
+                legend: { show: false },
+                dataLabels: { enabled: false },
+                stroke: { width: 0 }
+            });
+
+            window.appointmentsMainChart.render();
+            window.statisticsChart.render();
+        };
+
+        window.loadDashboardData = function () {
+            $.ajax({
+                url: '/DoctorDashboard/GetData',
+                type: 'GET',
+                success: function(data){
+                    if ($('#total-appointments-today').length)
+                        $('#total-appointments-today').text(data.totalAppointmentsToday || 0);
+
+                    if ($('#online-consultations-today').length)
+                        $('#online-consultations-today').text(data.completedAppointmentsToday || 0);
+
+                    if ($('#cancelled-appointments-today').length)
+                        $('#cancelled-appointments-today').text(data.cancelledAppointmentsToday || 0);
+
+                    if ($('#total-appointments-change-top').length)
+                        updateBadge($('#total-appointments-change-top'), data.totalAppointmentsChange || 0, true);
+
+                    loadAppointmentsChart('monthly');
+                },
+                error: function(xhr, status, error){
+                    console.error('Failed to load dashboard data:', error);
+                }
+            });
+        };
+
+        function loadAppointmentsChart(filter = 'monthly') {
+            $.get('/DoctorDashboard/GetAppointmentsChart', { filter }, function(data) {
+                if (window.appointmentsMainChart && data) {
+                    window.appointmentsMainChart.updateOptions({
+                        series: [
+                            { name: 'Total Appointments', data: data.totalAppointments || [] },
+                            { name: 'Completed Appointments', data: data.completedAppointments || [] }
+                        ],
+                        xaxis: { categories: data.categories || [] }
+                    });
+                }
+            }).fail(() => console.error('Failed to load appointments chart data'));
+        }
+
+        // ------- single ready block -------
+        $(function () {
+            // Initialize everything
+            initializeCharts();
             loadDashboardData();
             loadRecentAppointments();
             loadStatistics();
             loadTopPatients();
             loadAvailability();
             loadAppointmentStatistics();
-
-            // Setup dropdown functionality
-            setupDropdownFilters();
-
-            function initializeCharts() {
-                // Sparkline chart options for top row cards
-                var sparklineOptions = {
-                    chart: {
-                        type: 'bar',
-                        height: 40,
-                        sparkline: { enabled: true },
-                        animations: { enabled: false }
-                    },
-                    plotOptions: {
-                        bar: {
-                            columnWidth: '60%',
-                            borderRadius: 2
-                        }
-                    },
-                    tooltip: { enabled: false },
-                    grid: { show: false }
-                };
-
-                // Initialize top row sparkline charts
-                window.appointmentsChart = new ApexCharts(document.querySelector("#s-col-5"), {
-                    ...sparklineOptions,
-                    series: [{ data: [] }], // Empty initially, will be populated from database
-                    colors: ['#0d6efd']
-                });
-
-                window.onlineChart = new ApexCharts(document.querySelector("#s-col-6"), {
-                    ...sparklineOptions,
-                    series: [{ data: [] }], // Empty initially
-                    colors: ['#dc3545']
-                });
-
-                window.cancelledChart = new ApexCharts(document.querySelector("#s-col-7"), {
-                    ...sparklineOptions,
-                    series: [{ data: [] }], // Empty initially
-                    colors: ['#198754']
-                });
-
-                // Main appointments chart - no mock data
-                window.appointmentsMainChart = new ApexCharts(document.querySelector("#s-col-20"), {
-                    chart: {
-                        type: 'area',
-                        height: 300,
-                        toolbar: { show: false },
-                        zoom: { enabled: false },
-                        animations: { enabled: false }
-                    },
-                    series: [], // Empty initially, will be populated from database
-                    colors: ['#0d6efd', '#198754'],
-                    fill: {
-                        type: 'gradient',
-                        gradient: {
-                            shadeIntensity: 1,
-                            opacityFrom: 0.4,
-                            opacityTo: 0.1
-                        }
-                    },
-                    stroke: {
-                        curve: 'smooth',
-                        width: 2
-                    },
-                    xaxis: {
-                        categories: [], // Will be populated from database
-                        axisBorder: { show: false },
-                        axisTicks: { show: false }
-                    },
-                    yaxis: { show: false },
-                    grid: {
-                        show: true,
-                        borderColor: '#f1f1f1',
-                        strokeDashArray: 3
-                    },
-                    legend: { show: false },
-                    dataLabels: { enabled: false }
-                });
-
-                // Appointment Statistics Donut Chart - no mock data
-                window.statisticsChart = new ApexCharts(document.querySelector("#circle-chart-2"), {
-                    chart: {
-                        type: 'donut',
-                        height: 200,
-                        animations: { enabled: false }
-                    },
-                    series: [], // Empty initially
-                    labels: ['Completed', 'Pending', 'Cancelled'],
-                    colors: ['#198754', '#ffc107', '#dc3545'],
-                    plotOptions: {
-                        pie: {
-                            donut: { size: '70%' }
-                        }
-                    },
-                    legend: { show: false },
-                    dataLabels: { enabled: false },
-                    stroke: { width: 0 }
-                });
-
-                // Render all charts
-                window.appointmentsChart.render();
-                window.onlineChart.render();
-                window.cancelledChart.render();
-                window.appointmentsMainChart.render();
-                window.statisticsChart.render();
-            }
-
-            function setupDropdownFilters() {
-                $('.dropdown-menu a').on('click', function(e) {
-                    e.preventDefault();
-                    const filterText = $(this).text();
-                    const dropdownToggle = $(this).closest('.dropdown').find('.dropdown-toggle');
-
-                    // Update button text
-                    dropdownToggle.html(filterText + ' <i class="ti ti-chevron-down ms-1"></i>');
-
-                    // Handle different filter actions
-                    const cardHeader = $(this).closest('.card-header');
-                    const cardTitle = cardHeader.find('h5').text();
-
-                    if (cardTitle.includes('Upcoming Appointments')) {
-                        loadUpcomingAppointments(filterText.toLowerCase());
-                    } else if (cardTitle.includes('Appointments') && !cardTitle.includes('Upcoming')) {
-                        loadAppointmentsChart(filterText.toLowerCase());
-                    } else if (cardTitle.includes('Recent Appointments')) {
-                        loadRecentAppointments(filterText.toLowerCase());
-                    } else if (cardTitle.includes('Appointment Statistics')) {
-                        loadAppointmentStatistics(filterText.toLowerCase());
-                    } else if (cardTitle.includes('Top Patients')) {
-                        loadTopPatients(filterText.toLowerCase());
-                    }
-                });
-            }
-
-            function loadDashboardData() {
-                $.ajax({
-                    url: '/DoctorDashboard/GetData',
-                    type: 'GET',
-                    success: function(data) {
-                        // Update stat numbers from database
-                        $('#total-appointments-today').text(data.totalAppointmentsToday);
-                        $('#online-consultations-today').text(data.onlineConsultationsToday);
-                        $('#cancelled-appointments-today').text(data.cancelledAppointmentsToday);
-
-                        // Update percentage badges from database
-                        updateBadge($('#total-appointments-change-top'), data.totalAppointmentsChange, true);
-                        updateBadge($('#total-appointments-change-bottom'), data.totalAppointmentsChange, false);
-                        updateBadge($('#online-consultations-change-top'), data.onlineConsultationsChange, true);
-                        updateBadge($('#online-consultations-change-bottom'), data.onlineConsultationsChange, false);
-                        updateBadge($('#cancelled-appointments-change-top'), data.cancelledAppointmentsChange, true);
-                        updateBadge($('#cancelled-appointments-change-bottom'), data.cancelledAppointmentsChange, false);
-
-                        // Update sparkline charts with database data
-                        if (window.appointmentsChart && data.weeklyAppointmentData) {
-                            window.appointmentsChart.updateSeries([{ data: data.weeklyAppointmentData }]);
-                        }
-                        if (window.onlineChart && data.weeklyOnlineConsultationData) {
-                            window.onlineChart.updateSeries([{ data: data.weeklyOnlineConsultationData }]);
-                        }
-                        if (window.cancelledChart && data.weeklyCancelledData) {
-                            window.cancelledChart.updateSeries([{ data: data.weeklyCancelledData }]);
-                        }
-
-                        // Update next patient from database
-                        updateNextPatient(data.nextPatient);
-
-                        // Load main appointments chart with database data
-                        loadAppointmentsChart('monthly');
-                    },
-                    error: function() {
-                        console.error('Failed to load dashboard data');
-                        showErrorMessage('Failed to load dashboard data');
-                    }
-                });
-            }
-
-            function loadAppointmentsChart(filter = 'monthly') {
-                $.ajax({
-                    url: '/DoctorDashboard/GetAppointmentsChart',
-                    type: 'GET',
-                    data: { filter: filter },
-                    success: function(data) {
-                        if (window.appointmentsMainChart && data) {
-                            // Update chart with database data
-                            window.appointmentsMainChart.updateOptions({
-                                series: [
-                                    {
-                                        name: 'Total Appointments',
-                                        data: data.totalAppointments || []
-                                    },
-                                    {
-                                        name: 'Completed Appointments',
-                                        data: data.completedAppointments || []
-                                    }
-                                ],
-                                xaxis: {
-                                    categories: data.categories || []
-                                }
-                            });
-                        }
-                    },
-                    error: function() {
-                        console.error('Failed to load appointments chart data');
-                    }
-                });
-            }
-
-            function loadRecentAppointments(filter = 'weekly') {
-                $.ajax({
-                    url: '/DoctorDashboard/GetRecentAppointments',
-                    type: 'GET',
-                    data: { filter: filter },
-                    success: function(data) {
-                        let html = '';
-
-                        if (data && data.length > 0) {
-                            data.forEach(appointment => {
-                                const statusClass = getStatusClass(appointment.status);
-                                html += `
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <a href="javascript:void(0);" class="avatar me-2">
-                                                    <img src="${appointment.patientImage}" alt="img" class="rounded-circle">
-                                                </a>
-                                                <div>
-                                                    <h6 class="fs-14 mb-1"><a href="javascript:void(0);" class="fw-medium">${appointment.patientName}</a></h6>
-                                                    <p class="mb-0 fs-13">${appointment.phoneNumber}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>${appointment.appointmentDate}</td>
-                                        <td>${appointment.mode}</td>
-                                        <td><span class="badge ${statusClass} fw-medium">${appointment.status}</span></td>
-                                        <td class="fw-semibold text-dark">$${appointment.consultationFees}</td>
-                                        <td>
-                                            <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1 me-1">
-                                                <i class="ti ti-calendar-plus"></i>
-                                            </a>
-                                            <a href="javascript:void(0);" data-bs-toggle="dropdown" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1">
-                                                <i class="ti ti-dots-vertical"></i>
-                                            </a>
-                                            <ul class="dropdown-menu p-2">
-                                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"><i class="ti ti-edit me-2"></i>Edit</a></li>
-                                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"><i class="ti ti-trash me-2"></i>Delete</a></li>
-                                            </ul>
-                                        </td>
-                                    </tr>`;
-                            });
-                        } else {
-                            html = '<tr><td colspan="6" class="text-center py-4">No appointments found</td></tr>';
-                        }
-
-                        $('#recent-appointments-tbody').html(html);
-                    },
-                    error: function() {
-                        console.error('Failed to load recent appointments');
-                        $('#recent-appointments-tbody').html('<tr><td colspan="6" class="text-center py-4 text-danger">Failed to load appointments</td></tr>');
-                    }
-                });
-            }
-
-            function loadStatistics() {
-                $.ajax({
-                    url: '/DoctorDashboard/GetStatistics',
-                    type: 'GET',
-                    success: function(data) {
-                        // Update all statistics from database
-                        $('#total-patients').text(data.totalPatients || 0);
-                        $('#video-consultations').text(data.videoConsultations || 0);
-                        $('#rescheduled').text(data.rescheduled || 0);
-                        $('#pre-visit-bookings').text(data.preVisitBookings || 0);
-                        $('#walkin-bookings').text(data.walkinBookings || 0);
-                        $('#follow-ups').text(data.followUps || 0);
-                    },
-                    error: function() {
-                        console.error('Failed to load statistics');
-                    }
-                });
-            }
-
-            function loadTopPatients(filter = 'weekly') {
-                $.ajax({
-                    url: '/DoctorDashboard/GetTopPatients',
-                    type: 'GET',
-                    data: { filter: filter },
-                    success: function(data) {
-                        let html = '';
-
-                        if (data && data.length > 0) {
-                            data.forEach(patient => {
-                                html += `
-                                    <div class="d-flex align-items-center justify-content-between mb-4">
-                                        <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar me-2 flex-shrink-0">
-                                                <img src="${patient.patientImage}" alt="img" class="rounded-circle">
-                                            </a>
-                                            <div>
-                                                <h6 class="fs-14 mb-1 text-truncate"><a href="javascript:void(0);" class="fw-medium">${patient.patientName}</a></h6>
-                                                <p class="mb-0 fs-13 text-truncate">${patient.phoneNumber}</p>
-                                            </div>
-                                        </div>
-                                        <span class="badge fw-medium badge-soft-primary border border-primary flex-shrink-0">${patient.appointmentCount} Appointments</span>
-                                    </div>`;
-                            });
-                        } else {
-                            html = '<div class="text-center py-4">No patient data found</div>';
-                        }
-
-                        $('#top-patients-container').html(html);
-                    },
-                    error: function() {
-                        console.error('Failed to load top patients');
-                        $('#top-patients-container').html('<div class="text-center py-4 text-danger">Failed to load patient data</div>');
-                    }
-                });
-            }
-
-            function loadAvailability() {
-                $.ajax({
-                    url: '/DoctorDashboard/GetAvailability',
-                    type: 'GET',
-                    success: function(data) {
-                        let html = '';
-                        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-                        days.forEach((day, index) => {
-                            const availability = data.find(a => a.dayOfWeek === index + 1);
-                            const borderClass = index < 6 ? 'border-bottom pb-2' : 'pb-2';
-
-                            if (availability && availability.isAvailable) {
-                                html += `
-                                    <div class="d-flex align-items-center justify-content-between mb-2 ${borderClass}">
-                                        <p class="text-dark fw-semibold mb-0">${day}</p>
-                                        <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-clock me-1"></i>${availability.startTime} - ${availability.endTime}</p>
-                                    </div>`;
-                            } else {
-                                html += `
-                                    <div class="d-flex align-items-center justify-content-between mb-2 ${borderClass}">
-                                        <p class="text-dark fw-semibold mb-0">${day}</p>
-                                        <p class="mb-0 d-inline-flex align-items-center text-danger"><i class="ti ti-clock me-1"></i>Closed</p>
-                                    </div>`;
-                            }
-                        });
-
-                        html += '<a href="javascript:void(0);" class="btn btn-light w-100 mt-2 fs-13">Edit Availability</a>';
-                        $('#availability-container').html(html);
-                    },
-                    error: function() {
-                        console.error('Failed to load availability');
-                    }
-                });
-            }
-
-            function loadAppointmentStatistics(filter = 'monthly') {
-                $.ajax({
-                    url: '/DoctorDashboard/GetAppointmentStatistics',
-                    type: 'GET',
-                    data: { filter: filter },
-                    success: function(data) {
-                        if (window.statisticsChart && data) {
-                            // Update donut chart with database data
-                            window.statisticsChart.updateSeries([
-                                data.completed || 0,
-                                data.pending || 0,
-                                data.cancelled || 0
-                            ]);
-                        }
-
-                        // Update statistics numbers from database
-                        $('#completed-count').text(data.completed || 0);
-                        $('#pending-count').text(data.pending || 0);
-                        $('#cancelled-count').text(data.cancelled || 0);
-                    },
-                    error: function() {
-                        console.error('Failed to load appointment statistics');
-                    }
-                });
-            }
-
-            function updateNextPatient(patient) {
-                const container = $('#next-patient-container');
-                if (patient) {
-                    const appointmentDate = new Date(patient.lastAppointmentDate);
-                    const html = `
-                        <div class="d-flex align-items-center mb-3">
-                            <a href="javascript:void(0);" class="avatar me-2 flex-shrink-0">
-                                <img src="${patient.profileImage || 'assets/img/doctors/doctor-01.jpg'}" alt="img" class="rounded-circle">
-                            </a>
-                            <div>
-                                <h6 class="fs-14 mb-1 text-truncate"><a href="javascript:void(0);" class="fw-semibold">${patient.fullName}</a></h6>
-                                <p class="mb-0 fs-13 text-truncate">#AP${patient.patientId.toString().padStart(6, '0')}</p>
-                            </div>
-                        </div>
-                        <h6 class="fs-14 fw-semibold mb-1">General Visit</h6>
-                        <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
-                            <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-calendar-time text-dark me-1"></i>${appointmentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                            <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-clock text-dark me-1"></i>${appointmentDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true})}</p>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <h6 class="fs-13 fw-semibold mb-1">Department</h6>
-                                <p>Cardiology</p>
-                            </div>
-                            <div class="col">
-                                <h6 class="fs-13 fw-semibold mb-1">Type</h6>
-                                <p class="text-truncate">Online Consultation</p>
-                            </div>
-                        </div>
-                        <div class="my-3 border-bottom pb-3">
-                            <a href="javascript:void(0);" class="btn btn-primary w-100">Start Appointment</a>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <a href="javascript:void(0);" class="btn btn-dark w-100"><i class="ti ti-brand-hipchat me-1"></i>Chat Now</a>
-                            <a href="javascript:void(0);" class="btn btn-outline-white w-100"><i class="ti ti-video me-1"></i>Video Consultation</a>
-                        </div>`;
-                    container.html(html);
-                } else {
-                    container.html('<div class="text-center py-5"><i class="ti ti-users-off fs-48 text-muted mb-3"></i><p class="text-muted">No upcoming appointments</p></div>');
-                }
-            }
-
-            function getStatusClass(status) {
-                switch(status.toLowerCase()) {
-                    case 'completed': case 'checked out': return 'bg-success';
-                    case 'pending': case 'checked in': return 'bg-warning';
-                    case 'cancelled': return 'bg-danger';
-                    case 'scheduled': return 'bg-info';
-                    default: return 'bg-secondary';
-                }
-            }
-
-            function updateBadge(element, value, isTopBadge) {
-                const formattedValue = (value >= 0 ? '+' : '') + Math.abs(value) + '%';
-                element.text(formattedValue);
-
-                if (isTopBadge) {
-                    element.removeClass('bg-success bg-danger bg-secondary').addClass(value >= 0 ? 'bg-success' : 'bg-danger');
-                } else {
-                    element.removeClass('badge-soft-success badge-soft-danger').addClass(value >= 0 ? 'badge-soft-success' : 'badge-soft-danger');
-                    const arrow = value >= 0 ? '<i class="ti ti-arrow-up ms-1"></i>' : '<i class="ti ti-arrow-down ms-1"></i>';
-                    element.html(formattedValue + ' ' + arrow);
-                }
-            }
-
-            function showErrorMessage(message) {
-                console.error(message);
-                // You can implement toast notifications here
-            }
+            loadUpcomingAppointments(); // Load upcoming appointments
+            // setupDropdownFilters(); Setup filters once
         });
-
     </script>
 }
+
+

@@ -1,5 +1,4 @@
-﻿@using CMS.ViewModels
-@* In: Views/Shared/Components/PopularDoctors/Default.cshtml *@
+﻿@* @using CMS.ViewModels
 
 
 
@@ -21,6 +20,34 @@
     </div>
     <div class="card-body">
         <!-- This div will be updated by AJAX -->
+        <div id="popular-doctors-list">
+            @await Html.PartialAsync("~/Views/Shared/Partials/_PopularDoctorsList.cshtml", Model)
+        </div>
+    </div>
+</div> *@
+
+
+
+@using CMS.ViewModels
+
+@model IEnumerable<PopularDoctorViewModel>
+
+<div class="card shadow-sm flex-fill w-100">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="fw-bold mb-0">Médecins Populaires</h5>
+        <div class="dropdown">
+            <a href="javascript:void(0);" id="popular-doctors-dropdown-btn" class="btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                Hebdomadaire <i class="ti ti-chevron-down ms-1"></i>
+            </a>
+            <ul class="dropdown-menu" id="popular-doctors-dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-range="Monthly">Mensuel</a></li>
+                <li><a class="dropdown-item" href="#" data-range="Weekly">Hebdomadaire</a></li>
+                <li><a class="dropdown-item" href="#" data-range="Yearly">Annuel</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Ce div sera mis à jour par AJAX -->
         <div id="popular-doctors-list">
             @await Html.PartialAsync("~/Views/Shared/Partials/_PopularDoctorsList.cshtml", Model)
         </div>

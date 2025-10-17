@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CMS.Models
 {
@@ -8,22 +7,35 @@ namespace CMS.Models
         public int TreatmentId { get; set; }
 
         [Required]
-        public int AppointmentId { get; set; }
-        public Appointment? Appointment { get; set; }
-
-        [StringLength(20)]
-        public string? ToothCode { get; set; } // e.g., "11", "3-5"
-
-        [StringLength(50)]
-        public string? ProcedureCode { get; set; }
+        [StringLength(100)]
+        public string Name { get; set; }
 
         [StringLength(500)]
         public string? Description { get; set; }
 
-        [Precision(18, 2)]
-        public decimal Cost { get; set; }
+        [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+       
+        public decimal UnitPrice { get; set; }
 
-        // One-to-one (optional) to InvoiceItem
-        public InvoiceItem? InvoiceItem { get; set; }
+        [StringLength(50)]
+        public string? Category { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Duration must be at least 1 minute")]
+        public int DurationMinutes { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public DateTime? UpdatedAt { get; set; }
+
+        [StringLength(100)]
+        public string? CreatedBy { get; set; }
+
+        [StringLength(100)]
+        public string? UpdatedBy { get; set; }
+        public int? AppointmentId { get; set; }
+        public Appointment? Appointment { get; set; }
     }
 }

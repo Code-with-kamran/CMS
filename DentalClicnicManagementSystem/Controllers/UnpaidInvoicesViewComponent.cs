@@ -18,7 +18,7 @@ namespace CMS.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var unpaidInvoices = await _context.Invoices
-                .Where(i => i.Status != "Paid")
+                .Where(i => i.status != "Paid")
                 .Select(i => new
                 {
                     i.Id,

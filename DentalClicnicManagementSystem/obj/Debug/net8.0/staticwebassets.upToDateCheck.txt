@@ -648,7 +648,7 @@ wwwroot\assets\plugins\icons\remix\remixicon.svg@t=1718271040674
 wwwroot\assets\plugins\icons\remix\remixicon.ttf@t=1718271040674
 wwwroot\assets\plugins\icons\remix\remixicon.woff2@t=1718271040674
 wwwroot\assets\plugins\icons\remix\remixicon.woff@t=1718271040674
-wwwroot\assets\plugins\icons\themify\fonts\themify.woff@-fvbane
+wwwroot\assets\plugins\icons\themify\fonts\themify.woff
 wwwroot\assets\plugins\icons\themify\themify.css
 wwwroot\assets\plugins\icons\typicons\fonts\typicons.woff
 wwwroot\assets\plugins\icons\typicons\typicons.css
@@ -709,6 +709,7 @@ wwwroot\favicon.ico
 wwwroot\js\appointment.js
 wwwroot\js\delete.js
 wwwroot\js\hr.common.js
+wwwroot\js\recept.js
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -768,6 +769,12 @@ wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
 wwwroot\lib\signalr\SignalR.min.js
+wwwroot\uploads\attachments\20142953-8c98-4a12-9b0a-ea2f3d18ad16.jpg
+wwwroot\uploads\attachments\2cf21d78-6225-421b-a86e-e69793bc4265.pdf
+wwwroot\uploads\attachments\337a7a61-f0e9-4c8a-8c71-2612196d5d2f.jpg
+wwwroot\uploads\attachments\3a428231-dc38-480d-95cc-5b9aea063158.jpg
+wwwroot\uploads\attachments\aaafb8ae-b5c2-44ad-96d0-64391c556d1b.jpg
+wwwroot\uploads\attachments\d3544a55-3b14-4228-9558-13c99aa93a88.jpg
 wwwroot\uploads\doctors\04da1784b60641a0b13f4aaff34c85f4.jfif
 wwwroot\uploads\doctors\08e03b8835534d0bb6dd2e54db35004b.jpg
 wwwroot\uploads\doctors\0eae86210618434093d2a5e167afa30d.jpg

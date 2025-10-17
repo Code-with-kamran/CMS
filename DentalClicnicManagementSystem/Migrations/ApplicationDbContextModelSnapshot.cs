@@ -22,6 +22,9 @@ namespace CMS.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.HasSequence<int>("EmployeeCodeSeq", "dbo")
+                .StartsAt(10000L);
+
             modelBuilder.Entity("CMS.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -99,8 +102,8 @@ namespace CMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
 
-                    b.Property<DateTime>("AppointmentDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("AppointmentDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("AppointmentNo")
                         .HasColumnType("nvarchar(max)");
@@ -109,8 +112,8 @@ namespace CMS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("DentistId")
                         .HasColumnType("int");
@@ -136,14 +139,12 @@ namespace CMS.Migrations
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PatientId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("Status")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("Scheduled");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TreamentId")
+                        .HasColumnType("int");
 
                     b.HasKey("AppointmentId");
 
@@ -154,8 +155,6 @@ namespace CMS.Migrations
                     b.HasIndex("DoctorId");
 
                     b.HasIndex("PatientId");
-
-                    b.HasIndex("PatientId1");
 
                     b.ToTable("Appointments");
                 });
@@ -207,6 +206,9 @@ namespace CMS.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<decimal?>("OvertimeHours")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -224,7 +226,7 @@ namespace CMS.Migrations
                             Id = 1,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 19, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -234,7 +236,7 @@ namespace CMS.Migrations
                             Id = 2,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 19, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -242,7 +244,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 3,
-                            Date = new DateTime(2025, 9, 19, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -252,7 +254,7 @@ namespace CMS.Migrations
                             Id = 4,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 18, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -262,7 +264,7 @@ namespace CMS.Migrations
                             Id = 5,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 18, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -272,7 +274,7 @@ namespace CMS.Migrations
                             Id = 6,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 18, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -282,7 +284,7 @@ namespace CMS.Migrations
                             Id = 7,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -292,7 +294,7 @@ namespace CMS.Migrations
                             Id = 8,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -302,7 +304,7 @@ namespace CMS.Migrations
                             Id = 9,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -312,7 +314,7 @@ namespace CMS.Migrations
                             Id = 10,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -322,7 +324,7 @@ namespace CMS.Migrations
                             Id = 11,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -332,7 +334,7 @@ namespace CMS.Migrations
                             Id = 12,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -342,7 +344,7 @@ namespace CMS.Migrations
                             Id = 13,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 7, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -352,7 +354,7 @@ namespace CMS.Migrations
                             Id = 14,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 7, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -362,7 +364,7 @@ namespace CMS.Migrations
                             Id = 15,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 7, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -372,7 +374,7 @@ namespace CMS.Migrations
                             Id = 16,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 14, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -382,7 +384,7 @@ namespace CMS.Migrations
                             Id = 17,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 14, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -390,7 +392,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 18,
-                            Date = new DateTime(2025, 9, 14, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -400,7 +402,7 @@ namespace CMS.Migrations
                             Id = 19,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 13, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -410,7 +412,7 @@ namespace CMS.Migrations
                             Id = 20,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 13, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -420,7 +422,7 @@ namespace CMS.Migrations
                             Id = 21,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 13, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -430,7 +432,7 @@ namespace CMS.Migrations
                             Id = 22,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 12, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 4, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -440,7 +442,7 @@ namespace CMS.Migrations
                             Id = 23,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 12, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 4, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -450,7 +452,7 @@ namespace CMS.Migrations
                             Id = 24,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 12, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 4, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -460,7 +462,7 @@ namespace CMS.Migrations
                             Id = 25,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 11, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 3, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -470,7 +472,7 @@ namespace CMS.Migrations
                             Id = 26,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 11, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 3, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -480,7 +482,7 @@ namespace CMS.Migrations
                             Id = 27,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 11, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 3, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -490,7 +492,7 @@ namespace CMS.Migrations
                             Id = 28,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -500,7 +502,7 @@ namespace CMS.Migrations
                             Id = 29,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -510,7 +512,7 @@ namespace CMS.Migrations
                             Id = 30,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -520,7 +522,7 @@ namespace CMS.Migrations
                             Id = 31,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 9, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -530,7 +532,7 @@ namespace CMS.Migrations
                             Id = 32,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 9, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -538,7 +540,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 33,
-                            Date = new DateTime(2025, 9, 9, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -548,7 +550,7 @@ namespace CMS.Migrations
                             Id = 34,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 8, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -558,7 +560,7 @@ namespace CMS.Migrations
                             Id = 35,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 8, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -568,7 +570,7 @@ namespace CMS.Migrations
                             Id = 36,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 8, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -578,7 +580,7 @@ namespace CMS.Migrations
                             Id = 37,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 29, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -588,7 +590,7 @@ namespace CMS.Migrations
                             Id = 38,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 29, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -598,7 +600,7 @@ namespace CMS.Migrations
                             Id = 39,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 29, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -608,7 +610,7 @@ namespace CMS.Migrations
                             Id = 40,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 6, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -618,7 +620,7 @@ namespace CMS.Migrations
                             Id = 41,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 6, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -628,7 +630,7 @@ namespace CMS.Migrations
                             Id = 42,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 6, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -638,7 +640,7 @@ namespace CMS.Migrations
                             Id = 43,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -648,7 +650,7 @@ namespace CMS.Migrations
                             Id = 44,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -658,7 +660,7 @@ namespace CMS.Migrations
                             Id = 45,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -668,7 +670,7 @@ namespace CMS.Migrations
                             Id = 46,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 4, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 26, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -678,7 +680,7 @@ namespace CMS.Migrations
                             Id = 47,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 4, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 26, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -686,7 +688,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 48,
-                            Date = new DateTime(2025, 9, 4, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 26, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -696,7 +698,7 @@ namespace CMS.Migrations
                             Id = 49,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -706,7 +708,7 @@ namespace CMS.Migrations
                             Id = 50,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -716,7 +718,7 @@ namespace CMS.Migrations
                             Id = 51,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -726,7 +728,7 @@ namespace CMS.Migrations
                             Id = 52,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 2, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 24, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -736,7 +738,7 @@ namespace CMS.Migrations
                             Id = 53,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 2, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 24, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -746,7 +748,7 @@ namespace CMS.Migrations
                             Id = 54,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 2, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 24, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -756,7 +758,7 @@ namespace CMS.Migrations
                             Id = 55,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 23, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -766,7 +768,7 @@ namespace CMS.Migrations
                             Id = 56,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 23, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -776,7 +778,7 @@ namespace CMS.Migrations
                             Id = 57,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 23, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -786,7 +788,7 @@ namespace CMS.Migrations
                             Id = 58,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 31, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 22, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -796,7 +798,7 @@ namespace CMS.Migrations
                             Id = 59,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 31, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 22, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -806,7 +808,7 @@ namespace CMS.Migrations
                             Id = 60,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 31, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 22, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -816,7 +818,7 @@ namespace CMS.Migrations
                             Id = 61,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 21, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -826,7 +828,7 @@ namespace CMS.Migrations
                             Id = 62,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 21, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -834,7 +836,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 63,
-                            Date = new DateTime(2025, 8, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 21, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -844,7 +846,7 @@ namespace CMS.Migrations
                             Id = 64,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 29, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -854,7 +856,7 @@ namespace CMS.Migrations
                             Id = 65,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 29, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -864,7 +866,7 @@ namespace CMS.Migrations
                             Id = 66,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 29, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -874,7 +876,7 @@ namespace CMS.Migrations
                             Id = 67,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -884,7 +886,7 @@ namespace CMS.Migrations
                             Id = 68,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -894,7 +896,7 @@ namespace CMS.Migrations
                             Id = 69,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -904,7 +906,7 @@ namespace CMS.Migrations
                             Id = 70,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 27, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -914,7 +916,7 @@ namespace CMS.Migrations
                             Id = 71,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 27, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -924,7 +926,7 @@ namespace CMS.Migrations
                             Id = 72,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 27, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -934,7 +936,7 @@ namespace CMS.Migrations
                             Id = 73,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -944,7 +946,7 @@ namespace CMS.Migrations
                             Id = 74,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -954,7 +956,7 @@ namespace CMS.Migrations
                             Id = 75,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -964,7 +966,7 @@ namespace CMS.Migrations
                             Id = 76,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 25, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -974,7 +976,7 @@ namespace CMS.Migrations
                             Id = 77,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 25, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -982,7 +984,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 78,
-                            Date = new DateTime(2025, 8, 25, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -992,7 +994,7 @@ namespace CMS.Migrations
                             Id = 79,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 24, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -1002,7 +1004,7 @@ namespace CMS.Migrations
                             Id = 80,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 24, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -1012,7 +1014,7 @@ namespace CMS.Migrations
                             Id = 81,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 24, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -1022,7 +1024,7 @@ namespace CMS.Migrations
                             Id = 82,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 23, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 14, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -1032,7 +1034,7 @@ namespace CMS.Migrations
                             Id = 83,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 23, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 14, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -1042,7 +1044,7 @@ namespace CMS.Migrations
                             Id = 84,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 23, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 14, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -1052,7 +1054,7 @@ namespace CMS.Migrations
                             Id = 85,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 22, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 13, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -1062,7 +1064,7 @@ namespace CMS.Migrations
                             Id = 86,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 22, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 13, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -1072,7 +1074,7 @@ namespace CMS.Migrations
                             Id = 87,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 22, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 13, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -1082,7 +1084,7 @@ namespace CMS.Migrations
                             Id = 88,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 21, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -1092,7 +1094,7 @@ namespace CMS.Migrations
                             Id = 89,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 8, 21, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -1102,11 +1104,56 @@ namespace CMS.Migrations
                             Id = 90,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 8, 21, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 9, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
                         });
+                });
+
+            modelBuilder.Entity("CMS.Models.BillReceipt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiptNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionReference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("BillReceipts");
                 });
 
             modelBuilder.Entity("CMS.Models.Currency", b =>
@@ -1535,29 +1582,30 @@ namespace CMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileSize")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientId")
+                    b.Property<int?>("PatientId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
 
                     b.HasIndex("PatientId");
 
@@ -1572,13 +1620,21 @@ namespace CMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AccountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("BaseSalary")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Code")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValueSql("('EMP' + FORMAT(NEXT VALUE FOR EmployeeCodeSeq, '00000'))");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
@@ -1600,6 +1656,12 @@ namespace CMS.Migrations
                     b.Property<DateTime>("HireDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("HousingAllowance")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IBAN")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1611,9 +1673,15 @@ namespace CMS.Migrations
                     b.Property<int>("LeaveBalance")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PaymentMethodId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
+
+                    b.Property<int?>("TransportAllowance")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1626,6 +1694,8 @@ namespace CMS.Migrations
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("PaymentMethodId");
 
                     b.ToTable("Employees");
 
@@ -1710,6 +1780,9 @@ namespace CMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("FollowUpDate")
                         .HasColumnType("datetime2");
 
@@ -1723,6 +1796,8 @@ namespace CMS.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
 
                     b.HasIndex("PatientId");
 
@@ -1748,6 +1823,9 @@ namespace CMS.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<DateTimeOffset?>("LastRestockDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -1767,6 +1845,9 @@ namespace CMS.Migrations
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
+
+                    b.Property<string>("SupplierName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
@@ -1848,10 +1929,25 @@ namespace CMS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1000L);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("AppointmentId")
                         .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CurrencyCode")
                         .IsRequired()
@@ -1859,7 +1955,6 @@ namespace CMS.Migrations
                         .HasColumnType("nvarchar(3)");
 
                     b.Property<string>("CustomerAddress")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1888,14 +1983,31 @@ namespace CMS.Migrations
                         .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("InvoiceNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvoiceType")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsAppointmentInvoice")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsCombinedInvoice")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsLaboratoryInvoice")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMedicationInvoice")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("LabTestOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LaboratoryOrderId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)
@@ -1904,12 +2016,11 @@ namespace CMS.Migrations
                     b.Property<int?>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Draft");
+                    b.Property<int?>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("SubTotal")
                         .HasPrecision(18, 2)
@@ -1923,13 +2034,34 @@ namespace CMS.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique()
+                        .HasFilter("IsCombinedInvoice = 1");
 
                     b.HasIndex("DoctorId");
 
+                    b.HasIndex("LabTestOrderId");
+
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Invoices");
+                    b.HasIndex("PaymentMethodId");
+
+                    b.ToTable("Invoices", t =>
+                        {
+                            t.HasCheckConstraint("CK_Invoices_OneTypeOnly", "(CASE WHEN IsMedicationInvoice = 1 THEN 1 ELSE 0 END) + (CASE WHEN IsAppointmentInvoice = 1 THEN 1 ELSE 0 END) + (CASE WHEN IsCombinedInvoice = 1 THEN 1 ELSE 0 END) <= 1");
+                        });
                 });
 
             modelBuilder.Entity("CMS.Models.InvoiceItem", b =>
@@ -1940,6 +2072,12 @@ namespace CMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AppointmentWIth")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -1949,14 +2087,37 @@ namespace CMS.Migrations
                     b.Property<int>("InvoiceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("InvoiceId1")
+                    b.Property<string>("ItemType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("LabTestId")
                         .HasColumnType("int");
 
-                    b.Property<int>("InvoiceId2")
+                    b.Property<int?>("MedicationsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MedicationsName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PatientId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("TestName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("TreatmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TreatmentName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
@@ -1964,13 +2125,162 @@ namespace CMS.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppointmentId");
+
                     b.HasIndex("InventoryItemId");
 
                     b.HasIndex("InvoiceId");
 
-                    b.HasIndex("InvoiceId1");
+                    b.HasIndex("MedicationsId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("TreatmentId");
 
                     b.ToTable("InvoiceItems");
+                });
+
+            modelBuilder.Entity("CMS.Models.InvoicePayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset>("PaymentDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.ToTable("InvoicePayments");
+                });
+
+            modelBuilder.Entity("CMS.Models.LabTestOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Instructions")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TestName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("LabTestOrders");
+                });
+
+            modelBuilder.Entity("CMS.Models.LaboratoryOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CollectionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Result")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTime?>("ResultDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TestCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TestName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("TestPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("LaboratoryOrders");
                 });
 
             modelBuilder.Entity("CMS.Models.LeaveRequest", b =>
@@ -2112,6 +2422,55 @@ namespace CMS.Migrations
                     b.ToTable("MedicalHistories");
                 });
 
+            modelBuilder.Entity("CMS.Models.Medications", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.ToTable("Medications");
+                });
+
+            modelBuilder.Entity("CMS.Models.Note", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.ToTable("NotesList");
+                });
+
             modelBuilder.Entity("CMS.Models.Patient", b =>
                 {
                     b.Property<int>("PatientId")
@@ -2129,11 +2488,11 @@ namespace CMS.Migrations
                     b.Property<string>("BloodGroup")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("DateOfBirth")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("DentalHistory")
                         .HasColumnType("nvarchar(max)");
@@ -2150,11 +2509,11 @@ namespace CMS.Migrations
                     b.Property<string>("FollowUpInterval")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("FollowUpScheduledAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("FollowUpScheduledAt")
+                        .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime?>("FollowUpSentAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("FollowUpSentAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -2171,14 +2530,13 @@ namespace CMS.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("LastVisited")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("LastVisited")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PatientIdNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -2188,12 +2546,42 @@ namespace CMS.Migrations
                     b.Property<string>("ProfileImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("RegistrationDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("RegistrationDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.HasKey("PatientId");
 
                     b.ToTable("Patients");
+                });
+
+            modelBuilder.Entity("CMS.Models.PatientTreatments", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TreatmentId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("TreatmentId");
+
+                    b.ToTable("PatientTreatments");
                 });
 
             modelBuilder.Entity("CMS.Models.PatientVitals", b =>
@@ -2204,11 +2592,17 @@ namespace CMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("BloodPressure")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HeartRate")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("RecordedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("RespiratoryRate")
                         .HasColumnType("nvarchar(max)");
@@ -2224,6 +2618,8 @@ namespace CMS.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppointmentId");
+
                     b.ToTable("PatientVitals");
                 });
 
@@ -2235,20 +2631,45 @@ namespace CMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("PatientId")
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("PaymentDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Status")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Total")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Transaction")
-                        .IsRequired()
+                    b.Property<string>("TransactionReference")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("InvoiceId");
+
                     b.HasIndex("PatientId");
+
+                    b.HasIndex("PaymentMethodId");
 
                     b.ToTable("Payments");
                 });
@@ -2286,6 +2707,35 @@ namespace CMS.Migrations
                     b.ToTable("PaymentMethods");
                 });
 
+            modelBuilder.Entity("CMS.Models.PaymentRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionReference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentRequests");
+                });
+
             modelBuilder.Entity("CMS.Models.PayrollItem", b =>
                 {
                     b.Property<int>("Id")
@@ -2297,6 +2747,9 @@ namespace CMS.Migrations
                     b.Property<decimal>("Allowances")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("AttendanceSummary")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("BaseSalary")
                         .HasPrecision(18, 2)
@@ -2329,6 +2782,7 @@ namespace CMS.Migrations
                         {
                             Id = 1,
                             Allowances = 500.00m,
+                            AttendanceSummary = "Present: 23, Absent: 0, Half-days: 0",
                             BaseSalary = 3750.00m,
                             Deductions = 200.00m,
                             EmployeeId = 1,
@@ -2339,6 +2793,7 @@ namespace CMS.Migrations
                         {
                             Id = 2,
                             Allowances = 750.00m,
+                            AttendanceSummary = "Present: 12, Absent: 10, Half-days: 0",
                             BaseSalary = 5000.00m,
                             Deductions = 300.00m,
                             EmployeeId = 2,
@@ -2349,6 +2804,7 @@ namespace CMS.Migrations
                         {
                             Id = 3,
                             Allowances = 300.00m,
+                            AttendanceSummary = "Present: 52, Absent: 0, Half-days: 0",
                             BaseSalary = 2916.6666666666666666666666667m,
                             Deductions = 150.00m,
                             EmployeeId = 3,
@@ -2359,6 +2815,7 @@ namespace CMS.Migrations
                         {
                             Id = 4,
                             Allowances = 1000.00m,
+                            AttendanceSummary = "Present: 2, Absent: 0, Half-days: 5",
                             BaseSalary = 5833.3333333333333333333333333m,
                             Deductions = 400.00m,
                             EmployeeId = 4,
@@ -2382,8 +2839,8 @@ namespace CMS.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime>("RunAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("RunAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -2398,7 +2855,7 @@ namespace CMS.Migrations
                             Id = 1,
                             Month = 10,
                             Notes = "October 2023 Payroll",
-                            RunAt = new DateTime(2023, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RunAt = new DateTimeOffset(new DateTime(2023, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 5, 0, 0, 0)),
                             Year = 2023
                         });
                 });
@@ -2413,6 +2870,9 @@ namespace CMS.Migrations
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -2441,6 +2901,7 @@ namespace CMS.Migrations
                         {
                             Id = 1,
                             EmployeeId = 1,
+                            IsActive = true,
                             Notes = "Consistently meets expectations, good team player.",
                             Rating = 4,
                             ReviewDate = new DateTime(2023, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -2450,6 +2911,7 @@ namespace CMS.Migrations
                         {
                             Id = 2,
                             EmployeeId = 2,
+                            IsActive = true,
                             Notes = "Exceeds expectations, highly skilled and proactive.",
                             Rating = 5,
                             ReviewDate = new DateTime(2023, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -2459,11 +2921,55 @@ namespace CMS.Migrations
                         {
                             Id = 3,
                             EmployeeId = 3,
+                            IsActive = true,
                             Notes = "Meets basic requirements, areas for improvement in patient communication.",
                             Rating = 3,
                             ReviewDate = new DateTime(2023, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Reviewer = "HR Manager"
                         });
+                });
+
+            modelBuilder.Entity("CMS.Models.PurchaseItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InventoryItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PurchaseItems");
+                });
+
+            modelBuilder.Entity("CMS.Models.ServiceItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceItems");
                 });
 
             modelBuilder.Entity("CMS.Models.StockMovement", b =>
@@ -2501,36 +3007,54 @@ namespace CMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TreatmentId"));
 
-                    b.Property<int>("AppointmentId")
+                    b.Property<int?>("AppointmentId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Cost")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Category")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("InvoiceItemId")
+                    b.Property<int>("DurationMinutes")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ProcedureCode")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("ToothCode")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("TreatmentId");
 
-                    b.HasIndex("AppointmentId");
-
-                    b.HasIndex("InvoiceItemId");
+                    b.HasIndex("AppointmentId")
+                        .IsUnique()
+                        .HasFilter("[AppointmentId] IS NOT NULL");
 
                     b.HasIndex("PatientId");
 
@@ -2561,6 +3085,9 @@ namespace CMS.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
@@ -2622,18 +3149,14 @@ namespace CMS.Migrations
                     b.HasOne("CMS.Models.Doctor", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CMS.Models.Patient", "Patient")
-                        .WithMany()
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CMS.Models.Patient", null)
                         .WithMany("Appointments")
-                        .HasForeignKey("PatientId1");
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Department");
 
@@ -2651,6 +3174,17 @@ namespace CMS.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("CMS.Models.BillReceipt", b =>
+                {
+                    b.HasOne("CMS.Models.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
                 });
 
             modelBuilder.Entity("CMS.Models.Dentist", b =>
@@ -2726,11 +3260,16 @@ namespace CMS.Migrations
 
             modelBuilder.Entity("CMS.Models.Document", b =>
                 {
+                    b.HasOne("CMS.Models.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId");
+
                     b.HasOne("CMS.Models.Patient", "Patient")
                         .WithMany("Documents")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Appointment");
 
                     b.Navigation("Patient");
                 });
@@ -2741,54 +3280,153 @@ namespace CMS.Migrations
                         .WithMany()
                         .HasForeignKey("DepartmentId");
 
+                    b.HasOne("CMS.Models.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId");
+
                     b.Navigation("Department");
+
+                    b.Navigation("PaymentMethod");
                 });
 
             modelBuilder.Entity("CMS.Models.FollowUp", b =>
                 {
+                    b.HasOne("CMS.Models.Appointment", "Appointment")
+                        .WithMany("FollowUps")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("CMS.Models.Patient", "Patient")
                         .WithMany("FollowUps")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Appointment");
+
                     b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("CMS.Models.Invoice", b =>
                 {
+                    b.HasOne("CMS.Models.Appointment", "Appointment")
+                        .WithOne("Invoice")
+                        .HasForeignKey("CMS.Models.Invoice", "AppointmentId");
+
                     b.HasOne("CMS.Models.Doctor", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId");
 
+                    b.HasOne("CMS.Models.LabTestOrder", "LabTestOrder")
+                        .WithMany()
+                        .HasForeignKey("LabTestOrderId");
+
                     b.HasOne("CMS.Models.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId");
+
+                    b.HasOne("CMS.Models.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId");
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("LabTestOrder");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("PaymentMethod");
+                });
+
+            modelBuilder.Entity("CMS.Models.InvoiceItem", b =>
+                {
+                    b.HasOne("CMS.Models.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId");
+
+                    b.HasOne("CMS.Models.InventoryItem", "InventoryItem")
+                        .WithMany()
+                        .HasForeignKey("InventoryItemId");
+
+                    b.HasOne("CMS.Models.Invoice", "Invoice")
+                        .WithMany("Items")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CMS.Models.Medications", "Medications")
+                        .WithMany()
+                        .HasForeignKey("MedicationsId");
+
+                    b.HasOne("CMS.Models.Patient", null)
+                        .WithMany("InvoiceItems")
+                        .HasForeignKey("PatientId");
+
+                    b.HasOne("CMS.Models.Treatment", "Treatment")
+                        .WithMany()
+                        .HasForeignKey("TreatmentId");
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("InventoryItem");
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Medications");
+
+                    b.Navigation("Treatment");
+                });
+
+            modelBuilder.Entity("CMS.Models.InvoicePayment", b =>
+                {
+                    b.HasOne("CMS.Models.Invoice", "Invoice")
+                        .WithMany("Payments")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CMS.Models.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("PaymentMethod");
+                });
+
+            modelBuilder.Entity("CMS.Models.LabTestOrder", b =>
+                {
+                    b.HasOne("CMS.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CMS.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("CMS.Models.InvoiceItem", b =>
+            modelBuilder.Entity("CMS.Models.LaboratoryOrder", b =>
                 {
-                    b.HasOne("CMS.Models.InventoryItem", "InventoryItem")
+                    b.HasOne("CMS.Models.Patient", "Patient")
                         .WithMany()
-                        .HasForeignKey("InventoryItemId");
-
-                    b.HasOne("CMS.Models.Invoice", null)
-                        .WithMany("Items")
-                        .HasForeignKey("InvoiceId")
+                        .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CMS.Models.Invoice", "Invoice")
-                        .WithMany()
-                        .HasForeignKey("InvoiceId1");
-
-                    b.Navigation("InventoryItem");
-
-                    b.Navigation("Invoice");
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("CMS.Models.LeaveRequest", b =>
@@ -2796,7 +3434,7 @@ namespace CMS.Migrations
                     b.HasOne("CMS.Models.Employee", "Employee")
                         .WithMany("LeaveRequests")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Employee");
@@ -2821,15 +3459,77 @@ namespace CMS.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("CMS.Models.Payment", b =>
+            modelBuilder.Entity("CMS.Models.Medications", b =>
                 {
-                    b.HasOne("CMS.Models.Patient", "Patient")
-                        .WithMany()
-                        .HasForeignKey("PatientId")
+                    b.HasOne("CMS.Models.Appointment", null)
+                        .WithMany("Medications")
+                        .HasForeignKey("AppointmentId");
+                });
+
+            modelBuilder.Entity("CMS.Models.Note", b =>
+                {
+                    b.HasOne("CMS.Models.Appointment", "Appointment")
+                        .WithMany("NotesList")
+                        .HasForeignKey("AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Appointment");
+                });
+
+            modelBuilder.Entity("CMS.Models.PatientTreatments", b =>
+                {
+                    b.HasOne("CMS.Models.Appointment", "Appointment")
+                        .WithMany("PatientTreatments")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CMS.Models.Treatment", "Treatment")
+                        .WithMany()
+                        .HasForeignKey("TreatmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Treatment");
+                });
+
+            modelBuilder.Entity("CMS.Models.PatientVitals", b =>
+                {
+                    b.HasOne("CMS.Models.Appointment", "Appointment")
+                        .WithMany("PatientVitals")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+                });
+
+            modelBuilder.Entity("CMS.Models.Payment", b =>
+                {
+                    b.HasOne("CMS.Models.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CMS.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId");
+
+                    b.HasOne("CMS.Models.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
                     b.Navigation("Patient");
+
+                    b.Navigation("PaymentMethod");
                 });
 
             modelBuilder.Entity("CMS.Models.PayrollItem", b =>
@@ -2837,7 +3537,7 @@ namespace CMS.Migrations
                     b.HasOne("CMS.Models.Employee", "Employee")
                         .WithMany("PayrollItems")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CMS.Models.PayrollRun", "PayrollRun")
@@ -2856,7 +3556,7 @@ namespace CMS.Migrations
                     b.HasOne("CMS.Models.Employee", "Employee")
                         .WithMany("PerformanceReviews")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Employee");
@@ -2876,22 +3576,14 @@ namespace CMS.Migrations
             modelBuilder.Entity("CMS.Models.Treatment", b =>
                 {
                     b.HasOne("CMS.Models.Appointment", "Appointment")
-                        .WithMany("Treatments")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CMS.Models.InvoiceItem", "InvoiceItem")
-                        .WithMany()
-                        .HasForeignKey("InvoiceItemId");
+                        .WithOne("Treatments")
+                        .HasForeignKey("CMS.Models.Treatment", "AppointmentId");
 
                     b.HasOne("CMS.Models.Patient", null)
                         .WithMany("Treatments")
                         .HasForeignKey("PatientId");
 
                     b.Navigation("Appointment");
-
-                    b.Navigation("InvoiceItem");
                 });
 
             modelBuilder.Entity("CMS.Models.Xray", b =>
@@ -2907,6 +3599,18 @@ namespace CMS.Migrations
 
             modelBuilder.Entity("CMS.Models.Appointment", b =>
                 {
+                    b.Navigation("FollowUps");
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Medications");
+
+                    b.Navigation("NotesList");
+
+                    b.Navigation("PatientTreatments");
+
+                    b.Navigation("PatientVitals");
+
                     b.Navigation("Treatments");
                 });
 
@@ -2947,6 +3651,8 @@ namespace CMS.Migrations
             modelBuilder.Entity("CMS.Models.Invoice", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("CMS.Models.Patient", b =>
@@ -2956,6 +3662,8 @@ namespace CMS.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("FollowUps");
+
+                    b.Navigation("InvoiceItems");
 
                     b.Navigation("Treatments");
                 });

@@ -1,43 +1,120 @@
-﻿@* // File: Views/Reports/Index.cshtml *@
+﻿@* File: Views/Reports/Index.cshtml *@
 @{
-    ViewData["Title"] = "HR Reports";
+    ViewData["Title"] = "Reports Dashboard";
 }
 
-<div class="content py-3">
-    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
-        <div class="flex-grow-1">
-            <h4 class="fw-bold mb-0">HR Reports</h4>
+<div class="container py-4">
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Reports Dashboard</h2>
+            <span class="text-secondary">Access all your clinic reports and analytics</span>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Attendance Report</h5>
-                    <p class="card-text">Generate a detailed report of employee attendance records with date and status filters.</p>
-                    <a asp-action="AttendanceReport" class="btn btn-primary">View Report</a>
+    <div class="row g-4">
+
+        <!-- Financial Reports -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-gradient bg-primary text-white border-0 d-flex align-items-center">
+                    <i class="ti ti-chart-pie fs-3 me-2"></i>
+                    <h5 class="card-title mb-0 ms-1">Financial Reports</h5>
                 </div>
+                <ul class="list-group list-group-flush bg-light">
+                    <a href="@Url.Action("DailyCollection")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-cash text-success fs-5 me-3"></i>
+                        <div class="flex-fill">Daily Collection Report</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a>
+                    @* <a href="@Url.Action("OutstandingInvoices")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-receipt text-warning fs-5 me-3"></i>
+                        <div class="flex-fill">Outstanding Invoices</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a>
+                    <a href="@Url.Action("DoctorRevenueShare")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-chart-bar text-info fs-5 me-3"></i>
+                        <div class="flex-fill">Doctor Revenue Share</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a>
+                    <a href="@Url.Action("TaxSummary")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-report-money text-danger fs-5 me-3"></i>
+                        <div class="flex-fill">Tax Summary</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a> *@
+                </ul>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Leave Report</h5>
-                    <p class="card-text">Generate a report of all leave requests, filterable by status, type, and date range.</p>
-                    <a asp-action="LeaveReport" class="btn btn-primary">View Report</a>
+
+        <!-- Appointment Reports -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-gradient bg-success text-white border-0 d-flex align-items-center">
+                    <i class="ti ti-calendar fs-3 me-2"></i>
+                    <h5 class="card-title mb-0 ms-1">Appointment Reports</h5>
                 </div>
+                <ul class="list-group list-group-flush bg-light">
+                    <a href="@Url.Action("DoctorAppointmentList")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-list text-primary fs-5 me-3"></i>
+                        <div class="flex-fill">Doctor Appointment List</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a>
+                   
+                    @* <a href="@Url.Action("TreatmentStatistics")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-stethoscope text-warning fs-5 me-3"></i>
+                        <div class="flex-fill">Treatment Statistics</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a> *@
+                </ul>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Payroll Summary Report</h5>
-                    <p class="card-text">View a summary of payroll runs, including total salaries, allowances, and deductions.</p>
-                    <a asp-action="PayrollSummary" class="btn btn-primary">View Report</a>
+
+        <!-- Inventory Reports -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-gradient bg-warning border-0 d-flex align-items-center">
+                    <i class="ti ti-package fs-3 me-2"></i>
+                    <h5 class="card-title mb-0 ms-1 text-dark">Inventory Reports</h5>
                 </div>
+                <ul class="list-group list-group-flush bg-light">
+                    <a href="@Url.Action("LowStock")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-alert-triangle text-danger fs-5 me-3"></i>
+                        <div class="flex-fill">Low Stock Alert</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+        <!-- HR Reports -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-gradient bg-info text-white border-0 d-flex align-items-center">
+                    <i class="ti ti-users fs-3 me-2"></i>
+                    <h5 class="card-title mb-0 ms-1">HR Reports</h5>
+                </div>
+                <ul class="list-group list-group-flush bg-light">
+                    <a href="@Url.Action("Payslip")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-file-invoice text-primary fs-5 me-3"></i>
+                        <div class="flex-fill">Payslip</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a>
+                    <a href="@Url.Action("MonthlyAttendanceSheet")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-clipboard-text text-success fs-5 me-3"></i>
+                        <div class="flex-fill">Monthly Attendance</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a>
+                    @* <a href="@Url.Action("PerformanceAppraisalHistory")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-trending-up text-warning fs-5 me-3"></i>
+                        <div class="flex-fill">Performance Appraisal</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a>
+                    <a href="@Url.Action("StaffCostSummary")" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+                        <i class="ti ti-calculator text-danger fs-5 me-3"></i>
+                        <div class="flex-fill">Staff Cost Summary</div>
+                        <i class="ti ti-chevron-right text-muted fs-6"></i>
+                    </a> *@
+                </ul>
             </div>
         </div>
     </div>
 </div>
-

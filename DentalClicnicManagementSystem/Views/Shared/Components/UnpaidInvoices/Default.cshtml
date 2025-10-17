@@ -1,5 +1,4 @@
-﻿@* Views/Shared/Components/UnpaidInvoices/Default.cshtml *@
-@model IEnumerable<dynamic>
+﻿@* @model IEnumerable<dynamic>
 <div class="card shadow-md rounded-3">
     <div class="card-header bg-gradient-warning text-white">
         <h6 class="mb-0">Unpaid Invoices <span class="badge bg-light text-dark ms-2">@ViewData["TotalUnpaid"]</span></h6>
@@ -9,6 +8,35 @@
             <thead>
                 <tr>
                     <th>Invoice #</th>
+                    <th>Patient</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in Model)
+                {
+                    <tr>
+                        <td>@i.InvoiceNumber</td>
+                        <td>@i.PatientName</td>
+                        <td>@i.Total.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div> *@
+
+
+@model IEnumerable<dynamic>
+<div class="card shadow-md rounded-3">
+    <div class="card-header bg-gradient-warning text-white">
+        <h6 class="mb-0">Factures Impayées <span class="badge bg-light text-dark ms-2">@ViewData["TotalUnpaid"]</span></h6>
+    </div>
+    <div class="card-body p-2">
+        <table class="table table-themed mb-0">
+            <thead>
+                <tr>
+                    <th>Facture #</th>
                     <th>Patient</th>
                     <th>Total</th>
                 </tr>

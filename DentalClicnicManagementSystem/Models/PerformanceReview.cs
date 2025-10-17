@@ -12,7 +12,7 @@ namespace CMS.Models
         [Required]
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; }
-
+        public bool IsActive { get; set; } = true;
         [Required]
         [DataType(DataType.Date)]
         public DateTime ReviewDate { get; set; }

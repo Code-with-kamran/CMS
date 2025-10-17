@@ -1,0 +1,361 @@
+﻿@* File: Views/Reports/DoctorAppointmentList.cshtml *@
+@{
+    ViewData["Title"] = "Doctor Appointment List";
+}
+
+<div class="content">
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3 pb-3 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Doctor Appointment List</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export <i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item export-csv" href="javascript:void(0);" data-report="doctorappointmentlist">Download as CSV</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Total Appointments</p>
+                            <h4 class="mb-0 fw-bold text-primary" id="totalAppointments">0</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-primary text-primary rounded-2">
+                            <i class="ti ti-calendar fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Today's Appointments</p>
+                            <h4 class="mb-0 fw-bold text-success" id="todaysAppointments">0</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-success text-success rounded-2">
+                            <i class="ti ti-calendar-event fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Doctors Scheduled</p>
+                            <h4 class="mb-0 fw-bold text-info" id="doctorsScheduled">0</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-info text-info rounded-2">
+                            <i class="ti ti-user fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Completion Rate</p>
+                            <h4 class="mb-0 fw-bold text-warning" id="completionRate">0%</h4>
+                        </div>
+                        <span class="avatar avatar-md bg-soft-warning text-warning rounded-2">
+                            <i class="ti ti-chart-pie fs-18"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row row-gap-2">
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="text" class="form-control datepicker" id="startDate" placeholder="Select start date">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label">End Date</label>
+                        <input type="text" class="form-control datepicker" id="endDate" placeholder="Select end date">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Doctor</label>
+                        <select class="form-select select2" id="doctorFilter">
+                            <option value="">All Doctors</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="No Show">No Show</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex justify-content-between">
+                    <div class="mb-4 d-flex align-items-end">
+                        <button type="button" class="btn btn-dark w-100" id="applyFiltersBtn">
+                            <i class="ti ti-player-play me-1"></i>Run Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="appointmentListTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Appointment Date</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Treatment</th>
+                            <th>Time</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+  <script>
+        $(document).ready(function () {
+            // Initialize Flatpickr
+           
+
+            // Initialize Select2 for doctor dropdown
+            $('.doctor-select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select a doctor',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Load doctors for dropdown
+            loadDoctors();
+
+            // Set default dates
+            const today = new Date();
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+            const todayString = new Date().toISOString().split('T')[0];
+            $('#startDate').val(todayString);
+            $('#endDate').val(todayString);
+
+            // Load initial data
+            loadAppointmentListData();
+
+            // Apply filters
+            $('#applyFiltersBtn').on('click', function () {
+                loadAppointmentListData();
+            });
+
+            // Export functionality
+            $('.export-csv').on('click', function () {
+                exportToCSV();
+            });
+
+            
+
+            function loadDoctors() {
+                $.ajax({
+                    url: '/Reports/GetDoctors',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success && response.data) {
+                            const doctorSelect = $('#doctorFilter');
+                            doctorSelect.empty();
+                            doctorSelect.append('<option value="">All Doctors</option>');
+
+                            response.data.forEach(function (doctor) {
+                                doctorSelect.append(new Option(doctor.text, doctor.id));
+                            });
+
+                            // Refresh Select2
+                            doctorSelect.trigger('change');
+                        }
+                    },
+                    error: function () {
+                        console.error('Failed to load doctors');
+                    }
+                });
+            }
+
+            function loadAppointmentListData() {
+                const params = getFilterParams();
+                const $btn = $('#applyFiltersBtn');
+                const originalText = $btn.html();
+
+                // Show loading state
+                $btn.prop('disabled', true).html('<i class="ti ti-loader me-1"></i>Loading...');
+
+                $.ajax({
+                    url: '/Reports/GetDoctorAppointmentList',
+                    type: 'GET',
+                    data: params,
+                    success: function (response) {
+                        if (response.success) {
+                            updateSummary(response.summary);
+                            populateTable(response.data);
+                        } else {
+                            showError('Failed to load appointment data');
+                        }
+                    },
+                    error: function () {
+                        showError('Error loading appointment data');
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                });
+            }
+
+            function getFilterParams() {
+                return {
+                    startDate: $('#startDate').val(),
+                    endDate: $('#endDate').val(),
+                    doctorId: $('#doctorFilter').val(),
+                    status: $('#statusFilter').val()
+                };
+            }
+
+            function updateSummary(summary) {
+                $('#totalAppointments').text(summary.totalAppointments || 0);
+                $('#todaysAppointments').text(summary.todaysAppointments || 0);
+                $('#doctorsScheduled').text(summary.doctorsScheduled || 0);
+                $('#completionRate').text((summary.completionRate || 0) + '%');
+            }
+
+            function populateTable(data) {
+                const tbody = $('#appointmentListTable tbody');
+                tbody.empty();
+
+                if (!data || data.length === 0) {
+                    tbody.append('<tr><td colspan="8" class="text-center py-4 text-muted">No appointments found for the selected criteria</td></tr>');
+                    return;
+                }
+
+                data.forEach(function (item) {
+                    const statusBadge = getStatusBadge(item.status);
+                    const row = `
+                        <tr>
+                            <td>
+                                <div class="fw-bold">${formatDate(item.appointmentDate)}</div>
+                            </td>
+                            <td><strong>${escapeHtml(item.patientName)}</strong></td>
+                            <td>${escapeHtml(item.doctorName)}</td>
+                            <td>${escapeHtml(item.treatment)}</td>
+                            <td>${formatTime(item.time)}</td>
+                            <td>${item.duration} min</td>
+                            <td><span class="badge bg-${statusBadge}">${item.status}</span></td>
+                            <td class="truncate-220">${escapeHtml(item.notes || '-')}</td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
+
+            function getStatusBadge(status) {
+                switch(status) {
+                    case 'Completed': return 'success';
+                    case 'Scheduled': return 'primary';
+                    case 'Cancelled': return 'danger';
+                    case 'No Show': return 'warning';
+                    default: return 'secondary';
+                }
+            }
+
+            function formatDate(dateString) {
+                if (!dateString) return '-';
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-GB');
+            }
+
+            function formatTime(timeString) {
+                if (!timeString) return '-';
+                // If time is already formatted, return as is
+                if (timeString.includes(':')) return timeString;
+                // If it's a time span, format it
+                const time = new Date('2000-01-01T' + timeString);
+                return time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            }
+
+            function escapeHtml(unsafe) {
+                if (!unsafe) return '';
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function showError(message) {
+                // You can use Toastr or SweetAlert for better error messages
+                console.error(message);
+                const tbody = $('#appointmentListTable tbody');
+                tbody.empty();
+                tbody.append(`<tr><td colspan="8" class="text-center py-4 text-danger">${message}</td></tr>`);
+            }
+
+         function exportToCSV() {
+            const params = {
+                startDate: $('#startDate').val(), // already 2025-10-14
+                endDate:   $('#endDate').val(),
+                doctorId:  $('#doctorFilter').val(),
+                status:    $('#statusFilter').val(),
+                exportType: 'csv'
+            };
+            window.location.href = '/Reports/ExportDoctorAppointmentList?' +
+                                   new URLSearchParams(params).toString();
+        }
+
+         flatpickr('.datepicker', {
+                dateFormat: 'Y-m-d',
+                defaultDate: new Date()
+            });
+        });
+    </script>
+}

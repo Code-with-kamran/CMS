@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\SirwalaDental\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj": {}
+    "D:\\SirwalaDental\\DentalClicnicManagementSystem -\\DentalClicnicManagementSystem\\CMS.csproj": {}
   },
   "projects": {
-    "D:\\SirwalaDental\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj": {
+    "D:\\SirwalaDental\\DentalClicnicManagementSystem -\\DentalClicnicManagementSystem\\CMS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\SirwalaDental\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj",
+        "projectUniqueName": "D:\\SirwalaDental\\DentalClicnicManagementSystem -\\DentalClicnicManagementSystem\\CMS.csproj",
         "projectName": "CMS",
-        "projectPath": "D:\\SirwalaDental\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\CMS.csproj",
+        "projectPath": "D:\\SirwalaDental\\DentalClicnicManagementSystem -\\DentalClicnicManagementSystem\\CMS.csproj",
         "packagesPath": "C:\\Users\\kamran\\.nuget\\packages\\",
-        "outputPath": "D:\\SirwalaDental\\DentalClicnicManagementSystem\\DentalClicnicManagementSystem\\obj\\",
+        "outputPath": "D:\\SirwalaDental\\DentalClicnicManagementSystem -\\DentalClicnicManagementSystem\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

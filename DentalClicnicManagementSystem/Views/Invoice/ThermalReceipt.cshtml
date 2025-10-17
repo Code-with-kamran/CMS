@@ -1,0 +1,463 @@
+﻿@* @model Invoice
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thermal Receipt</title>
+    <style>
+        /* Thermal printing styles */
+        body {
+           
+            margin: 0;
+            padding: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .thermal-container {
+            width: 100%;
+            padding: 10px;
+            background: #fff;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .invoice-meta {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .section {
+            margin-top: 15px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .item-details {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .item-name {
+            width: 60%;
+            text-align: left;
+        }
+
+        .item-quantity {
+            width: 10%;
+            text-align: center;
+        }
+
+        .item-price {
+            width: 15%;
+            text-align: right;
+        }
+
+        .item-total {
+            width: 15%;
+            text-align: right;
+        }
+
+        .total-row {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: right;
+            border-top: 1px dashed #000;
+            padding-top: 5px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* Print styles */
+        @@media print {
+            body {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="thermal-container">
+        <div class="header">
+            <h3>Cabinet Dentair Corvil</h3>
+            <p>@ViewData["CompanyName"]</p>
+            <p>@ViewData["CompanyPhone"]</p>
+        </div>
+
+        <div class="invoice-meta">
+            <p>Invoice #: @Model.InvoiceNumber</p>
+            <p>Issue Date: @Model.IssueDate.ToString("MMMM dd, yyyy")</p>
+            <p>Due Date: @Model.DueDate.ToString("MMMM dd, yyyy")</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Bill To:</div>
+            <div>@Model.CustomerName</div>
+            <div>@Model.CustomerAddress</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Invoice Details</div>
+
+            <!-- Header row -->
+            <div class="item-row" style="font-weight: bold; border-bottom: 1px solid #000;">
+                <div class="item-details">
+                    <div class="item-name">Description</div>
+                    <div class="item-quantity">Qty</div>
+                    <div class="item-price">Price</div>
+                    <div class="item-total">Total</div>
+                </div>
+            </div>
+
+            <!-- Items -->
+            @for (int i = 0; i < Model.Items.Count; i++)
+            {
+                var item = Model.Items[i];
+                <div class="item-row">
+                    <div class="item-details">
+                        <div class="item-name">
+                            @(i + 1).
+                            @if (item.ItemType == "Test")
+                            {
+                                <span>@(string.IsNullOrEmpty(item.TestName) ? "Test Name Not Available" : item.TestName)</span>
+                            }
+                            else if (item.ItemType == "Inventory")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.InventoryItem?.Name)
+                                                                ? (string.IsNullOrEmpty(item.MedicationsName)
+                                                                ? "Medication not found"
+                                                                : item.MedicationsName)
+                                                                : item.InventoryItem?.Name)
+                        </span>
+                                                }
+                            else if (item.ItemType == "Medication")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.InventoryItem?.Name)
+                                                                ? (string.IsNullOrEmpty(item.MedicationsName)
+                                                                ? "Medication not found"
+                                                                : item.MedicationsName)
+                                                                : item.InventoryItem?.Name)
+                        </span>
+                                                }
+                            else if (item.ItemType == "Appointment")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.AppointmentWIth)
+                                                                ? (item.Appointment?.Doctor?.FullName ?? "Appointment not found")
+                                                                : item.AppointmentWIth)
+                        </span>
+                                                }
+                            else if (item.ItemType == "Combined")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.Treatment?.Name)
+                                                                ? (string.IsNullOrEmpty(item.TreatmentName)
+                                                                ? "Treatment not found"
+                                                                : item.TreatmentName)
+                                                                : item.Treatment.Name)
+                        </span>
+                                                }
+                            else if (item.ItemType == "Treatment")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.Treatment?.Name)
+                                                                ? (string.IsNullOrEmpty(item.TreatmentName)
+                                                                ? "Treatment not found"
+                                                                : item.TreatmentName)
+                                                                : item.Treatment.Name)
+                        </span>
+                                                }
+                            else
+                            {
+                                <span>@(string.IsNullOrEmpty(item.Description) ? "Description not available" : item.Description)</span>
+                            }
+                        </div>
+                        <div class="item-quantity">@item.Quantity</div>
+                        <div class="item-price">@String.Format("{0:C}", item.UnitPrice)</div>
+                        <div class="item-total">@String.Format("{0:C}", item.LineTotal)</div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="total-row">
+            <p>Total Amount: @String.Format("{0:C}", Model.Total)</p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for your business!</p>
+        </div>
+    </div>
+
+    <script>
+        function triggerPrint() {
+            window.print();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Auto-trigger print dialog if URL has ?print parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('print')) {
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html> *@
+
+
+
+
+@inject CMS.Services.ICurrencyService CurrencyService
+@model Invoice
+@{
+    Layout = null;
+    var currentCurrency = await CurrencyService.GetCurrentCurrencyAsync();
+    var currencySymbol = currentCurrency?.Symbol ?? "£";
+    var currencyFormat = currentCurrency?.Code ?? "GBP";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reçu Thermique</title>
+    <style>
+        /* Styles d'impression thermique */
+        body {
+            margin: 0;
+            padding: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .thermal-container {
+            width: 100%;
+            padding: 10px;
+            background: #fff;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .invoice-meta {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .section {
+            margin-top: 15px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .item-details {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .item-name {
+            width: 60%;
+            text-align: left;
+        }
+
+        .item-quantity {
+            width: 10%;
+            text-align: center;
+        }
+
+        .item-price {
+            width: 15%;
+            text-align: right;
+        }
+
+        .item-total {
+            width: 15%;
+            text-align: right;
+        }
+
+        .total-row {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: right;
+            border-top: 1px dashed #000;
+            padding-top: 5px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* Styles d'impression */
+        @@media print {
+            body {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="thermal-container">
+        <div class="header">
+            <h3>Cabinet Dentaire Corvil</h3>
+            <p>@ViewData["CompanyName"]</p>
+            <p>@ViewData["CompanyPhone"]</p>
+        </div>
+
+        <div class="invoice-meta">
+            <p>Facture N° : @Model.InvoiceNumber</p>
+            <p>Date d'Émission : @Model.IssueDate.ToString("dd MMMM yyyy")</p>
+            <p>Date d'Échéance : @Model.DueDate.ToString("dd MMMM yyyy")</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Facturé à :</div>
+            <div>@Model.CustomerName</div>
+            <div>@Model.CustomerAddress</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Détails de la Facture</div>
+
+            <!-- Ligne d'en-tête -->
+            <div class="item-row" style="font-weight: bold; border-bottom: 1px solid #000;">
+                <div class="item-details">
+                    <div class="item-name">Description</div>
+                    <div class="item-quantity">Qté</div>
+                    <div class="item-price">Prix</div>
+                    <div class="item-total">Total</div>
+                </div>
+            </div>
+
+            <!-- Articles -->
+            @for (int i = 0; i < Model.Items.Count; i++)
+            {
+                var item = Model.Items[i];
+                <div class="item-row">
+                    <div class="item-details">
+                        <div class="item-name">
+                            @(i + 1).
+                            @if (item.ItemType == "Test")
+                            {
+                                <span>@(string.IsNullOrEmpty(item.TestName) ? "Nom du test non disponible" : item.TestName)</span>
+                            }
+                            else if (item.ItemType == "Inventory")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.InventoryItem?.Name)
+                                                                ? (string.IsNullOrEmpty(item.MedicationsName)
+                                                                ? "Médicament non trouvé"
+                                                                : item.MedicationsName)
+                                                                : item.InventoryItem?.Name)
+                        </span>
+                                                }
+                            else if (item.ItemType == "Medication")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.InventoryItem?.Name)
+                                                                ? (string.IsNullOrEmpty(item.MedicationsName)
+                                                                ? "Médicament non trouvé"
+                                                                : item.MedicationsName)
+                                                                : item.InventoryItem?.Name)
+                        </span>
+                                                }
+                            else if (item.ItemType == "Appointment")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.AppointmentWIth)
+                                                                ? (item.Appointment?.Doctor?.FullName ?? "Rendez-vous non trouvé")
+                                                                : item.AppointmentWIth)
+                        </span>
+                                                }
+                            else if (item.ItemType == "Combined")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.Treatment?.Name)
+                                                                ? (string.IsNullOrEmpty(item.TreatmentName)
+                                                                ? "Traitement non trouvé"
+                                                                : item.TreatmentName)
+                                                                : item.Treatment.Name)
+                        </span>
+                                                }
+                            else if (item.ItemType == "Treatment")
+                            {
+                                <span>
+                                    @(string.IsNullOrEmpty(item.Treatment?.Name)
+                                                                ? (string.IsNullOrEmpty(item.TreatmentName)
+                                                                ? "Traitement non trouvé"
+                                                                : item.TreatmentName)
+                                                                : item.Treatment.Name)
+                        </span>
+                                                }
+                            else
+                            {
+                                <span>@(string.IsNullOrEmpty(item.Description) ? "Description non disponible" : item.Description)</span>
+                            }
+                        </div>
+                        <div class="item-quantity">@item.Quantity</div>
+                        <div class="item-price">@(currencySymbol)@item.UnitPrice.ToString("N2")</div>
+                        <div class="item-total">@(currencySymbol)@item.LineTotal.ToString("N2")</div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="total-row">
+            <div class="total-row">
+                <p>Montant Total : @(currencySymbol)@Model.Total.ToString("N2")</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Merci pour votre confiance !</p>
+        </div>
+    </div>
+   
+    <script>
+        function triggerPrint() {
+            window.print();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Déclencher automatiquement l'impression si l'URL a le paramètre ?print
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('print')) {
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html>

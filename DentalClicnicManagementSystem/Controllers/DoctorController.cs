@@ -249,7 +249,7 @@ namespace CMS.Controllers
 
                 return Json(new { status = true, message = "Deleted successfully." });
             }
-            catch
+            catch(Exception ex)
             {
                 return Json(new { status = false, message = "Error deleting doctor." });
             }
@@ -262,9 +262,9 @@ namespace CMS.Controllers
         [HttpGet]
         public async Task<IActionResult> Upsert(int? id, bool prefill5 = false, bool prefill7 = false)
         {
-            // THE FIX: Initialize the ViewModel and immediately populate the Departments list.
             var vm = new DoctorUpsertVM
             {
+                // Load departments from database
                 Departments = await _context.Departments
                     .OrderBy(d => d.DepartmentName)
                     .Select(d => new SelectListItem
@@ -275,34 +275,37 @@ namespace CMS.Controllers
                     .ToListAsync()
             };
 
-            if (id == null || id == 0) // This is a 'Create' operation
+            if (id == null || id == 0)
             {
+                // Initialize a new Doctor object if no ID is passed (Create)
                 vm.Doctor = new Doctor
                 {
                     AvailabilityStatus = "Available",
                     ConsultationDurationInMinutes = 15
                 };
 
+                // Pre-fill weekly availability if needed
                 if (prefill5) PrefillWeekly(vm, days: 5);
                 if (prefill7) PrefillWeekly(vm, days: 7);
             }
-            else // This is an 'Edit' operation
+            else
             {
+                // Retrieve existing doctor details from the database (Edit)
                 vm.Doctor = await _context.Doctors
                     .Include(d => d.WeeklyAvailabilities)
                     .Include(d => d.DateAvailabilities)
                     .Include(d => d.Educations)
                     .Include(d => d.Awards)
                     .Include(d => d.Certifications)
-                    .FirstOrDefaultAsync(x => x.Id == id.Value);
+                    .FirstOrDefaultAsync(d => d.Id == id.Value);
 
-                if (vm.Doctor == null) return NotFound();
+                if (vm.Doctor == null)
+                {
+                    // If no doctor is found, return a 404 error
+                    return NotFound();
+                }
 
-                // Keep password fields empty on edit
-                vm.Doctor.Password = string.Empty;
-                vm.Doctor.ConfirmPassword = string.Empty;
-
-                // Populate the other lists for the view
+                // Load additional data for existing doctor
                 vm.WeeklyAvailabilities = vm.Doctor.WeeklyAvailabilities.OrderBy(a => a.DayOfWeek).ToList();
                 vm.DateAvailabilities = vm.Doctor.DateAvailabilities.OrderBy(a => a.Date).ToList();
                 vm.Educations = vm.Doctor.Educations.OrderByDescending(e => e.Year).ToList();
@@ -310,25 +313,57 @@ namespace CMS.Controllers
                 vm.Certifications = vm.Doctor.Certifications.OrderByDescending(c => c.IssuedOn).ToList();
             }
 
+            // Return the correct view with the DoctorUpsertVM
             return View(vm);
         }
 
-        // POST: /Doctor/Upsert
-        public async Task<IActionResult> Upsert(DoctorUpsertVM vm, IFormFile? ProfileImage, string repeatAvailabilityFor)
+        // ---------------------- POST: Doctor/Upsert
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upsert(DoctorUpsertVM vm, IFormFile? ProfileImage)
         {
+            // Load departments for the view (in case of validation errors)
+            vm.Departments = await _context.Departments
+                .OrderBy(d => d.DepartmentName)
+                .Select(d => new SelectListItem
+                {
+                    Text = d.DepartmentName,
+                    Value = d.DepartmentId.ToString()
+                })
+                .ToListAsync();
+
             if (ProfileImage is { Length: > 1 * 1024 * 1024 })
             {
-                ModelState.AddModelError(
-                    nameof(vm.Doctor.ProfileImageUrl),
-                    "Profile photo must not exceed 1 MB.");
+                ModelState.AddModelError(nameof(vm.Doctor.ProfileImageUrl), "Profile photo must not exceed 1 MB.");
                 return View(vm);
             }
 
             var isCreate = vm.Doctor.Id == 0;
 
-            // --- Trim empty child rows first (avoids binder noise) ---
+            // Trim empty child rows
             TrimEmptyChildren(vm);
 
+
+            if (vm.Doctor.Id == 0) // create
+            {
+                if (string.IsNullOrWhiteSpace(vm.Doctor.Password))
+                    ModelState.AddModelError("Doctor.Password", "Password is required.");
+                if (vm.Doctor.Password != vm.Doctor.ConfirmPassword)
+                    ModelState.AddModelError("Doctor.ConfirmPassword", "Passwords do not match.");
+            }
+            else // edit
+            {
+                if (string.IsNullOrWhiteSpace(vm.Doctor.Password) &&
+                    string.IsNullOrWhiteSpace(vm.Doctor.ConfirmPassword))
+                {
+                    ModelState.Remove("Doctor.Password");
+                    ModelState.Remove("Doctor.ConfirmPassword");
+                }
+                else if (vm.Doctor.Password != vm.Doctor.ConfirmPassword)
+                {
+                    ModelState.AddModelError("Doctor.ConfirmPassword", "Passwords do not match.");
+                }
+            }
             // Validate Weekly Availability
             for (int i = 0; i < (vm.WeeklyAvailabilities?.Count ?? 0); i++)
             {
@@ -344,158 +379,121 @@ namespace CMS.Controllers
                     ModelState.AddModelError($"WeeklyAvailabilities[{i}].EndTime", "End must be after Start.");
                 if (w.SlotDuration <= TimeSpan.Zero)
                     ModelState.AddModelError($"WeeklyAvailabilities[{i}].SlotDuration", "Slot duration must be > 0.");
+
+                if (w.StartTime != default && w.EndTime != default &&
+                    (w.EndTime - w.StartTime).TotalMinutes < 30)
+                    ModelState.AddModelError($"WeeklyAvailabilities[{i}].EndTime", "Each availability block must be at least 30 minutes long.");
             }
 
-            // Convert Weekly Availability to Date-Specific Availability (this is where the problem may lie)
-            foreach (var weekly in vm.WeeklyAvailabilities)
+            // Validate ModelState
+            if (!ModelState.IsValid)
             {
-                var firstDayOfMonth = DateTime.Now; // Modify this if you want a specific range
-                var lastDayOfMonth = firstDayOfMonth.AddMonths(1); // You can set this range based on user input
-
-                var currentDay = firstDayOfMonth;
-
-                // Loop through each day of the week in the range and add the availability
-                while (currentDay <= lastDayOfMonth)
-                {
-                    if (currentDay.DayOfWeek == weekly.DayOfWeek)
-                    {
-                        vm.DateAvailabilities.Add(new DoctorDateAvailability
-                        {
-                            DoctorId = vm.Doctor.Id,
-                            Date = currentDay,
-                            StartTime = weekly.StartTime,
-                            EndTime = weekly.EndTime,
-                            IsAvailable = weekly.IsWorkingDay
-                        });
-                    }
-                    currentDay = currentDay.AddDays(1); // Move to the next day
-                }
+                return View(vm);
             }
 
             // Handle Profile Image
             if (ProfileImage != null)
             {
-                _fileHelper.DeleteIfNotDefault(vm.Doctor.ProfileImageUrl);  // remove old
+                _fileHelper.DeleteIfNotDefault(vm.Doctor.ProfileImageUrl);
                 vm.Doctor.ProfileImageUrl = await _fileHelper.SaveAsync(ProfileImage, "uploads/doctors");
             }
 
             // Default image on create only
-            if (vm.Doctor.Id == 0 && string.IsNullOrEmpty(vm.Doctor.ProfileImageUrl))
+            if (isCreate && string.IsNullOrEmpty(vm.Doctor.ProfileImageUrl))
                 vm.Doctor.ProfileImageUrl = "/uploads/doctors/default.jpg";
 
-            if (isCreate)
+            try
             {
-
-                var user = new User
+                if (isCreate)
                 {
-                    Username = vm.Doctor.Email,
-                    Email = vm.Doctor.Email,
-                    PasswordHash = vm.Doctor.Password,
-                    FullName = vm.Doctor.FullName,
-                    Role = "Doctor",
-                    IsActive = true,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
-                };
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-
-                vm.Doctor.UserId = user.Id;
-                vm.Doctor.CreatedOn = DateTime.Now;
-
-
-
-                vm.Doctor.CreatedOn = DateTime.Now;
-                _context.Doctors.Add(vm.Doctor);
-                await _context.SaveChangesAsync();
-
-                // Handle availability replication if necessary
-                if (!string.IsNullOrEmpty(repeatAvailabilityFor))
-                {
-                    // Parse the repeat availability period (e.g., 1 Year, 3 Months)
-                    int repeatPeriod = int.Parse(repeatAvailabilityFor.Split(' ')[0]);
-                    await ReplicateAvailabilityForMonths(vm.Doctor.Id, repeatPeriod);
-                }
-
-                await ReplaceChildren(vm.Doctor.Id, vm);
-                TempData["success"] = "Doctor created successfully.";
-            }
-            else
-            {
-                // Preserve existing image if none was uploaded
-                if (ProfileImage == null)
-                    _context.Entry(vm.Doctor).Property(d => d.ProfileImageUrl).IsModified = false;
-
-                var dbDoctor = await _context.Doctors
-                    .Include(d => d.WeeklyAvailabilities)
-                    .Include(d => d.DateAvailabilities)
-                    .FirstOrDefaultAsync(x => x.Id == vm.Doctor.Id);
-
-                if (dbDoctor == null) return NotFound();
-
-                // Update doctor details here...
-                dbDoctor.UpdatedOn = DateTime.Now;
-
-                await _context.SaveChangesAsync();
-                await ReplaceChildren(dbDoctor.Id, vm);
-
-                TempData["success"] = "Doctor updated successfully.";
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        // ------ Helpers ------
-
-
-        public async Task<IActionResult> ReplicateAvailabilityForMonths(int doctorId, int numberOfMonths)
-        {
-            var doctor = await _context.Doctors
-                                        .Include(d => d.WeeklyAvailabilities)
-                                        .FirstOrDefaultAsync(d => d.Id == doctorId);
-
-            if (doctor == null)
-                return NotFound("Doctor not found.");
-
-            var weeklyAvailabilities = doctor.WeeklyAvailabilities.ToList();
-
-            // Replicate availability for the next numberOfMonths
-            for (int monthOffset = 0; monthOffset < numberOfMonths; monthOffset++)
-            {
-                var firstDayOfMonth = DateTime.Now.AddMonths(monthOffset).AddDays(-DateTime.Now.Day + 1); // First day of the next month
-                var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1); // Last day of the month
-
-                // For each availability, replicate for each day in the month
-                foreach (var availability in weeklyAvailabilities)
-                {
-                    var currentDay = firstDayOfMonth;
-
-                    while (currentDay <= lastDayOfMonth)
+                    // Create user account
+                    var user = new User
                     {
-                        if (currentDay.DayOfWeek == availability.DayOfWeek)
-                        {
-                            // Add to the DoctorDateAvailabilities
-                            _context.DoctorDateAvailabilities.Add(new DoctorDateAvailability
-                            {
-                                DoctorId = doctorId,
-                                Date = currentDay,
-                                StartTime = availability.StartTime,
-                                EndTime = availability.EndTime,
-                                IsAvailable = availability.IsWorkingDay
-                            });
-                        }
-                        currentDay = currentDay.AddDays(1); // Move to the next day
+                        Username = vm.Doctor.Email,
+                        Email = vm.Doctor.Email,
+                        PasswordHash = vm.Doctor.Password, // Make sure to hash this in production
+                        FullName = vm.Doctor.FullName,
+                        Role = "Doctor",
+                        IsActive = true,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+
+                    vm.Doctor.UserId = user.Id;
+                    vm.Doctor.CreatedOn = DateTime.Now;
+
+                    _context.Doctors.Add(vm.Doctor);
+                    await _context.SaveChangesAsync();
+
+                    await ReplaceChildren(vm.Doctor.Id, vm);
+
+                    TempData["success"] = "Doctor created successfully.";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    // Update existing doctor
+                    var dbDoctor = await _context.Doctors
+                        .Include(d => d.WeeklyAvailabilities)
+                        .Include(d => d.DateAvailabilities)
+                        .Include(d => d.Educations)
+                        .Include(d => d.Awards)
+                        .Include(d => d.Certifications)
+                        .FirstOrDefaultAsync(x => x.Id == vm.Doctor.Id);
+
+                    if (dbDoctor == null)
+                    {
+                        TempData["error"] = "Doctor not found.";
+                        return RedirectToAction(nameof(Index));
                     }
+
+                    // Update doctor properties
+                    dbDoctor.FullName = vm.Doctor.FullName;
+                    dbDoctor.Specialty = vm.Doctor.Specialty;
+                    dbDoctor.DepartmentId = vm.Doctor.DepartmentId;
+                    dbDoctor.Degrees = vm.Doctor.Degrees;
+                    dbDoctor.About = vm.Doctor.About;
+                    dbDoctor.Email = vm.Doctor.Email;
+                    dbDoctor.Phone = vm.Doctor.Phone;
+                    dbDoctor.Address = vm.Doctor.Address;
+                    dbDoctor.ConsultationCharge = vm.Doctor.ConsultationCharge;
+                    dbDoctor.ConsultationDurationInMinutes = vm.Doctor.ConsultationDurationInMinutes;
+                    dbDoctor.MedicalLicenseNumber = vm.Doctor.MedicalLicenseNumber;
+                    dbDoctor.Clinic = vm.Doctor.Clinic;
+                    dbDoctor.BloodGroup = vm.Doctor.BloodGroup;
+                    dbDoctor.YearOfExperience = vm.Doctor.YearOfExperience;
+                    dbDoctor.AvailabilityStatus = vm.Doctor.AvailabilityStatus;
+                    dbDoctor.UpdatedOn = DateTime.Now;
+
+                    // Only update password if provided
+                    if (!string.IsNullOrEmpty(vm.Doctor.Password))
+                    {
+                        dbDoctor.Password = vm.Doctor.Password; // Hash this in production
+                    }
+
+                    // Update profile image if changed
+                    if (ProfileImage != null)
+                    {
+                        dbDoctor.ProfileImageUrl = vm.Doctor.ProfileImageUrl;
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await ReplaceChildren(dbDoctor.Id, vm);
+
+                    TempData["success"] = "Doctor updated successfully.";
+                    return RedirectToAction(nameof(Index));
                 }
             }
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("DoctorDetails", new { id = doctorId });
+            catch (Exception ex)
+            {
+                TempData["error"] = $"An error occurred: {ex.Message}";
+                return View(vm);
+            }
         }
 
-        // ------ Helpers ------
-
+       
         private static void PrefillWeekly(DoctorUpsertVM vm, int days)
         {
             vm.WeeklyAvailabilities.Clear();
@@ -557,7 +555,6 @@ namespace CMS.Controllers
 
 
 
-        // Simple replace strategy for children (delete + insert)
         private async Task ReplaceChildren(int doctorId, DoctorUpsertVM vm)
         {
             var oldW = _context.DoctorWeeklyAvailabilities.Where(x => x.DoctorId == doctorId);
@@ -578,11 +575,14 @@ namespace CMS.Controllers
                 w.Id = 0; w.DoctorId = doctorId;
                 _context.DoctorWeeklyAvailabilities.Add(w);
             }
+
+            // ONLY ADD EXPLICIT DATE AVAILABILITIES (not converted from weekly)
             foreach (var d in vm.DateAvailabilities)
             {
                 d.Id = 0; d.DoctorId = doctorId;
                 _context.DoctorDateAvailabilities.Add(d);
             }
+
             foreach (var e in vm.Educations)
             {
                 e.Id = 0; e.DoctorId = doctorId;

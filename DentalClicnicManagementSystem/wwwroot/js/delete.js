@@ -1,4 +1,4 @@
-﻿// Common Delete Handler
+﻿
 $(document).on('click', '.delete-btn-doctor', function () {
     let id = $(this).data('id');
     let url = $(this).data('url');   // coming from button attribute

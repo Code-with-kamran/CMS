@@ -1,4 +1,4 @@
-﻿@* This is the full, corrected dashboard view that matches your index.html UI *@
+﻿@* 
 @model CMS.ViewModels.DashboardStatsViewModel
 @{
     ViewData["Title"] = "Admin Dashboard";
@@ -10,7 +10,7 @@
 <div>
     <div class="content pb-0">
 
-        @* <!-- Page Header --> *@
+      
         <div class="d-flex align-items-sm-center justify-content-between flex-wrap gap-2 mb-4">
             <div>
                 <h4 class="fw-bold mb-0">Admin Dashboard</h4>
@@ -21,10 +21,7 @@
             </div>
         </div>
 
-        <!-- Top Stat Cards -->
-        @* In: Views/AdminDashboard/Index.cshtml *@
-
-        @* <!-- DYNAMIC: Top Stat Cards - This block replaces the old one --> *@
+       
         <div class="row">
             <div class="col-xl-3 col-md-6">
                 <div class="position-relative border card rounded-2 shadow-sm">
@@ -123,15 +120,12 @@
 
 
         <div class="row">
-            @* In: Views/AdminDashboard/Index.cshtml *@
 
            <div class="col-xl-8"> 
                 <div class="card shadow-sm flex-fill w-100">
                     <div class="card-header d-flex align-items-center justify-content-between">
                         <h5 class="fw-bold mb-0">Appointment Statistics</h5>
-                        @* In: Views/AdminDashboard/Index.cshtml *@
 
-                        @* <!-- Find this dropdown block --> *@
                         <div class="dropdown">
                             <a href="javascript:void(0);" id="statsDropdownButton" class="btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
                                 Monthly <i class="ti ti-chevron-down ms-1"></i>
@@ -150,7 +144,6 @@
                         </div>
 
                     </div>
-                        @* In: Views/AdminDashboard/Index.cshtml *@
 
                         
 
@@ -181,7 +174,6 @@
                                 </div>
                             </div>
                         </div>
-                        @* <!-- The chart's ID is "s-col-19" from your index.html --> *@
                         <div class="chart-set" id="s-col-19"></div>
                     </div>
                 </div>
@@ -189,7 +181,6 @@
                     @await Component.InvokeAsync("PopularDoctors")
             </div>
 
-            @* In: Views/AdminDashboard/Index.cshtml *@
 
             <div class="col-xl-4">
                 @await Component.InvokeAsync("AppointmentsCard")
@@ -197,7 +188,6 @@
 
         </div>
 
-        @* <!-- All Appointments Table --> *@
         <div class="row">
             <div class="col-12 d-flex">
                 <div class="card shadow-sm flex-fill w-100">
@@ -212,19 +202,15 @@
             </div>
         </div>
 
-        @* <!-- Other sections from your index.html can be added here in the same way --> *@
 
     </div>
-    @* <!-- Footer --> *@
     <div class="footer text-center bg-white p-2 border-top">
         <p class="text-dark mb-0">2025 &copy; <a href="javascript:void(0);" class="link-primary">Preclinic</a>, All Rights Reserved</p>
     </div>
 </div>
 </body>
-@* In: Views/AdminDashboard/Index.cshtml *@
 
 @section Scripts {
-    @* <!-- Add Font Awesome for icons --> *@
     
     <script>
 
@@ -315,91 +301,7 @@
         });
 
 
-                           @* In: Views/AdminDashboard/Index.cshtml, inside @section Scripts *@
-
-        // This AJAX call should replace the existing one for the card charts.
-        // $.ajax({
-        //     url: '@Url.Action("GetDashboardCardChartsData", "Admin")',
-        //     method: 'GET',
-        //     success: function (data) {
-        //         --- Base options for all sparkline charts ---
-        //         var sparklineOptions = {
-        //             chart: {
-        //                 type: 'line',
-        //                 height: 50,
-        //                 sparkline: { enabled: true }
-        //             },
-        //             stroke: { width: 2 },
-        //             tooltip: { enabled: false }
-        //         };
-
-        //         --- Doctors Chart (Bar) ---
-        //         var doctorsChartOptions = {
-        //             ...sparklineOptions,
-        //             chart: { ...sparklineOptions.chart, type: 'bar' },
-        //             colors: ['#0d6efd'],
-        //             plotOptions: {
-        //                 bar: {
-        //                     FIX 1: Use a more reasonable width to reduce gaps.
-        //                     columnWidth: '60%',
-        //                     FIX 2: Add rounded corners for a modern, sleek look.
-        //                     borderRadius: 4
-        //                 }
-        //             }
-        //         };
-        //         doctorsChartOptions.series = [{ name: 'Doctors', data: data.doctorsData }];
-        //         new ApexCharts(document.querySelector("#s-col"), doctorsChartOptions).render();
-
-        //         --- Patients Chart (Line) ---
-        //         var patientsChartOptions = {
-        //             ...sparklineOptions,
-        //             colors: ['#dc3545'],
-        //             dropShadow: {
-        //                 enabled: true,
-        //                 top: 3,
-        //                 left: 0,
-        //                 blur: 3,
-        //                 opacity: 0.5
-        //             }
-        //         };
-        //         patientsChartOptions.series = [{ name: 'Patients', data: data.patientsData }];
-        //         new ApexCharts(document.querySelector("#s-col-2"), patientsChartOptions).render();
-
-        //         --- Appointments Chart (Bar) ---
-        //         var appointmentsChartOptions = {
-        //             ...sparklineOptions,
-        //             chart: { ...sparklineOptions.chart, type: 'bar' },
-        //             colors: ['#0dcaf0'],
-        //             plotOptions: {
-        //                 bar: {
-        //                     FIX 1: Use a more reasonable width to reduce gaps.
-        //                     columnWidth: '60%',
-        //                     FIX 2: Add rounded corners for a modern, sleek look.
-        //                     borderRadius: 4
-        //                 }
-        //             }
-        //         };
-        //         appointmentsChartOptions.series = [{ name: 'Appointments', data: data.appointmentsData }];
-        //         new ApexCharts(document.querySelector("#s-col-3"), appointmentsChartOptions).render();
-
-        //         --- Revenue Chart (Line) ---
-        //         var revenueChartOptions = {
-        //             ...sparklineOptions,
-        //             colors: ['#198754'],
-        //             dropShadow: {
-        //                 enabled: true,
-        //                 top: 3,
-        //                 left: 0,
-        //                 blur: 3,
-        //                 opacity: 0.5
-        //             }
-        //         };
-        //         revenueChartOptions.series = [{ name: 'Revenue', data: data.revenueData }];
-        //         new ApexCharts(document.querySelector("#s-col-4"), revenueChartOptions).render();
-        //     }
-        // });
-
-
+                          
 
 
         $(function () {
@@ -515,7 +417,6 @@
 
 
 
-                @* In: Views/AdminDashboard/Index.cshtml, inside @section Scripts *@
 
         // --- Popular Doctors Dropdown AJAX ---
         $('#popular-doctors-dropdown-menu').on('click', 'a', function (e) {
@@ -539,6 +440,886 @@
                 }
             });
         });
+
+    </script>
+} *@
+
+
+
+@* 
+@model CMS.ViewModels.DashboardStatsViewModel
+@{
+    ViewData["Title"] = "Tableau de Bord Administrateur";
+    Layout = "_Layout";
+}
+
+<body>
+
+    <div>
+        <div class="content pb-0">
+
+
+            <div class="d-flex align-items-sm-center justify-content-between flex-wrap gap-2 mb-4">
+                <div>
+                    <h4 class="fw-bold mb-0">Tableau de Bord Administrateur</h4>
+                </div>
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <a href="#" class="btn btn-primary d-inline-flex align-items-center"><i class="ti ti-plus me-1"></i>Nouveau Rendez-vous</a>
+                    <a href="#" class="btn btn-outline-white bg-white d-inline-flex align-items-center"><i class="ti ti-calendar-time me-1"></i>Planifier Disponibilité</a>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="position-relative border card rounded-2 shadow-sm">
+                        <img src="~/assets/img/bg/bg-01.svg" alt="img" class="position-absolute start-0 top-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 justify-content-between">
+                                <span class="avatar bg-primary rounded-circle"><i class="ti ti-user-plus fs-24"></i></span>
+                                <div class="text-end">
+                                    <span class="badge px-2 py-1 fs-12 fw-medium d-inline-flex mb-1 bg-success">+95%</span>
+                                    <p class="fs-13 mb-0">ces 7 derniers jours</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between overflow-hidden">
+                                <div>
+                                    <p class="mb-1">Médecins</p>
+                                    <h3 class="fw-bold mb-0">@Model.DoctorCount</h3>
+                                </div>
+                                <div>
+                                    <div id="s-col" class="chart-set"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="position-relative border card rounded-2 shadow-sm">
+                        <img src="~/assets/img/bg/bg-02.svg" alt="img" class="position-absolute start-0 top-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 justify-content-between">
+                                <span class="avatar bg-danger rounded-circle"><i class="ti ti-user-heart fs-24"></i></span>
+                                <div class="text-end">
+                                    <span class="badge px-2 py-1 fs-12 fw-medium d-inline-flex mb-1 bg-success">+25%</span>
+                                    <p class="fs-13 mb-0">ces 7 derniers jours</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between overflow-hidden">
+                                <div>
+                                    <p class="mb-1">Patients</p>
+                                    <h3 class="fw-bold mb-0">@Model.PatientCount</h3>
+                                </div>
+                                <div>
+                                    <div id="s-col-2" class="chart-set"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="position-relative border card rounded-2 shadow-sm">
+                        <img src="~/assets/img/bg/bg-03.svg" alt="img" class="position-absolute start-0 top-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 justify-content-between">
+                                <span class="avatar bg-info rounded-circle"><i class="ti ti-calendar-check fs-24"></i></span>
+                                <div class="text-end">
+                                    <span class="badge px-2 py-1 fs-12 fw-medium d-inline-flex mb-1 bg-danger">-15%</span>
+                                    <p class="fs-13 mb-0">ces 7 derniers jours</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between overflow-hidden">
+                                <div>
+                                    <p class="mb-1">Rendez-vous</p>
+                                    <h3 class="fw-bold mb-0">@Model.AppointmentCount</h3>
+                                </div>
+                                <div>
+                                    <div id="s-col-3" class="chart-set"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="position-relative border card rounded-2 shadow-sm">
+                        <img src="~/assets/img/bg/bg-04.svg" alt="img" class="position-absolute start-0 top-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 justify-content-between">
+                                <span class="avatar bg-success rounded-circle"><i class="ti ti-coin fs-24"></i></span>
+                                <div class="text-end">
+                                    <span class="badge px-2 py-1 fs-12 fw-medium d-inline-flex mb-1 bg-success">+25%</span>
+                                    <p class="fs-13 mb-0">ces 7 derniers jours</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between overflow-hidden">
+                                <div>
+                                    <p class="mb-1">Revenus</p>
+                                    <h3 class="fw-bold mb-0 text-truncate">@Model.Revenue.ToString("C")</h3>
+                                </div>
+                                <div>
+                                    <div id="s-col-4" class="chart-set"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-xl-8">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="fw-bold mb-0">Statistiques des Rendez-vous</h5>
+
+                            <div class="dropdown">
+                                <a href="javascript:void(0);" id="statsDropdownButton" class="btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                                    Mensuel <i class="ti ti-chevron-down ms-1"></i>
+                                </a>
+                                <ul class="dropdown-menu" id="statsDropdownMenu">
+                                    <li>
+                                        <a class="dropdown-item" href="#" data-range="Monthly">Mensuel</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" data-range="Weekly">Hebdomadaire</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" data-range="Yearly">Annuel</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body pb-0">
+                            <div class="row row-gap-3 mb-2">
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="bg-light border p-2 text-center rounded-2">
+                                        <p class="mb-1 text-body text-truncate"><i class="ti ti-point-filled me-1 text-primary"></i>Tous les Rendez-vous</p>
+                                        <h5 class="fw-bold mb-0" id="statsTotalAll">0</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="bg-light border p-2 text-center rounded-2">
+                                        <p class="mb-1 text-body"><i class="ti ti-point-filled me-1 text-danger"></i>Annulés</p>
+                                        <h5 class="fw-bold mb-0" id="statsTotalCancelled">0</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="bg-light border p-2 text-center rounded-2">
+                                        <p class="mb-1 text-body"><i class="ti ti-point-filled me-1 text-warning"></i>Reportés</p>
+                                        <h5 class="fw-bold mb-0" id="statsTotalRescheduled">0</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="bg-light border p-2 text-center rounded-2">
+                                        <p class="mb-1 text-body"><i class="ti ti-point-filled me-1 text-success"></i>Terminés</p>
+                                        <h5 class="fw-bold mb-0" id="statsTotalCompleted">0</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chart-set" id="s-col-19"></div>
+                        </div>
+                    </div>
+                    @await Component.InvokeAsync("PopularDoctors")
+                </div>
+
+
+                <div class="col-xl-4">
+                    @await Component.InvokeAsync("AppointmentsCard")
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="fw-bold mb-0">Tous les Rendez-vous</h5>
+                            <a href="#" class="btn fw-normal btn-outline-white">Voir Tout</a>
+                        </div>
+                        <div class="card-body">
+                            @await Component.InvokeAsync("AllAppointmentsTable")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="footer text-center bg-white p-2 border-top">
+            <p class="text-dark mb-0">2025 &copy; <a href="javascript:void(0);" class="link-primary">Preclinic</a>, Tous Droits Réservés</p>
+        </div>
+    </div>
+</body>
+
+@section Scripts {
+
+    <script>
+
+        $.ajax({
+                 url: '@Url.Action("GetDashboardCardChartsData", "Admin")',
+                 method: 'GET',
+                 success: function (data) {
+                     // --- Options de base pour tous les graphiques sparkline ---
+                     var sparklineOptions = {
+                         chart: {
+                             type: 'line',
+                             height: 50,
+                             sparkline: { enabled: true }
+                         },
+                         stroke: { width: 2 },
+                         tooltip: { enabled: false }
+                     };
+
+                     // --- Graphique Médecins (Barres) ---
+                     var doctorsChartOptions = {
+                         ...sparklineOptions,
+                         chart: { ...sparklineOptions.chart, type: 'bar' },
+                         colors: ['#0d6efd'],
+                         plotOptions: {
+                             bar: {
+                                 columnWidth: '30%',
+                                 groupPadding: 0,
+                                 borderRadiusTopLeft: 6,
+                                 borderRadiusTopRight: 6,
+                                 borderRadiusBottomLeft: 0,
+                                 borderRadiusBottomRight: 0
+                             }
+                         }
+                     };
+                     doctorsChartOptions.series = [{ name: 'Médecins', data: data.doctorsData }];
+                     new ApexCharts(document.querySelector("#s-col"), doctorsChartOptions).render();
+
+                     // --- Graphique Patients (Ligne) ---
+                     var patientsChartOptions = {
+                         ...sparklineOptions,
+                         colors: ['#dc3545'],
+                         dropShadow: {
+                             enabled: true,
+                             top: 3,
+                             left: 0,
+                             blur: 3,
+                             opacity: 0.5
+                         }
+                     };
+                     patientsChartOptions.series = [{ name: 'Patients', data: data.patientsData }];
+                     new ApexCharts(document.querySelector("#s-col-2"), patientsChartOptions).render();
+
+                     // --- Graphique Rendez-vous (Barres) ---
+                     var appointmentsChartOptions = {
+                         ...sparklineOptions,
+                         chart: { ...sparklineOptions.chart, type: 'bar' },
+                         colors: ['#0dcaf0'],
+                         plotOptions: {
+                             bar: {
+                                 columnWidth: '30%',
+                                 barPadding: 0,
+                                 borderRadiusTopLeft: 6,
+                                 borderRadiusTopRight: 6,
+                                 borderRadiusBottomLeft: 0,
+                                 borderRadiusBottomRight: 0
+                             }
+                         },
+                         dataLabels: { enabled: false }
+                     };
+                     appointmentsChartOptions.series = [{ name: 'Rendez-vous', data: data.appointmentsData }];
+                     new ApexCharts(document.querySelector("#s-col-3"), appointmentsChartOptions).render();
+
+                     // --- Graphique Revenus (Ligne) ---
+                     var revenueChartOptions = {
+                         ...sparklineOptions,
+                         colors: ['#198754'],
+                         dropShadow: {
+                             enabled: true,
+                             top: 3,
+                             left: 0,
+                             blur: 3,
+                             opacity: 0.5
+                         }
+                     };
+                     revenueChartOptions.series = [{ name: 'Revenus', data: data.revenueData }];
+                     new ApexCharts(document.querySelector("#s-col-4"), revenueChartOptions).render();
+                 }
+             });
+
+             $(function () {
+                 // Déclarer la variable du graphique dans une portée plus large
+                 var appointmentChart = null;
+
+                 // Fonction pour charger ou mettre à jour les données du graphique
+                 function loadChartData(range) {
+                     $.ajax({
+                         url: '@Url.Action("GetAppointmentStatistics", "Admin")',
+                         method: 'GET',
+                         data: { range: range },
+                         success: function (data) {
+                             // Mettre à jour les 4 boîtes de statistiques
+                             $('#statsTotalAll').text(data.totalAll);
+                             $('#statsTotalCancelled').text(data.totalCancelled);
+                             $('#statsTotalRescheduled').text(data.totalRescheduled);
+                             $('#statsTotalCompleted').text(data.totalCompleted);
+
+                             var options = {
+                                 series: [{
+                                     name: 'Terminés',
+                                     data: data.completedData
+                                 }, {
+                                     name: 'En Cours',
+                                     data: data.ongoingData
+                                 }, {
+                                     name: 'Reportés',
+                                     data: data.rescheduledData
+                                 }],
+                                 chart: { type: 'bar', height: 350, stacked: true, toolbar: { show: false } },
+                                 plotOptions: { bar: { horizontal: false, columnWidth: '55%' } },
+                                 xaxis: { categories: data.labels },
+                                 fill: { opacity: 1 },
+                                 colors: ['#28a745', '#007bff', '#6f42c1']
+                             };
+
+                             // Si le graphique n'existe pas, le créer. Sinon, le mettre à jour.
+                             if (appointmentChart === null) {
+                                 appointmentChart = new ApexCharts(document.querySelector("#s-col-19"), options);
+                                 appointmentChart.render();
+                             } else {
+                                 appointmentChart.updateOptions(options);
+                             }
+                         },
+                         error: function(err) {
+                             console.error("Échec du chargement des données du graphique:", err);
+                             $("#s-col-19").html("<div class='text-center text-danger p-5'>Impossible de charger les données du graphique. Veuillez vérifier la console pour les erreurs.</div>");
+                         }
+                     });
+                 }
+
+                 // --- Écouteur d'événement pour le menu déroulant ---
+                 $('#statsDropdownMenu a').on('click', function (e) {
+                     e.preventDefault();
+
+                     var selectedRange = $(this).data('range');
+                     var buttonText = $(this).text();
+
+                     // Mettre à jour le texte du bouton
+                     $('#statsDropdownButton').html(buttonText + ' <i class="ti ti-chevron-down ms-1"></i>');
+
+                     // Charger de nouvelles données pour le graphique
+                     loadChartData(selectedRange);
+                 });
+
+                 // --- Chargement Initial ---
+                 // Charger le graphique avec la plage par défaut ('Mensuel') au chargement de la page
+                 loadChartData('Monthly');
+             });
+
+             // --- Calendrier et AJAX de la carte des rendez-vous ---
+             if ($('.datepic').length > 0) {
+                 $('.datepic').datetimepicker({
+                     format: 'DD-MM-YYYY',
+                     inline: true,
+                     toolbarPlacement: 'top'
+                 });
+
+                 // Écouter l'événement de changement de date
+                 $('.datepic').on('dp.change', function (e) {
+                     // Obtenir la date sélectionnée à partir de l'événement
+                     var selectedDate = e.date.format('YYYY-MM-DD');
+
+                     // Faire un appel AJAX pour obtenir la liste mise à jour des rendez-vous
+                     $.ajax({
+                         url: '@Url.Action("GetAppointmentsForDate", "Admin")',
+                         method: 'GET',
+                         data: { date: selectedDate },
+                         success: function (response) {
+                             // Remplacer le contenu de la liste par la nouvelle vue partielle
+                             $('#appointment-list-for-day').html(response);
+                         },
+                         error: function () {
+                             $('#appointment-list-for-day').html('<p class="text-danger">Impossible de charger les rendez-vous.</p>');
+                         }
+                     });
+                 });
+             }
+
+             // --- AJAX du menu déroulant des médecins populaires ---
+             $('#popular-doctors-dropdown-menu').on('click', 'a', function (e) {
+                 e.preventDefault();
+                 var range = $(this).data('range');
+                 var text = $(this).text();
+
+                 // Mettre à jour le texte du bouton
+                 $('#popular-doctors-dropdown-btn').html(text + ' <i class="ti ti-chevron-down ms-1"></i>');
+
+                 // Récupérer les nouvelles données
+                 $.ajax({
+                     url: '@Url.Action("GetPopularDoctors", "Admin")',
+                     type: 'GET',
+                     data: { range: range },
+                     success: function (response) {
+                         $('#popular-doctors-list').html(response);
+                     },
+                     error: function () {
+                         $('#popular-doctors-list').html('<p class="text-danger">Impossible de charger les médecins.</p>');
+                     }
+                 });
+             });
+
+    </script>
+} *@
+
+
+@model CMS.ViewModels.DashboardStatsViewModel
+@inject CMS.Services.ICurrencyService CurrencyService
+@{
+    ViewData["Title"] = "Tableau de Bord Administrateur";
+    Layout = "_Layout";
+    var currentCurrency = await CurrencyService.GetCurrentCurrencyAsync();
+    var currencySymbol = currentCurrency?.Symbol ?? "€";
+}
+
+<body>
+
+    <div>
+        <div class="content pb-0">
+
+
+            <div class="d-flex align-items-sm-center justify-content-between flex-wrap gap-2 mb-4">
+                <div>
+                    <h4 class="fw-bold mb-0">Tableau de Bord Administrateur</h4>
+                </div>
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <a href="#" class="btn btn-primary d-inline-flex align-items-center"><i class="ti ti-plus me-1"></i>Nouveau Rendez-vous</a>
+                    <a href="#" class="btn btn-outline-white bg-white d-inline-flex align-items-center"><i class="ti ti-calendar-time me-1"></i>Planifier Disponibilité</a>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="position-relative border card rounded-2 shadow-sm">
+                        <img src="~/assets/img/bg/bg-01.svg" alt="img" class="position-absolute start-0 top-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 justify-content-between">
+                                <span class="avatar bg-primary rounded-circle"><i class="ti ti-user-plus fs-24"></i></span>
+                                <div class="text-end">
+                                    <span class="badge px-2 py-1 fs-12 fw-medium d-inline-flex mb-1 bg-success">+95%</span>
+                                    <p class="fs-13 mb-0">ces 7 derniers jours</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between overflow-hidden">
+                                <div>
+                                    <p class="mb-1">Médecins</p>
+                                    <h4 class="fw-bold mb-0">@Model.DoctorCount</h4>
+                                </div>
+                                <div>
+                                    <div id="s-col" class="chart-set"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="position-relative border card rounded-2 shadow-sm">
+                        <img src="~/assets/img/bg/bg-02.svg" alt="img" class="position-absolute start-0 top-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 justify-content-between">
+                                <span class="avatar bg-danger rounded-circle"><i class="ti ti-user-heart fs-24"></i></span>
+                                <div class="text-end">
+                                    <span class="badge px-2 py-1 fs-12 fw-medium d-inline-flex mb-1 bg-success">+25%</span>
+                                    <p class="fs-13 mb-0">ces 7 derniers jours</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between overflow-hidden">
+                                <div>
+                                    <p class="mb-1">Patients</p>
+                                    <h4 class="fw-bold mb-0">@Model.PatientCount</h4>
+                                </div>
+                                <div>
+                                    <div id="s-col-2" class="chart-set"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="position-relative border card rounded-2 shadow-sm">
+                        <img src="~/assets/img/bg/bg-03.svg" alt="img" class="position-absolute start-0 top-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 justify-content-between">
+                                <span class="avatar bg-info rounded-circle"><i class="ti ti-calendar-check fs-24"></i></span>
+                                <div class="text-end">
+                                    <span class="badge px-2 py-1 fs-12 fw-medium d-inline-flex mb-1 bg-danger">-15%</span>
+                                    <p class="fs-13 mb-0">ces 7 derniers jours</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between overflow-hidden">
+                                <div>
+                                    <p class="mb-1 text-nowrap">Rendez-vous</p>
+                                    <h4 class="fw-bold mb-0">@Model.AppointmentCount</h4>
+                                </div>
+                                <div>
+                                    <div id="s-col-3" class="chart-set"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="position-relative border card rounded-2 shadow-sm">
+                        <img src="~/assets/img/bg/bg-04.svg" alt="img" class="position-absolute start-0 top-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 justify-content-between">
+                                <span class="avatar bg-success rounded-circle"><i class="ti ti-coin fs-24"></i></span>
+                                <div class="text-end">
+                                    <span class="badge px-2 py-1 fs-12 fw-medium d-inline-flex mb-1 bg-success">+25%</span>
+                                    <p class="fs-13 mb-0">ces 7 derniers jours</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between overflow-hidden">
+                                <div>
+                                    <p class="mb-1">Revenus</p>
+                                    <h4 class="fw-bold mb-0 text-truncate">@(currencySymbol)@Model.Revenue.ToString("N2")</h4>
+                                </div>
+                                <div>
+                                    <div id="s-col-4" class="chart-set"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-xl-8">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="fw-bold mb-0">Statistiques des Rendez-vous</h5>
+
+                            <div class="dropdown">
+                                <a href="javascript:void(0);" id="statsDropdownButton" class="btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                                    Mensuel <i class="ti ti-chevron-down ms-1"></i>
+                                </a>
+                                <ul class="dropdown-menu" id="statsDropdownMenu">
+                                    <li>
+                                        <a class="dropdown-item" href="#" data-range="Monthly">Mensuel</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" data-range="Weekly">Hebdomadaire</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" data-range="Yearly">Annuel</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body pb-0">
+                            <div class="row row-gap-3 mb-2">
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="bg-light border p-2 text-center rounded-2">
+                                        <p class="mb-1 text-body text-truncate"><i class="ti ti-point-filled me-1 text-primary"></i>Tous les Rendez-vous</p>
+                                        <h5 class="fw-bold mb-0" id="statsTotalAll">0</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="bg-light border p-2 text-center rounded-2">
+                                        <p class="mb-1 text-body"><i class="ti ti-point-filled me-1 text-danger"></i>Annulés</p>
+                                        <h5 class="fw-bold mb-0" id="statsTotalCancelled">0</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="bg-light border p-2 text-center rounded-2">
+                                        <p class="mb-1 text-body"><i class="ti ti-point-filled me-1 text-warning"></i>Reportés</p>
+                                        <h5 class="fw-bold mb-0" id="statsTotalRescheduled">0</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="bg-light border p-2 text-center rounded-2">
+                                        <p class="mb-1 text-body"><i class="ti ti-point-filled me-1 text-success"></i>Terminés</p>
+                                        <h5 class="fw-bold mb-0" id="statsTotalCompleted">0</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chart-set" id="s-col-19"></div>
+                        </div>
+                    </div>
+                    @await Component.InvokeAsync("PopularDoctors")
+                </div>
+
+
+                <div class="col-xl-4">
+                    @await Component.InvokeAsync("AppointmentsCard")
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex">
+                    <div class="card shadow-sm flex-fill w-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="fw-bold mb-0">Tous les Rendez-vous</h5>
+                            <a href="#" class="btn fw-normal btn-outline-white">Voir Tout</a>
+                        </div>
+                        <div class="card-body">
+                            @await Component.InvokeAsync("AllAppointmentsTable")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        
+    </div>
+</body>
+
+@section Scripts {
+    <script>
+        // Configuration de la devise
+        let currentCurrencySymbol = '@currencySymbol';
+
+        // Fonction pour formater les montants avec la devise dynamique
+        function formatCurrency(amount) {
+            return currentCurrencySymbol + parseFloat(amount).toFixed(2);
+        }
+
+        // SignalR pour les mises à jour en temps réel de la devise
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/settingsHub")
+            .build();
+
+        connection.start().then(() => {
+            connection.invoke("JoinSettingsGroup");
+        }).catch(err => console.error('Connexion SignalR échouée:', err));
+
+        // Écouter les mises à jour de devise
+        connection.on("SettingsUpdated", function (settings) {
+            $.get('/Admin/GetCurrentCurrency', function(currency) {
+                currentCurrencySymbol = currency.symbol;
+                // Recharger les données pour mettre à jour les affichages de devise
+                loadDashboardData();
+            }).fail(function() {
+                currentCurrencySymbol = '@currencySymbol';
+            });
+        });
+
+        // Fonction pour recharger toutes les données du dashboard
+        function loadDashboardData() {
+            // Recharger les graphiques et données
+            loadChartData('Monthly');
+            // Vous pouvez ajouter d'autres appels pour recharger d'autres composants
+        }
+
+        $.ajax({
+                 url: '@Url.Action("GetDashboardCardChartsData", "Admin")',
+                 method: 'GET',
+                 success: function (data) {
+                     // --- Options de base pour tous les graphiques sparkline ---
+                     var sparklineOptions = {
+                         chart: {
+                             type: 'line',
+                             height: 50,
+                             sparkline: { enabled: true }
+                         },
+                         stroke: { width: 2 },
+                         tooltip: { enabled: false }
+                     };
+
+                     // --- Graphique Médecins (Barres) ---
+                     var doctorsChartOptions = {
+                         ...sparklineOptions,
+                         chart: { ...sparklineOptions.chart, type: 'bar' },
+                         colors: ['#0d6efd'],
+                         plotOptions: {
+                             bar: {
+                                 columnWidth: '30%',
+                                 groupPadding: 0,
+                                 borderRadiusTopLeft: 6,
+                                 borderRadiusTopRight: 6,
+                                 borderRadiusBottomLeft: 0,
+                                 borderRadiusBottomRight: 0
+                             }
+                         }
+                     };
+                     doctorsChartOptions.series = [{ name: 'Médecins', data: data.doctorsData }];
+                     new ApexCharts(document.querySelector("#s-col"), doctorsChartOptions).render();
+
+                     // --- Graphique Patients (Ligne) ---
+                     var patientsChartOptions = {
+                         ...sparklineOptions,
+                         colors: ['#dc3545'],
+                         dropShadow: {
+                             enabled: true,
+                             top: 3,
+                             left: 0,
+                             blur: 3,
+                             opacity: 0.5
+                         }
+                     };
+                     patientsChartOptions.series = [{ name: 'Patients', data: data.patientsData }];
+                     new ApexCharts(document.querySelector("#s-col-2"), patientsChartOptions).render();
+
+                     // --- Graphique Rendez-vous (Barres) ---
+                     var appointmentsChartOptions = {
+                         ...sparklineOptions,
+                         chart: { ...sparklineOptions.chart, type: 'bar' },
+                         colors: ['#0dcaf0'],
+                         plotOptions: {
+                             bar: {
+                                 columnWidth: '30%',
+                                 barPadding: 0,
+                                 borderRadiusTopLeft: 6,
+                                 borderRadiusTopRight: 6,
+                                 borderRadiusBottomLeft: 0,
+                                 borderRadiusBottomRight: 0
+                             }
+                         },
+                         dataLabels: { enabled: false }
+                     };
+                     appointmentsChartOptions.series = [{ name: 'Rendez-vous', data: data.appointmentsData }];
+                     new ApexCharts(document.querySelector("#s-col-3"), appointmentsChartOptions).render();
+
+                     // --- Graphique Revenus (Ligne) ---
+                     var revenueChartOptions = {
+                         ...sparklineOptions,
+                         colors: ['#198754'],
+                         dropShadow: {
+                             enabled: true,
+                             top: 3,
+                             left: 0,
+                             blur: 3,
+                             opacity: 0.5
+                         }
+                     };
+                     revenueChartOptions.series = [{ name: 'Revenus', data: data.revenueData }];
+                     new ApexCharts(document.querySelector("#s-col-4"), revenueChartOptions).render();
+                 }
+             });
+
+             $(function () {
+                 // Déclarer la variable du graphique dans une portée plus large
+                 var appointmentChart = null;
+
+                 // Fonction pour charger ou mettre à jour les données du graphique
+                 function loadChartData(range) {
+                     $.ajax({
+                         url: '@Url.Action("GetAppointmentStatistics", "Admin")',
+                         method: 'GET',
+                         data: { range: range },
+                         success: function (data) {
+                             // Mettre à jour les 4 boîtes de statistiques
+                             $('#statsTotalAll').text(data.totalAll);
+                             $('#statsTotalCancelled').text(data.totalCancelled);
+                             $('#statsTotalRescheduled').text(data.totalRescheduled);
+                             $('#statsTotalCompleted').text(data.totalCompleted);
+
+                             var options = {
+                                 series: [{
+                                     name: 'Terminés',
+                                     data: data.completedData
+                                 }, {
+                                     name: 'En Cours',
+                                     data: data.ongoingData
+                                 }, {
+                                     name: 'Reportés',
+                                     data: data.rescheduledData
+                                 }],
+                                 chart: { type: 'bar', height: 350, stacked: true, toolbar: { show: false } },
+                                 plotOptions: { bar: { horizontal: false, columnWidth: '55%' } },
+                                 xaxis: { categories: data.labels },
+                                 fill: { opacity: 1 },
+                                 colors: ['#28a745', '#007bff', '#6f42c1']
+                             };
+
+                             // Si le graphique n'existe pas, le créer. Sinon, le mettre à jour.
+                             if (appointmentChart === null) {
+                                 appointmentChart = new ApexCharts(document.querySelector("#s-col-19"), options);
+                                 appointmentChart.render();
+                             } else {
+                                 appointmentChart.updateOptions(options);
+                             }
+                         },
+                         error: function(err) {
+                             console.error("Échec du chargement des données du graphique:", err);
+                             $("#s-col-19").html("<div class='text-center text-danger p-5'>Impossible de charger les données du graphique. Veuillez vérifier la console pour les erreurs.</div>");
+                         }
+                     });
+                 }
+
+                 // --- Écouteur d'événement pour le menu déroulant ---
+                 $('#statsDropdownMenu a').on('click', function (e) {
+                     e.preventDefault();
+
+                     var selectedRange = $(this).data('range');
+                     var buttonText = $(this).text();
+
+                     // Mettre à jour le texte du bouton
+                     $('#statsDropdownButton').html(buttonText + ' <i class="ti ti-chevron-down ms-1"></i>');
+
+                     // Charger de nouvelles données pour le graphique
+                     loadChartData(selectedRange);
+                 });
+
+                 // --- Chargement Initial ---
+                 // Charger le graphique avec la plage par défaut ('Mensuel') au chargement de la page
+                 loadChartData('Monthly');
+             });
+
+             // --- Calendrier et AJAX de la carte des rendez-vous ---
+             if ($('.datepic').length > 0) {
+                 $('.datepic').datetimepicker({
+                     format: 'DD-MM-YYYY',
+                     inline: true,
+                     toolbarPlacement: 'top'
+                 });
+
+                 // Écouter l'événement de changement de date
+                 $('.datepic').on('dp.change', function (e) {
+                     // Obtenir la date sélectionnée à partir de l'événement
+                     var selectedDate = e.date.format('YYYY-MM-DD');
+
+                     // Faire un appel AJAX pour obtenir la liste mise à jour des rendez-vous
+                     $.ajax({
+                         url: '@Url.Action("GetAppointmentsForDate", "Admin")',
+                         method: 'GET',
+                         data: { date: selectedDate },
+                         success: function (response) {
+                             // Remplacer le contenu de la liste par la nouvelle vue partielle
+                             $('#appointment-list-for-day').html(response);
+                         },
+                         error: function () {
+                             $('#appointment-list-for-day').html('<p class="text-danger">Impossible de charger les rendez-vous.</p>');
+                         }
+                     });
+                 });
+             }
+
+             // --- AJAX du menu déroulant des médecins populaires ---
+             $('#popular-doctors-dropdown-menu').on('click', 'a', function (e) {
+                 e.preventDefault();
+                 var range = $(this).data('range');
+                 var text = $(this).text();
+
+                 // Mettre à jour le texte du bouton
+                 $('#popular-doctors-dropdown-btn').html(text + ' <i class="ti ti-chevron-down ms-1"></i>');
+
+                 // Récupérer les nouvelles données
+                 $.ajax({
+                     url: '@Url.Action("GetPopularDoctors", "Admin")',
+                     type: 'GET',
+                     data: { range: range },
+                     success: function (response) {
+                         $('#popular-doctors-list').html(response);
+                     },
+                     error: function () {
+                         $('#popular-doctors-list').html('<p class="text-danger">Impossible de charger les médecins.</p>');
+                     }
+                 });
+             });
 
     </script>
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Elfie.Model.Tree;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using static Azure.Core.HttpHeader;
@@ -13,7 +14,7 @@ using static Azure.Core.HttpHeader;
 namespace CMS.Controllers
 {
 
-    //[Authorize(Roles = "Admin,Receptionist,Dentist,HR")]
+    [Authorize(Roles = "Admin,Receptionist,Doctor,Acountant")]
     public class PatientController : Controller
     {
 
@@ -56,6 +57,7 @@ namespace CMS.Controllers
             return View(id);
         }
         // In PatientController.cs
+
         [HttpGet]
         public async Task<IActionResult> GetPatientProfile(int id)
         {
@@ -70,10 +72,10 @@ namespace CMS.Controllers
                         FullName = (p.FirstName ?? "") + " " + (p.LastName ?? ""),
                         Email = p.Email,
                         Gender = p.Gender,
-                        DateOfBirth = p.DateOfBirth ?? DateTime.MinValue,
+                        DateOfBirth = p.DateOfBirth ?? DateTimeOffset.MinValue,   // ►◄ offset
                         PhoneNumber = p.PhoneNumber,
                         Address = p.Address,
-                        CreatedDate = p.CreatedDate,
+                        CreatedDate = p.CreatedDate,         // already DateTimeOffset in DB
                         ProfileImageUrl = !string.IsNullOrEmpty(p.ProfileImageUrl)
                                           ? p.ProfileImageUrl.Replace('\\', '/')
                                           : "/uploads/doctors/patient_default.jpg"
@@ -87,15 +89,17 @@ namespace CMS.Controllers
 
                 // --- FIX STARTS HERE ---
 
+                var now = DateTimeOffset.Now;   // ►◄ single offset-based clock
+
                 // 1. Fetch upcoming appointments correctly into the ViewModel
                 var upcomingAppointments = await _context.Appointments
                     .Include(a => a.Doctor) // Eagerly load the related Doctor entity
-                    .Where(a => a.PatientId == id && a.AppointmentDate >= DateTime.Now)
+                    .Where(a => a.PatientId == id && a.AppointmentDate >= now) // ►◄ offset compare
                     .OrderBy(a => a.AppointmentDate)
                     .Select(a => new AppointmentViewModel // Project into the ViewModel
                     {
                         AppointmentId = a.AppointmentId,
-                        AppointmentDate = a.AppointmentDate,
+                        AppointmentDate = a.AppointmentDate, // already DateTimeOffset
                         AppointmentType = a.AppointmentType,
                         DoctorName = a.Doctor != null ? a.Doctor.FullName : "N/A"
                     })
@@ -104,7 +108,7 @@ namespace CMS.Controllers
                 // 2. FIX: Fetch past appointments with the same correct logic
                 var pastAppointments = await _context.Appointments
                     .Include(a => a.Doctor) // Eagerly load the related Doctor entity
-                    .Where(a => a.PatientId == id && a.AppointmentDate < DateTime.Now)
+                    .Where(a => a.PatientId == id && a.AppointmentDate < now) // ►◄ offset compare
                     .OrderByDescending(a => a.AppointmentDate)
                     .Select(a => new AppointmentViewModel // Project into the ViewModel
                     {
@@ -125,14 +129,23 @@ namespace CMS.Controllers
                 var combinedNotes = new List<DisplayNote>();
                 if (patientRecord != null && !string.IsNullOrWhiteSpace(patientRecord.Notes))
                 {
-                    // Use CreatedDate as per your model, or UpdatedAt if more appropriate
-                    combinedNotes.Add(new DisplayNote { Content = patientRecord.Notes, CreatedAt = patientRecord.CreatedDate, Source = "Patient Record" });
+                    combinedNotes.Add(new DisplayNote
+                    {
+                        Content = patientRecord.Notes,
+                        CreatedAt = patientRecord.CreatedDate, // already DateTimeOffset
+                        Source = "Patient Record"
+                    });
                 }
                 foreach (var followUp in followUps)
                 {
                     if (!string.IsNullOrWhiteSpace(followUp.Notes))
                     {
-                        combinedNotes.Add(new DisplayNote { Content = followUp.Notes, CreatedAt = followUp.FollowUpDate, Source = "Follow-up" });
+                        combinedNotes.Add(new DisplayNote
+                        {
+                            Content = followUp.Notes,
+                            CreatedAt = followUp.FollowUpDate, // already DateTimeOffset
+                            Source = "Follow-up"
+                        });
                     }
                 }
 
@@ -161,6 +174,8 @@ namespace CMS.Controllers
             }
         }
 
+
+       
         
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -266,99 +281,122 @@ namespace CMS.Controllers
         [HttpGet]
         public async Task<IActionResult> Upsert(int? id)
         {
-            Patient model;
-
-            if (id == null || id == 0)
+            var viewModel = new PatientUpsertViewModel
             {
-                // New patient
-                model = new Patient();
-            }
-            else
-            {
-                model = await _context.Patients
-                    .FirstOrDefaultAsync(x => x.PatientId == id.Value);
+                AvailableTreatments = await _context.Treatments
+                    .Where(t => t.IsActive)
+                    .Select(t => new SelectListItem { Value = t.TreatmentId.ToString(), Text = t.Name })
+                    .ToListAsync(),
 
-                if (model == null)
-                    return NotFound();
-            }
+                AvailableMedications = await _context.InventoryItems
+                    .Where(i => i.IsActive)
+                    .Select(i => new SelectListItem { Value = i.Id.ToString(), Text = $"{i.Name} (Stock: {i.Stock})" })
+                    .ToListAsync(),
 
+                // Fetch the patient data if id is not null
+                Patient = id == null || id == 0 ? new Patient() : await _context.Patients
+                    .FirstOrDefaultAsync(x => x.PatientId == id.Value)
+            };
 
-            // Full page
-            return View(model);
+            // If the patient doesn't exist, return NotFound
+            if (viewModel.Patient == null && id != null)
+                return NotFound();
+
+            // Return the View with the view model
+            return View(viewModel);
         }
-
 
         // POST: /Patient/Upsert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(Patient patient, IFormFile? ProfileImage)
+        public async Task<IActionResult> Upsert(PatientUpsertViewModel viewModel, IFormFile? ProfileImage)
         {
+            // Remove properties that you don't want to bind or process in this POST action
             ModelState.Remove(nameof(Patient.FollowUpInterval));
             ModelState.Remove(nameof(Patient.PatientIdNumber));
-            var isCreate = patient.PatientId == 0;
+
+            var isCreate = viewModel.Patient.PatientId == 0;
+
+            // Validate profile image size if exists
             if (ProfileImage is { Length: > 1 * 1024 * 1024 })
             {
                 ModelState.AddModelError(
                     nameof(Patient.ProfileImageUrl),
                     "Profile photo must not exceed 1 MB.");
-                return View(patient);
+                return View(viewModel); // Return the view with the model so validation errors are shown
             }
-           
+
             if (!ModelState.IsValid)
-                return View(patient);
+                return View(viewModel); // Return the view with the model if validation fails
+
+            // Handle the profile image if it's provided
             if (ProfileImage != null)
             {
-                _fileHelper.DeleteIfNotDefault(patient.ProfileImageUrl);  // remove old
-                patient.ProfileImageUrl = await _fileHelper.SaveAsync(ProfileImage, "uploads/doctors");
+                _fileHelper.DeleteIfNotDefault(viewModel.Patient.ProfileImageUrl); // Remove old profile image if a new one is uploaded
+                viewModel.Patient.ProfileImageUrl = await _fileHelper.SaveAsync(ProfileImage, "uploads/doctors");
             }
-             //2.Default image on create only
-                if (patient.PatientId == 0 && string.IsNullOrEmpty(patient.ProfileImageUrl))
-                    patient.ProfileImageUrl = "/uploads/doctors/patient_default.jpg";
+
+            // Set a default image if creating a new patient and none is uploaded
+            if (viewModel.Patient.PatientId == 0 && string.IsNullOrEmpty(viewModel.Patient.ProfileImageUrl))
+                viewModel.Patient.ProfileImageUrl = "/uploads/doctors/patient_default.jpg";
 
             if (isCreate)
             {
-                patient.PatientIdNumber = $"PT{DateTime.Now.Ticks.ToString().Substring(10)}";
-                patient.CreatedDate = DateTime.Now;
-                _context.Patients.Add(patient);
-                
+                // Generate a unique patient ID and set the creation date
+                viewModel.Patient.PatientIdNumber = $"PT{DateTime.Now.Ticks.ToString().Substring(10)}";
+                viewModel.Patient.CreatedDate = DateTime.Now;
+                _context.Patients.Add(viewModel.Patient);
                 await _context.SaveChangesAsync();
 
                 TempData["success"] = "Patient created successfully.";
+                return RedirectToAction("Index");
             }
             else
             {
-                // Preserve existing image if none was uploaded
+                // Preserve existing image if none was uploaded during update
                 if (ProfileImage == null)
-                    _context.Entry(patient).Property(d => d.ProfileImageUrl).IsModified = false;
+                    _context.Entry(viewModel.Patient).Property(d => d.ProfileImageUrl).IsModified = false;
 
                 var dbPatient = await _context.Patients
-                    .FirstOrDefaultAsync(x => x.PatientId == patient.PatientId);
+                    .FirstOrDefaultAsync(x => x.PatientId == viewModel.Patient.PatientId);
 
-                if (dbPatient == null) return NotFound();
+                if (dbPatient == null)
+                    return NotFound();
 
-                // map scalars
-                dbPatient.FirstName = patient.FirstName;
-                dbPatient.LastName = patient.LastName;
-                dbPatient.Email = patient.Email;
-                dbPatient.PhoneNumber = patient.PhoneNumber;
-                dbPatient.DateOfBirth = patient.DateOfBirth;
-                dbPatient.Address = patient.Address;
-                dbPatient.InsuranceProvider = patient.InsuranceProvider;
-                dbPatient.InsuranceNumber = patient.InsuranceNumber;
-                dbPatient.Allergies = patient.Allergies;
-                dbPatient.DentalHistory = patient.DentalHistory;
-                dbPatient.Notes = patient.Notes;
-                dbPatient.LastVisited = patient.LastVisited;
-                dbPatient.Gender = patient.Gender;
-
-
+                // Update patient data in the database
+                dbPatient.FirstName = viewModel.Patient.FirstName;
+                dbPatient.LastName = viewModel.Patient.LastName;
+                dbPatient.Email = viewModel.Patient.Email;
+                dbPatient.PhoneNumber = viewModel.Patient.PhoneNumber;
+                dbPatient.DateOfBirth = viewModel.Patient.DateOfBirth;
+                dbPatient.Address = viewModel.Patient.Address;
+                dbPatient.InsuranceProvider = viewModel.Patient.InsuranceProvider;
+                dbPatient.InsuranceNumber = viewModel.Patient.InsuranceNumber;
+                dbPatient.Allergies = viewModel.Patient.Allergies;
+                dbPatient.DentalHistory = viewModel.Patient.DentalHistory;
+                dbPatient.Notes = viewModel.Patient.Notes;
+                dbPatient.LastVisited = viewModel.Patient.LastVisited;
+                dbPatient.Gender = viewModel.Patient.Gender;
 
                 await _context.SaveChangesAsync();
 
                 TempData["success"] = "Patient updated successfully.";
+                return RedirectToAction("Index");
             }
 
-            return RedirectToAction("Index");
+            // After saving the patient, reload available treatments and medications into the viewModel
+            viewModel.AvailableTreatments = await _context.Treatments
+                .Where(t => t.IsActive)
+                .Select(t => new SelectListItem { Value = t.TreatmentId.ToString(), Text = t.Name })
+                .ToListAsync();
+
+            viewModel.AvailableMedications = await _context.InventoryItems
+                .Where(i => i.IsActive)
+                .Select(i => new SelectListItem { Value = i.Id.ToString(), Text = $"{i.Name} (Stock: {i.Stock})" })
+                .ToListAsync();
+
+            // Return the updated viewModel to the view
+            return View(viewModel);
         }
 
 

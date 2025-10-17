@@ -35,6 +35,7 @@ namespace CMS.Models
 
         // adding new types
         public int? DepartmentId { get; set; }
+        [ValidateNever]
         public virtual Department Department { get; set; }
 
 
@@ -60,6 +61,7 @@ namespace CMS.Models
         public DateTime? UpdatedOn { get; set; }
 
         public int? UserId { get; set; }
+        [ValidateNever]
         public User User { get; set; }
 
         // Child collections (no dropdowns; created inline)

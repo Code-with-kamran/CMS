@@ -1,0 +1,234 @@
+﻿@* File: Views/Reports/Payslip.cshtml *@
+@inject CMS.Services.ICurrencyService CurrencyService
+@{
+    ViewData["Title"] = "Payslip Report";
+    var currentCurrency = await CurrencyService.GetCurrentCurrencyAsync();
+    var currencySymbol = currentCurrency?.Symbol ?? "$";
+}
+
+<div class="content">
+    <input type="hidden" id="initialCurrencySymbol" value="@currencySymbol" />
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3 pb-3 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Payslip Report</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export <i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item export-csv" href="javascript:void(0);" data-report="payslip">Download as CSV</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row row-gap-2">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Pay Period</label>
+                        <input type="month" class="form-control" id="payPeriodFilter" value="@DateTime.Today.ToString("yyyy-MM")">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Employee</label>
+                        <select class="form-select" id="employeeFilter" style="width:100%"></select>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="departmentFilter" style="width:100%"></select>
+                    </div>
+
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3 d-flex align-items-end">
+                        <button type="button" class="btn btn-dark w-100" id="applyFiltersBtn">
+                            <i class="ti ti-player-play me-1"></i>Run Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payslip Cards -->
+    <div id="payslipContainer">
+        <!-- Payslips will be loaded here -->
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+                     let currentCurrencySymbol = $('#initialCurrencySymbol').val() || '$';
+
+                 $('#departmentFilter').select2({
+                placeholder: "Select a department",
+                ajax: {
+                    url: '/Reports/GetDepartments', // Change to match your controller route
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function (data) {
+                        return data;
+                    },
+                    cache: true
+                }
+            });
+
+ $('#employeeFilter').select2({
+            placeholder: "Select an employee",
+            ajax: {
+                url: '/Reports/GetEmployees', // Change controller name if needed
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    return data;
+                },
+                cache: true
+            }
+        });
+
+            // Load initial data
+            loadPayslipData();
+
+            // Apply filters
+            $('#applyFiltersBtn').on('click', function () {
+                loadPayslipData();
+            });
+
+       
+
+
+            function getFilterParams() {
+                return {
+                    payPeriod: $('#payPeriodFilter').val(),
+                    employeeId: $('#employeeFilter').val(),
+                    department: $('#departmentFilter').val()
+                };
+            }
+
+                    function populatePayslips(data) {
+            const container = $('#payslipContainer');
+            container.empty();
+
+            if (data.length === 0) {
+                container.append('<div class="text-center py-5"><i class="ti ti-file-off fs-48 text-muted mb-3"></i><h5 class="text-muted">No payslips found for the selected criteria</h5></div>');
+                return;
+            }
+
+            data.forEach(function (payslip) {
+                const payslipCard = `
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="mb-0">Payslip for ${payslip.employeeName}</h5>
+                                    <small class="text-muted">${payslip.position} - ${payslip.department}</small>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <span class="badge bg-${payslip.status === 'Paid' ? 'success' : 'warning'}">${payslip.status}</span>
+                                    <small class="text-muted ms-2">Pay Date: ${payslip.payDate}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="mb-3">Earnings</h6>
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td>Basic Salary:</td>
+                                            <td class="text-end">${currentCurrencySymbol}${payslip.basicSalary.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Overtime:</td>
+                                            <td class="text-end">${currentCurrencySymbol}${payslip.overtime.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Bonuses:</td>
+                                            <td class="text-end">${currentCurrencySymbol}${payslip.bonuses.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Allowances:</td>
+                                            <td class="text-end">${currentCurrencySymbol}${payslip.allowances.toFixed(2)}</td>
+                                        </tr>
+                                        <tr class="border-top">
+                                            <td><strong>Gross Pay:</strong></td>
+                                            <td class="text-end"><strong>${currentCurrencySymbol}${payslip.grossPay.toFixed(2)}</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-3">Deductions</h6>
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td>Tax:</td>
+                                            <td class="text-end">${currentCurrencySymbol}${payslip.tax.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Social Security:</td>
+                                            <td class="text-end">${currentCurrencySymbol}${payslip.socialSecurity.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Health Insurance:</td>
+                                            <td class="text-end">${currentCurrencySymbol}${payslip.healthInsurance.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Other Deductions:</td>
+                                            <td class="text-end">${currentCurrencySymbol}${payslip.otherDeductions.toFixed(2)}</td>
+                                        </tr>
+                                        <tr class="border-top">
+                                            <td><strong>Total Deductions:</strong></td>
+                                            <td class="text-end"><strong>${currentCurrencySymbol}${payslip.totalDeductions.toFixed(2)}</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="alert alert-${payslip.status === 'Paid' ? 'success' : 'warning'} mb-0">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-6">
+                                                <strong>Net Pay: ${currentCurrencySymbol}${payslip.netPay.toFixed(2)}</strong>
+                                            </div>
+                                            <div class="col-md-6 text-end">
+                                                <small>Payment Method: ${payslip.paymentMethod} | Account: ${payslip.accountNumber}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.append(payslipCard);
+            });
+        }
+
+function loadPayslipData() {
+            const params = getFilterParams();
+            $.ajax({
+                url: '/Reports/GetPayslipData',
+                method: 'GET',
+                data: params,
+                success: function (data) {
+                    populatePayslips(data);
+                }
+            });
+        }
+        $('.export-csv').on('click', function() {
+            const params = getFilterParams();
+            window.location = '/Reports/ExportPayslipCsv?' + $.param(params);
+        });
+
+        });
+    </script>
+}

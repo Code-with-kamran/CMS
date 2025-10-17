@@ -35,5 +35,14 @@ namespace CMS.Models
 
         [ValidateNever]
         public ICollection<PerformanceReview> PerformanceReviews { get; set; }
+        public string? BankName { get; set; }
+        public string? IBAN { get; set; }
+        public int? HousingAllowance { get; internal set; }
+        public int? TransportAllowance { get; internal set; }
+        public int? PaymentMethodId { get; set; }
+        [ValidateNever]
+        public PaymentMethod? PaymentMethod { get; set; }
+        public string? AccountNumber { get; set; }
+
     }
 }

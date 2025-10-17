@@ -38,7 +38,9 @@ namespace CMS.Controllers
             var sortColumnDir = HttpContext.Request.Query["order[0][dir]"].ToString();
 
             var reviews = _context.PerformanceReviews
+                                  .Where(pr => pr.IsActive)
                                   .Include(pr => pr.Employee)
+
                                   .AsQueryable();
 
             // Filtering
@@ -162,7 +164,7 @@ namespace CMS.Controllers
             {
                 return Json(new { status = false, message = "Performance review not found." });
             }
-
+            review.IsActive = false;
             _context.PerformanceReviews.Remove(review);
             await _context.SaveChangesAsync();
 

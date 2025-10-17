@@ -1,4 +1,4 @@
-﻿<form id="__af" method="post" style="display:none">
+﻿@* <form id="__af" method="post" style="display:none">
     @Html.AntiForgeryToken()
 </form>
 
@@ -346,5 +346,356 @@
             });
         });
           });
+    </script>
+} *@
+
+
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- En-tête de page -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Devises</h4>
+                </div>
+                <div class="text-end">
+                    <!-- Bouton pour ouvrir le modal -->
+                    <button type="button" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="modal" data-bs-target="#currencyModal">
+                        <i class="ti ti-plus me-1"></i>Nouvelle Devise
+                    </button>
+                </div>
+            </div>
+
+            <!-- Carte avec filtres et tableau -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Filtres -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Afficher</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entrées</span>
+                        </div>
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Rechercher" />
+                        </div>
+                    </div>
+
+                    <!-- Tableau -->
+                    <div class="table-responsive">
+                        <table id="currencyList" class="table table-hover align-middle w-100 nowrap" style="min-width: 800px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Code</th>
+                                    <th>Symbole</th>
+                                    <th>Taux de change</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pied de page -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inclure le partiel du modal de devise -->
+@await Html.PartialAsync("_CurrencyModelPartial")
+
+@section Scripts {
+    <script>
+        $(function () {
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+            const esc = s => s == null ? '' : String(s);
+
+            // Détruire la DataTable existante si elle existe
+            if ($.fn.DataTable.isDataTable('#currencyList')) {
+                $('#currencyList').DataTable().destroy();
+            }
+
+            const table = $('#currencyList').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: { url: '/Currency/GetList', type: 'GET' },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[0, 'asc']],
+                autoWidth: false,
+                responsive: true,
+                columnDefs: [
+                    { targets: 0, responsivePriority: 1 },
+                    { targets: 5, orderable: false, className: 'text-end', responsivePriority: 2 }
+                ],
+                columns: [
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            let content = `<p class="mb-0 me-2">${esc(row.name)}</p>`;
+                            if (row.isDefault) {
+                                content = `<div class="d-flex align-items-center">${content}<span class="badge badge-soft-primary border border-primary fw-medium">Par défaut</span></div>`;
+                            }
+                            return content;
+                        }
+                    },
+                    { data: 'code', render: d => esc(d) },
+                    { data: 'symbol', render: d => esc(d) },
+                    { data: 'exchangeRate', render: d => esc(d) },
+                    {
+                        data: 'isActive',
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return data ? '<span class="badge bg-soft-success fs-13 fw-medium text-success border border-success py-1 px-2">Actif</span>' : '<span class="badge bg-soft-danger fs-13 fw-medium text-danger border border-danger py-1 px-2">Inactif</span>';
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function (_d, _t, row) {
+                            return `
+                                <div class="dropdown d-inline-block">
+                                    <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1" data-bs-toggle="dropdown">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-edit-currency" data-id="${row.id}">
+                                                <i class="ti ti-edit me-2"></i>Modifier
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center text-danger js-delete" data-id="${row.id}" data-name="${esc(row.name)}">
+                                                <i class="ti ti-trash me-2"></i>Supprimer
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    }
+                ],
+                drawCallback() {
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) {
+                        $('#dt-pager').empty().append(pagerEl);
+                        $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                        $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+                    }
+
+                    const info = api.page.info();
+                    const msg = info.recordsDisplay
+                        ? `Affichage de ${info.start + 1} à ${info.end} sur ${info.recordsDisplay.toLocaleString()} entrées`
+                        : (info.recordsTotal
+                            ? `Affichage de 0 à 0 sur ${info.recordsTotal.toLocaleString()} entrées`
+                            : 'Aucune entrée à afficher');
+                    $('#dt-info').text(msg);
+                },
+                language: {
+                    emptyTable: "Aucune devise trouvée",
+                    processing: "Chargement...",
+                    paginate: {
+                        previous: "&lsaquo;",
+                        next: "&rsaquo;"
+                    }
+                }
+            });
+
+            // Contrôles de recherche personnalisés et longueur de page
+            $('#globalSearch').on('input', () => table.search($('#globalSearch').val()).draw());
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Réinitialiser le modal lors de l'ouverture pour ajouter une nouvelle devise
+            $('#currencyModal').on('show.bs.modal', function (e) {
+                const button = $(e.relatedTarget);
+                if (button.length === 0) {
+                    // Modal ouvert programmatiquement, ne rien faire (garder les données du formulaire)
+                    return;
+                }
+                const isEdit = button.hasClass('js-edit-currency');
+
+                if (!isEdit) {
+                    resetModalForAdd();
+                }
+            });
+
+            // Fonction pour réinitialiser le modal pour l'ajout d'une nouvelle devise
+            function resetModalForAdd() {
+                $('#currencyForm')[0].reset();
+                $('#currencyId').val('0');
+                $('#currencyModalLabel').text('Ajouter une devise');
+                $('#currencyForm button[type="submit"]').text('Ajouter la devise');
+                $('#statusField');
+                $('#currencyForm .form-control').removeClass('is-invalid is-valid');
+                $('#currencyForm .invalid-feedback').text('');
+            }
+
+            // Code de devise en majuscules automatiques
+            $('#currencyCode').on('input', function () {
+                this.value = this.value.toUpperCase();
+            });
+
+            // Gérer la suppression de devise
+            $(document).on('click', '.js-delete', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+
+                Swal.fire({
+                    title: `Supprimer ${name} ?`,
+                    text: "Vous ne pourrez pas annuler cette action !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Oui, supprimer !',
+                    cancelButtonText: 'Annuler'
+                }).then(res => {
+                    if (!res.isConfirmed) return;
+
+                    // Afficher l'état de chargement
+                    Swal.fire({
+                        title: 'Suppression en cours...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Envoyer la requête AJAX DELETE
+                    $.ajax({
+                        url: `/Currency/Delete/${id}`,
+                        type: 'DELETE',
+                        headers: { 'RequestVerificationToken': token },
+                        success: function (response) {
+                            if (response.status) {
+                                Swal.fire('Supprimé !', 'La devise a été supprimée.', 'success');
+                                table.ajax.reload(null, false); // Actualiser le tableau
+                            } else {
+                                Swal.fire('Erreur', 'Échec de la suppression de la devise.', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Erreur', 'Une erreur est survenue lors de la suppression de la devise.', 'error');
+                        },
+                        complete: function () {
+                            Swal.close();
+                        }
+                    });
+                });
+            });
+
+            // Gérer le clic sur le bouton Modifier
+            $(document).on('click', '.js-edit-currency', function () {
+                const currencyId = $(this).data('id');
+                if (!currencyId) return;
+
+                // Afficher l'état de chargement dans le modal
+                $('#currencyModalLabel').text('Modifier la devise');
+                $('#currencyForm button[type="submit"]').text('Mettre à jour la devise');
+                $('#statusField').show();  // Afficher le champ statut pour l'édition
+
+                // Récupérer les données de la devise
+                $.ajax({
+                    url: `/Currency/Get/${currencyId}`, // S'assurer que cela retourne les données existantes de la devise
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.status) {
+                            const c = response.data;
+
+                            // Remplir les champs du formulaire avec les données existantes de la devise
+                            $('#currencyId').val(c.id);
+                            $('#currencyName').val(c.name);
+                            $('#currencyCode').val(c.code);
+                            $('#currencySymbol').val(c.symbol);
+                            $('#exchangeRate').val(c.exchangeRate);
+                            $('#isDefaultCurrency').prop('checked', c.isDefault);
+                            $('#isActiveCurrency').prop('checked', c.isActive);  // S'assurer que la case à cocher IsActive est correctement définie
+
+                            $('#currencyModal').modal('show');
+                        } else {
+                            Swal.fire('Erreur', response.message || 'Échec du chargement des données de la devise.', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Erreur', 'Une erreur est survenue lors du chargement des données de la devise.', 'error');
+                    }
+                });
+            });
+
+            $('#currencyForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const submitBtn = $(this).find('button[type="submit"]');
+                const spinner = submitBtn.find('.spinner-border');
+                spinner.show();
+                submitBtn.prop('disabled', true);
+
+                const formData = {
+                    Id: parseInt($('#currencyId').val()) || 0,  // Utiliser 0 pour une nouvelle devise
+                    Name: $('#currencyName').val().trim(),
+                    Code: $('#currencyCode').val().trim().toUpperCase(),
+                    Symbol: $('#currencySymbol').val().trim(),
+                    ExchangeRate: parseFloat($('#exchangeRate').val()),
+                    // IsDefault: $('#isDefaultCurrency').is(':checked'),
+                    IsDefault: false,
+                    IsActive: $('#isActiveCurrency').is(':checked') // S'assurer que cela est envoyé correctement
+                };
+
+                const isEdit = formData.Id > 0;
+                const successMessage = isEdit ? 'Devise mise à jour avec succès !' : 'Devise ajoutée avec succès !';
+
+                $.ajax({
+                    url: '/Currency/Upsert',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: { 'RequestVerificationToken': token },
+                    data: JSON.stringify(formData),
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire('Succès', response.message || successMessage, 'success');
+                            $('#currencyModal').modal('hide');
+                            table.ajax.reload(null, false); // Actualiser le tableau après ajout ou mise à jour
+                        } else {
+                            Swal.fire('Erreur', response.message || 'Opération échouée', 'error');
+                        }
+                    },
+                    error: function (xhr) {
+                        let errorMessage = 'Une erreur est survenue lors du traitement de la requête.';
+                        if (xhr.responseJSON) {
+                            errorMessage = xhr.responseJSON.message || errorMessage;
+                        }
+                        Swal.fire('Erreur', errorMessage, 'error');
+                    },
+                    complete: function () {
+                        spinner.hide();
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+        });
     </script>
 }
