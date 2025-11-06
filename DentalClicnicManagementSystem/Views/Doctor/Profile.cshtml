@@ -1,6 +1,10 @@
-﻿@{
+﻿@using Azure.Core
+@{
     // Layout = null; // Ou votre mise en page de site
-    var doctorId = (int)ViewData["DoctorId"];
+    var currentUrl = Uri.EscapeDataString(Context.Request.Path + Context.Request.QueryString);
+    var doctorIdObj = ViewData["DoctorId"];
+    int doctorId = doctorIdObj != null ? (int)doctorIdObj : 0;
+    // var doctorId = (int)ViewData["DoctorId"];
 }
 
 <!-- Copier le HTML de doctor-details.html jusqu'à la zone principale de contenu -->
@@ -29,8 +33,9 @@
 @section Scripts {
 
     <script>
-        console.log(@doctorId)
+        
             $(function() {
+                const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
                      // const doctorId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(doctorId));
                     const doctorId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(doctorId));
 
@@ -63,9 +68,9 @@
                                 <div>
                                     <p class="mb-2">Frais de Consultation</p>
                                     <h6 class="fs-18 fw-bold mb-3">$${doctor.consultationCharge} <span class="fw-normal text-body fs-14"> / ${doctor.consultationDurationInMinutes} min</span></h6>
-                                    <a href="/Appointment/Book/${doctor.id}" class="btn btn-primary">
-                                        <i class="ti ti-calendar-event me-1"></i>Prendre Rendez-vous
-                                    </a>
+                             <a href="/Doctor/Upsert/${doctor.id}?returnUrl=${returnUrl}" class="btn btn-primary">
+          <i class="ti ti-calendar-event me-1"></i>Modifier
+        </a>
                                 </div>
                             </div>
                         </div>

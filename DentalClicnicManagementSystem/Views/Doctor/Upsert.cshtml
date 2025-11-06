@@ -628,19 +628,27 @@
 @model ViewModels.DoctorUpsertVM
 @{
     ViewData["Title"] = Model.Doctor.Id == 0 ? "Ajouter un médecin" : "Modifier le médecin";
-    var currentImage = string.IsNullOrEmpty(Model?.Doctor.ProfileImageUrl) ? "/uploads/doctors/default.jpg" : Model.Doctor.ProfileImageUrl;
+    // var currentImage = string.IsNullOrEmpty(Model?.Doctor.ProfileImageUrl) ? "/uploads/doctors/default.jpg" : Model.Doctor.ProfileImageUrl;
+    var currentImage = "/uploads/doctors/default.jpg";
 
+    if (Model?.Doctor != null && !string.IsNullOrEmpty(Model.Doctor.ProfileImageUrl))
+    {
+        currentImage = Model.Doctor.ProfileImageUrl;
+
+    }
 }
 
 <form asp-action="Upsert" asp-controller="Doctor" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Doctor.Id" />
 
+
     <div class="content py-3">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
             <h4 class="mb-0">@ViewData["Title"]</h4>
             <div class="d-flex gap-2">
-                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Retour</a>
+                @* <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Retour</a> *@
+
                 <button type="submit" class="btn btn-primary btn-sm">
                     @(Model.Doctor.Id == 0 ? "Créer" : "Mettre à jour")
                 </button>
@@ -1101,9 +1109,10 @@
 
             const startTime = '09:00';
             const endTime = '17:00';
-            const daysOfWeek = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-            let daysToFill = days === 5 ? ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'] : daysOfWeek;
+            let daysToFill = days === 5 ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] : daysOfWeek;
+
 
             daysToFill.forEach((day, index) => {
                 const html = `

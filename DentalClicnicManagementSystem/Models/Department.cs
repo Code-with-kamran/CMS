@@ -12,13 +12,13 @@ namespace CMS.Models
         public int DepartmentId { get; set; }
 
         [Required, StringLength(100)]
-        public string DepartmentName { get; set; } = string.Empty;   // e.g., "Cardiology", "Dental", "Neurology"
+        public string DepartmentName { get; set; }   // e.g., "Cardiology", "Dental", "Neurology"
 
         [StringLength(250)]
         public string? Description { get; set; }           // optional details about department
 
         public bool IsActive { get; set; } = true;
         // to soft-disable a department if needed
-        public ICollection<Doctor> Doctors { get; set; }
+        public ICollection<Doctor>? Doctors { get; set; }
     }
 }

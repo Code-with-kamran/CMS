@@ -37,6 +37,8 @@ namespace CMS.Models
         public string Mode { get; set; } = "In-Person"; // New field for Mode
         [StringLength(1000)]
         public string? Notes { get; set; }
+        public bool IsDeleted { get; set; } = false;
+
         public int? TreamentId { get; set; }
         public Treatment? Treatments { get; set; }
         public Invoice? Invoice { get; set; }

@@ -872,9 +872,16 @@
                                                     <i class="ti ti-edit me-2"></i> Modifier
                                                 </a>
                                             </li>
-                                            <li>
+                                             <li>
                                                 <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-delete-emp"
                                                    data-url="/Employees/Delete/${row.id}"
+                                                   data-name="${esc(row.firstName)} ${esc(row.lastName)}">
+                                                    <i class="ti ti-trash me-2"></i> Supprimer﻿
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-InActive-emp"
+                                                   data-url="/Employees/InActive/${row.id}"
                                                    data-name="${esc(row.firstName)} ${esc(row.lastName)}">
                                                     <i class="ti ti-trash me-2"></i> Désactiver
                                                 </a>
@@ -986,14 +993,12 @@
             $('#pageLength').on('change', function () {
                 empTable.page.len(parseInt(this.value, 10)).draw();
             });
-
-            /* Gestionnaire de suppression d'employé */
-            $(document).on('click', '.js-delete-emp', function () {
+            $(document).on('click', '.js-InActive-emp', function () {
                 const url = $(this).data('url'),
                       name = $(this).data('name');
 
                 Swal.fire({
-                    title: `Désactiver ${name} ?`,
+                    title: `Actif ${name} ?`,
                     text: 'L\'employé sera marqué comme inactif.',
                     icon: 'warning',
                     showCancelButton: true,
@@ -1009,7 +1014,43 @@
                             headers: { 'RequestVerificationToken': token },
                             success: r => {
                                 if (r.status) {
-                                    Swal.fire('Désactivé', r.message, 'success');
+                                    toastr.success(r.message, 'supprimé﻿');
+
+                                    empTable.ajax.reload(null, false);
+                                } else {
+                                    Swal.fire('Erreur', r.message || 'Action échouée', 'error');
+                                }
+                            },
+                            error: () => Swal.fire('Erreur', 'Quelque chose s\'est mal passé', 'error')
+                        });
+                    }
+                });
+            });
+
+            /* Gestionnaire de suppression d'employé */
+            $(document).on('click', '.js-delete-emp', function () {
+                const url = $(this).data('url'),
+                      name = $(this).data('name');
+
+                Swal.fire({
+                    title: `Désactiver ${name} ?`,
+                    text: 'L employé sera supprimé et ne sera plus visible dans les listes actives.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Oui, désactiver !'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        const token = $('form#__af input[name="__RequestVerificationToken"]').val();
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            success: r => {
+                                if (r.status) {
+                                    toastr.success(r.message, 'Désactivé');
+
                                     empTable.ajax.reload(null, false);
                                 } else {
                                     Swal.fire('Erreur', r.message || 'Action échouée', 'error');

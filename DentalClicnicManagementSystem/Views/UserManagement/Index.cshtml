@@ -213,6 +213,8 @@
     </script>
 } *@
 
+
+
 @{
     ViewData["Title"] = "Gestion des Utilisateurs";
 }
@@ -290,16 +292,22 @@
 </div>
 
 @section Scripts {
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    @* <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script> *@
 
     <script>
         $(function () {
+                    toastr.options = {
+                       "closeButton": true,
+                       "progressBar": true,
+                       "positionClass": "toast-bottom-right",
+                       "timeOut": "5000"
+                   };
             const token = $('#__af input[name="__RequestVerificationToken"]').val();
             const userModal = new bootstrap.Modal(document.getElementById('user-modal'));
 
             const table = $('#userList').DataTable({
-                processing: true,
+                processing: false,
                 serverSide: true,
                 ajax: {
                     url: '@Url.Action("GetUserList")',
@@ -345,6 +353,7 @@
                 ],
                 // Use the exact drawCallback from your working patient list
                 drawCallback: function() {
+                    $('#userList tbody tr.pre-load').remove()
                     const api = this.api();
                     const pagerEl = $(api.table().container()).find('.dataTables_paginate');
                     if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
@@ -362,7 +371,7 @@
                 },
                 language: {
                     emptyTable: "Aucun utilisateur trouvé",
-                    processing: "Chargement...",
+                    
                     info: "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
                     infoEmpty: "Affichage de 0 à 0 sur 0 entrées",
                     infoFiltered: "(filtré à partir de _MAX_ entrées au total)",
@@ -371,6 +380,12 @@
                 }
             });
 
+
+        $('#userList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
             // Add the event handlers for the external controls
             $('#globalSearch').on('input', () => table.search($('#globalSearch').val()).draw());
             $('#pageLength').on('change', function () {
@@ -387,23 +402,66 @@
                 $('#user-modal-content').load(`@Url.Action("Upsert")/${id}`, () => userModal.show());
             });
 
-            $(document).on('submit', '#user-upsert-form', function (e) {
-                e.preventDefault();
-                const form = $(this);
-                if (!form.valid()) { return; }
-                $.ajax({
-                    url: form.attr('action'), type: 'POST', data: form.serialize(),
-                    headers: { 'RequestVerificationToken': token },
-                    success: function (res) {
-                        if (res.success) {
-                            userModal.hide();
-                            Swal.fire('Succès !', res.message, 'success');
-                            table.ajax.reload(null, false);
-                        } else { Swal.fire('Erreur !', res.message, 'error'); }
-                    },
-                    error: () => Swal.fire('Erreur !', 'Une erreur est survenue.', 'error')
-                });
+            // $(document).on('submit', '#user-upsert-form', function (e) {
+            //     e.preventDefault();
+            //     const form = $(this);
+            //     if (!form.valid()) { return; }
+            //     $.ajax({
+            //         url: form.attr('action'), type: 'POST', data: form.serialize(),
+            //         headers: { 'RequestVerificationToken': token },
+            //         success: function (res) {
+            //             if (res.success) {
+            //                 userModal.hide();
+            //                 Swal.fire('Succès !', res.message, 'success');
+            //                 table.ajax.reload(null, false);
+            //             } else { Swal.fire('Erreur !', res.message, 'error'); }
+            //         },
+            //         error: () => Swal.fire('Erreur !', 'Une erreur est survenue.', 'error')
+            //     });
+            // });
+
+
+ $(document).on('submit', '#user-upsert-form', function (e) {
+            e.preventDefault();
+            const form = $(this);
+            const submitBtn = form.find('button[type="submit"]');
+
+            if (!form.valid()) {
+                return;
+            }
+
+            // Disable submit button and show processing text
+            submitBtn.prop('disabled', true);
+            const originalBtnText = submitBtn.html();
+            submitBtn.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>En cours...');
+
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                headers: { 'RequestVerificationToken': token },
+                success: function (res) {
+                    if (res.success) {
+                        userModal.hide();
+                        toastr.success(res.message, 'Succès !');
+
+                        table.ajax.reload(null, false);
+                    } else {
+                        Swal.fire('Erreur !', res.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Erreur !', 'Une erreur est survenue.', 'error');
+                },
+                complete: function () {
+                    // Re-enable submit button and restore original text
+                    submitBtn.prop('disabled', false);
+                    submitBtn.html(originalBtnText);
+                }
             });
+        });
+
+
 
             $('#userList').on('click', '.js-delete', function () {
                 const id = $(this).data('id');

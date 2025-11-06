@@ -32,6 +32,7 @@ namespace CMS.Models
 
         [StringLength(100)]
         public string Address { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         // adding new types
         public int? DepartmentId { get; set; }

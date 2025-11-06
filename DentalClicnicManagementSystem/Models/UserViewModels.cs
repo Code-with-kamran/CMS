@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace CMS.ViewModels
@@ -34,5 +35,33 @@ namespace CMS.ViewModels
 
         // This will hold the list of roles for the dropdown
         public IEnumerable<SelectListItem> RoleList { get; set; } = new List<SelectListItem>();
+    }
+
+    // Create this in your ViewModels folder
+    public class ProfileViewModel
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public string FullName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        public string? PhoneNumber { get; set; }
+
+        [DataType(DataType.Password)]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+        public string? NewPassword { get; set; }
+        public string? Address { get; set; }
+
+        [DataType(DataType.Password)]
+        [Compare("NewPassword", ErrorMessage = "Passwords do not match")]
+        public string? ConfirmPassword { get; set; }
+
+        // This will be the URL string (same as your Doctor model)
+        [ValidateNever]
+        public string ProfileImageUrl { get; set; }
     }
 }

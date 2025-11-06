@@ -11,7 +11,7 @@ namespace CMS.Data
             : base(options) { }
 
         public DbSet<Patient> Patients { get; set; }
-        public DbSet<Dentist> Dentists { get; set; }
+       
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Treatment> Treatments { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
@@ -38,7 +38,7 @@ namespace CMS.Data
         public DbSet<DoctorEducation> DoctorEducations { get; set; }
         public DbSet<DoctorAward> DoctorAwards { get; set; }
         public DbSet<DoctorCertification> DoctorCertifications { get; set; }
-        public DbSet<Department> Department { get; set; }
+       
         public DbSet<DefaultSettings> DefaultSettings { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<InvoicePayment> InvoicePayments { get; set; }

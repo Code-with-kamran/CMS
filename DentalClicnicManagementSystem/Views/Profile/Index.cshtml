@@ -1,0 +1,114 @@
+﻿@model CMS.Models.User
+<div class="content">
+    <div class="container-xxl">
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <!-- Green strip header -->
+                    <div class="bg-primary text-white px-4 py-3 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="@(Model.ProfileImageUrl ?? "/uploads/doctors/patient_default.jpg")"
+                                 class="rounded-circle border border-2 border-white"
+                                 alt="avatar" width="48" height="48" />
+                            <div>
+                                <h6 class="mb-0 fw-semibold text-white">@Model.FullName</h6>
+                                <small class="opacity-75">
+                                    <i class="bi bi-geo-alt-fill me-1"></i> @(Model.Address ?? "Address not set")
+                                    <span class="ms-3"><i class="bi bi-telephone-fill me-1"></i>@(Model.PhoneNumber ?? "000000000")</span>
+                                </small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            Edit
+                        </button>
+                    </div>
+
+                    <!-- Personal info -->
+                    <div class="p-4">
+                        <h6 class="mb-3">Personal Information</h6>
+                        <div class="row gy-3">
+                            <div class="col-md-6">
+                                <div class="form-text text-uppercase fw-semibold small">Full Name</div>
+                                <div class="border rounded p-2 bg-light">@Model.FullName</div>
+                            </div>
+                            @* <div class="col-md-6">
+                                <div class="form-text text-uppercase fw-semibold small">Last Name</div>
+                                <div class="border rounded p-2 bg-light">@Model.FullName?.Split(' ').Last()</div>
+                            </div> *@
+                            
+                            <div class="col-md-6">
+                                <div class="form-text text-uppercase fw-semibold small">Your phone number</div>
+                                <div class="border rounded p-2 bg-light"><i class="bi bi-telephone me-1"></i>@(Model.PhoneNumber ?? "0000000")</div>
+                                </div><div class="col-md-12">
+                                    <div class="form-text text-uppercase fw-semibold small">Your Location</div>
+                                    <div class="border rounded p-2 bg-light"><i class="bi bi-geo-alt me-1"></i>@(Model.Address ?? "Address not set")</div>
+                                </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editModalBody">
+                    <div class="text-center py-5">
+                        <div class="spinner-border" role="status"></div>
+                        <div class="mt-2 small text-muted">Loading…</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+@section Scripts {
+    <script>
+        // Load partial form into modal when opened
+        const editModal = document.getElementById('editProfileModal');
+        editModal.addEventListener('show.bs.modal', function () {
+            const body = document.getElementById('editModalBody');
+            fetch('@Url.Action("Edit", "Profile")', { cache: 'no-store' })
+                .then(r => r.text())
+                .then(html => body.innerHTML = html)
+                .catch(() => body.innerHTML = '<div class="alert alert-danger mb-0">Error loading form.</div>');
+        });
+
+
+        // Handle AJAX form submit (delegated because content is loaded dynamically)
+        document.addEventListener('submit', function (e) {
+            const form = e.target.closest('#editProfileForm');
+            if (!form) return;
+
+            e.preventDefault();
+            const fd = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: fd
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    // Close modal and refresh to show changes
+                    const modal = bootstrap.Modal.getInstance(editModal);
+                    modal.hide();
+                    location.reload();
+                } else {
+                    alert(res.message || 'Error updating profile');
+                }
+            })
+            .catch(() => alert('Error updating profile'));
+        }, true);
+    </script>
+}

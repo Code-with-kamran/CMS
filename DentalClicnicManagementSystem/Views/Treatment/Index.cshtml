@@ -364,9 +364,16 @@
           }
           const esc = s => s == null ? '' : String(s);
           const table = $('#treatmentList').DataTable({
-            processing: true,
+            processing: false,
             serverSide: true,
-            ajax: { url: '@Url.Action("GetTreatmentList", "Treatment")', type: 'GET' },
+             ajax: { url: '@Url.Action("GetTreatmentList", "Treatment")', type: 'GET',data: function (d) {
+            return {
+                draw: d.draw,
+                start: d.start,
+                length: d.length,
+                "search[value]": d.search.value
+            };
+        } },
             dom: 'rtip',
             paging: true,
             pagingType: 'simple_numbers',
@@ -458,6 +465,7 @@
               }
             ],
             drawCallback() {
+              $('#treatmentList tbody tr.pre-load').remove();
               const api = this.api();
               const pagerEl = $(api.table().container()).find('.dataTables_paginate');
               if (pagerEl.length) $('#dt-pager').empty().append(pagerEl);
@@ -471,8 +479,14 @@
                     : 'Aucune entrée à afficher');
               $('#dt-info').text(msg);
             },
-            language: { emptyTable: "Aucun traitement trouvé", processing: "Chargement..." }
+            language: { emptyTable: "Aucun traitement trouvé"}
           });
+
+    $('#treatmentList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
           $('#globalSearch').on('input', () => table.search($('#globalSearch').val()).draw());
           $('#pageLength').on('change', function () {
             table.page.len(parseInt(this.value,10)).draw();

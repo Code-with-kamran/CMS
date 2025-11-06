@@ -58,6 +58,14 @@
                                 <span asp-validation-for="Patient.Gender" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
+                                <label asp-for="Patient.Profession" class="form-label">Profession</label>
+                                <input asp-for="Patient.Profession"  class="form-control" />
+                                <span asp-validation-for="Patient.Profession" class="text-danger"></span>
+                            </div>
+
+                            
+
+                            <div class="col-md-6">
                                 <label asp-for="Patient.DateOfBirth" class="form-label">Date de naissance</label>
                                 <input asp-for="Patient.DateOfBirth" type="date" class="form-control" />
                                 <span asp-validation-for="Patient.DateOfBirth" class="text-danger"></span>

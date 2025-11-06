@@ -14,6 +14,7 @@ namespace CMS.Models
         [Required]
         [StringLength(100)]
         public string LastName { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [Required]
         [EmailAddress]
@@ -37,6 +38,7 @@ namespace CMS.Models
         public string Gender { get; set; }
         public string? Address { get; set; }
         public string? InsuranceProvider { get; set; }
+        public string? Profession { get; set; }
         public string? InsuranceNumber { get; set; }
         public string? Allergies { get; set; }
         public string? DentalHistory { get; set; }
@@ -44,6 +46,7 @@ namespace CMS.Models
         public string? ProfileImageUrl { get; set; } 
         public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.Now;
         public DateTimeOffset? LastVisited { get; set; }
+
 
 
         // Navigation properties

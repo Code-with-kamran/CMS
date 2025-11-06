@@ -347,12 +347,15 @@
 </html> *@
 
 
+
 @using System.Security.Claims
 @inject IHttpContextAccessor ctx
 @{
     bool IsInRole(string role) => ctx.HttpContext?.User?.IsInRole(role) == true;
     bool CanSee(params string[] roles) => roles.Any(r => ctx.HttpContext?.User?.IsInRole(r) == true);
 
+    var defaultImage = Url.Content("~/uploads/doctors/patient_default.jpg");
+    var profileImage = User.Claims.FirstOrDefault(c => c.Type == "ProfileImageUrl")?.Value ?? defaultImage;
     string Ctrl() => ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     string Act() => ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
@@ -389,11 +392,29 @@
     <link rel="stylesheet" href="~/assets/plugins/simplebar/simplebar.min.css">
     <link rel="stylesheet" href="~/assets/plugins/tabler-icons/tabler-icons.min.css">
     <link rel="stylesheet" href="~/assets/css/dataTables.bootstrap5.min.css">
-    <link href="~/assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
-    <link href="~/assets/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <link  rel="stylesheet" href="~/assets/plugins/select2/css/select2.min.css" />
     <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
+    <link href="~/assets/plugins/toastr/toastr.min.css" rel="stylesheet" />
 
     <style>
+        /*  SIDEBAR – always exactly the viewport high  */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-height: 100vh; /* full screen height */
+            display: flex; /* flex column */
+            flex-direction: column;
+            overflow: hidden; /* hide the wrapper scrollbar */
+        }
+
+        /*  LOGO BAR – keep its natural height  */
+        .sidebar-logo {
+            flex: 0 0 auto; /* do not grow / do not shrink */
+        }
+
+       
+
         .sidebar-menu ul li.active > a {
             border: none !important;
             box-shadow: none !important;
@@ -412,12 +433,44 @@
         .submenu > a .menu-arrow:before {
             border: none !important;
         }
+
+        .sidebar-menu ul li.active > a {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .sidebar .sidebar-menu > ul > li ul > li.active > a.subdrop > i {
+            color: #2E37A4 !important;
+            background: transparent;
+        }
+
+        .sidebar-menu .menu-arrow {
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .submenu > a .menu-arrow:before {
+            border: none !important;
+        }
+
+        
+        #sidebar-menu {
+            min-height: 100%;
+        }
+        @@media (max-width: 991.98px) {
+            .sidebar [data-simplebar] {
+                height: 145% !important;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="main-wrapper">
         <!--  BARRE SUPÉRIEURE  -->
-        <header class="navbar-header d-flex align-items-center justify-content-end">
+        <header class="navbar-header d-flex align-items-center justify-content-between">
+            <a id="mobile_btn" class="mobile-btn" href="index.html#sidebar">
+                <i class="ti ti-menu-deep fs-24"></i>
+            </a>
             <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center ms-auto">
                 <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none d-flex align-items-center" data-bs-toggle="dropdown" data-bs-offset="0,22">
                     <span class="me-2 d-none d-sm-block text-end">
@@ -425,7 +478,7 @@
                         <span class="fs-13 text-muted">@(User.FindFirst(ClaimTypes.Role)?.Value ?? "Utilisateur")</span>
                     </span>
                     <div class="position-relative">
-                        <img src="@((User.Claims.FirstOrDefault(c => c.Type == "ProfileImageUrl")?.Value) ?? Url.Content("~/uploads/doctors/patient_default.jpg"))"
+                        <img src="@profileImage"
                              width="45" height="45" class="rounded-circle" alt="utilisateur">
                         <span class="online text-success position-absolute bottom-0 end-0">
                             <i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i>
@@ -434,7 +487,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
                     <div class="d-flex align-items-center bg-light rounded-3 p-2 mb-2">
-                        <img src="@((User.Claims.FirstOrDefault(c => c.Type == "ProfileImageUrl")?.Value) ?? Url.Content("~/uploads/doctors/patient_default.jpg"))"
+                        <img src="@((User.Claims.FirstOrDefault(c => c.Type == "ProfileImageUrl")?.Value) ?? Url.Content("/uploads/doctors/patient_default.jpg"))"
                              class="rounded-circle" width="42" height="42" alt="">
                         <div class="ms-2">
                             <p class="fw-medium text-dark mb-0">@User.Identity?.Name</p>
@@ -442,7 +495,7 @@
                         </div>
                     </div>
 
-                    @* <!-- Lien Profil -->
+                     <!-- Lien Profil -->
                     <a href="/Profile" class="dropdown-item d-flex align-items-center">
                         <i class="ti ti-user me-2"></i>Mon Profil
                     </a>
@@ -450,7 +503,7 @@
                     <!-- Lien Paramètres -->
                     <a href="/Settings" class="dropdown-item d-flex align-items-center">
                         <i class="ti ti-settings me-2"></i>Paramètres
-                    </a> *@
+                    </a> 
 
                     <div class="dropdown-divider my-2"></div>
 
@@ -493,8 +546,8 @@
                 <button class="sidebar-close"><i class="ti ti-x align-middle"></i></button>
             </div>
 
-            <div class="sidebar-inner" data-simplebar>
-                <div id="sidebar-menu" class="sidebar-menu">
+            <div class="sidebar-inner overflow-y-auto" data-simplebar>
+                <div id="sidebar-menu" class="sidebar-menu ">
                     <ul>
                         <li class="menu-title"><span>Menu Principal</span></li>
                         <li>
@@ -539,6 +592,10 @@
                                 @if (CanSee("Admin") || CanSee("Doctor"))
                                 {
                                     <li class="@ActiveCls("Appointment")"><a asp-action="Index" asp-controller="Appointment"><i class="ti ti-calendar-check"></i><span>Rendez-vous</span></a></li>
+                                }
+                                @if (CanSee("Admin") || CanSee("Doctor") || CanSee("Nurse"))
+                                {
+                                    <li class="@ActiveCls("Appointment")"><a asp-action="NurseView" asp-controller="Appointment"><i class="ti ti-calendar-check"></i><span>Ajouter des signes vitaux</span></a></li>
                                 }
 
                                 @if (CanSee("Admin"))
@@ -616,7 +673,7 @@
                                             <li><a asp-controller="Currency" asp-action="Index">Devises</a></li>
                                             <li><a asp-controller="Treatment" asp-action="Index">Plans de Traitement</a></li>
                                             <li><a asp-controller="PaymentMethod" asp-action="Index">Méthodes de Paiement</a></li>
-                                            @* <li><a asp-controller="Department" asp-action="Index">Départements</a></li> *@
+                                            <li><a asp-controller="Departments" asp-action="Index">Départements</a></li> 
                                             <li><a asp-controller="Settings" asp-action="Index">Paramètres par Défaut</a></li>
                                         </ul>
                                     </li>
@@ -701,4 +758,442 @@
     @await Html.PartialAsync("_Notification")
     @RenderSection("Scripts", required: false)
 </body>
-</html>
+</html> 
+
+
+
+@* 
+@using System.Security.Claims
+@inject IHttpContextAccessor ctx
+@{
+    bool IsInRole(string role) => ctx.HttpContext?.User?.IsInRole(role) == true;
+    bool CanSee(params string[] roles) => roles.Any(r => ctx.HttpContext?.User?.IsInRole(r) == true);
+
+    var defaultImage = Url.Content("~/uploads/doctors/patient_default.jpg");
+    var profileImage = User.Claims.FirstOrDefault(c => c.Type == "ProfileImageUrl")?.Value ?? defaultImage;
+    string Ctrl() => ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string Act() => ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    bool IsActive(string c, string a = "") =>
+        string.IsNullOrEmpty(a)
+            ? string.Equals(Ctrl(), c, StringComparison.OrdinalIgnoreCase)
+            : string.Equals(Ctrl(), c, StringComparison.OrdinalIgnoreCase) &&
+              string.Equals(Act(), a, StringComparison.OrdinalIgnoreCase);
+
+    string ActiveCls(string c, string a = "") => IsActive(c, a) ? "active" : "";
+    string SubDrop(params string[] ctrls) => ctrls.Any(c => string.Equals(Ctrl(), c, StringComparison.OrdinalIgnoreCase)) ? "subdrop" : "";
+    string SubActive(params string[] ctrls) => ctrls.Any(c => string.Equals(Ctrl(), c, StringComparison.OrdinalIgnoreCase)) ? "submenu active" : "submenu";
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Tableau de Bord Administrateur - Cabinet Médical</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Dreams Technologies" />
+    <link rel="shortcut icon" href="~/assets/img/CABINET-DENTAIRE-CORVIL.png" />
+    <link rel="apple-touch-icon" href="~/assets/img/apple-icon.png" />
+
+    <!-- =====  CSS  ===== -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css" />
+    <link href="~/assets/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/flatpickr/flatpickr.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/plugins/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/simplebar/simplebar.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/tabler-icons/tabler-icons.min.css" />
+    <link rel="stylesheet" href="~/assets/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/assets/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/assets/css/style.css" id="app-style" />
+    <link href="~/assets/plugins/toastr/toastr.min.css" rel="stylesheet" />
+
+    <style>
+        /* SIDEBAR – always exactly the viewport height */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-height: 100vh; /* full screen height */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        /* LOGO BAR – keep its natural height */
+        .sidebar-logo {
+            flex: 0 0 auto;
+        }
+
+        .sidebar-menu ul li.active > a {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .sidebar .sidebar-menu > ul > li ul > li.active > a.subdrop > i {
+            color: #2E37A4 !important;
+            background: transparent;
+        }
+
+        .sidebar-menu .menu-arrow {
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .submenu > a .menu-arrow:before {
+            border: none !important;
+        }
+
+        #sidebar-menu {
+            min-height: 100%;
+        }
+        /* Responsive adjustments for smaller screens */
+        @@media (max-width: 991.98px) {
+            .sidebar [data-simplebar] {
+                height: 145% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- BARRE SUPÉRIEURE -->
+        <header class="navbar-header d-flex align-items-center justify-content-between">
+            <a id="mobile_btn" class="mobile-btn" href="index.html#sidebar">
+                <i class="ti ti-menu-deep fs-24"></i>
+            </a>
+            <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center ms-auto">
+                <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none d-flex align-items-center" data-bs-toggle="dropdown" data-bs-offset="0,22">
+                    <span class="me-2 d-none d-sm-block text-end">
+                        <span class="fw-medium text-dark d-block">@User.Identity?.Name</span>
+                        <span class="fs-13 text-muted">@(User.FindFirst(ClaimTypes.Role)?.Value ?? "Utilisateur")</span>
+                    </span>
+                    <div class="position-relative">
+                        <img src="@profileImage" width="45" height="45" class="rounded-circle" alt="utilisateur" />
+                        <span class="online text-success position-absolute bottom-0 end-0">
+                            <i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i>
+                        </span>
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
+                    <div class="d-flex align-items-center bg-light rounded-3 p-2 mb-2">
+                        <img src="@profileImage" class="rounded-circle" width="42" height="42" alt="" />
+                        <div class="ms-2">
+                            <p class="fw-medium text-dark mb-0">@User.Identity?.Name</p>
+                            <span class="d-block fs-13">@(User.FindFirst(ClaimTypes.Role)?.Value ?? "Utilisateur")</span>
+                        </div>
+                    </div>
+
+                    <!-- Lien Profil -->
+                    <a href="/Profile" class="dropdown-item d-flex align-items-center">
+                        <i class="ti ti-user me-2"></i>Mon Profil
+                    </a>
+
+                    <!-- Lien Paramètres -->
+                    <a href="/Settings" class="dropdown-item d-flex align-items-center">
+                        <i class="ti ti-settings me-2"></i>Paramètres
+                    </a>
+
+                    <div class="dropdown-divider my-2"></div>
+
+                    <!-- Bouton Déconnexion -->
+                    <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="dropdown-item d-flex align-items-center text-danger">
+                            <i class="ti ti-logout me-2"></i>Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <!-- MODAL DE RECHERCHE -->
+        <div class="modal fade" id="searchModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content bg-transparent">
+                    <div class="card shadow-none mb-0">
+                        <div class="px-3 py-2 d-flex flex-row align-items-center" id="search-top">
+                            <i class="ti ti-search fs-22"></i>
+                            <input type="search" class="form-control border-0" placeholder="Rechercher..." />
+                            <button type="button" class="btn p-0" data-bs-dismiss="modal" aria-label="Fermer"><i class="ti ti-x fs-22"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BARRE LATÉRALE -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div>
+                    <a href="index.html" class="logo logo-normal"><img src="~/assets/img/CABINET-DENTAIRE-CORVIL.png" alt="Logo" class="w-25" /></a>
+                    <a href="index.html" class="logo-small"><img src="~/assets/img/CABINET-DENTAIRE-CORVIL.png" alt="Logo" /></a>
+                    <a href="index.html" class="dark-logo"><img src="~/assets/img/logo-white.svg" alt="Logo" /></a>
+                </div>
+                <button class="sidenav-toggle-btn btn border-0 p-0 active" id="toggle_btn"><i class="ti ti-arrow-left text-body"></i></button>
+                <button class="sidebar-close"><i class="ti ti-x align-middle"></i></button>
+            </div>
+
+            <div class="sidebar-inner overflow-y-auto" data-simplebar>
+                <nav id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li class="menu-title"><span>Menu Principal</span></li>
+                        <li>
+                            <ul>
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@ActiveCls("Admin", "Index")">
+                                        <a asp-action="Index" asp-controller="Admin"><i class="ti ti-layout-dashboard"></i><span>Tableau de Bord</span></a>
+                                    </li>
+                                }
+                                @if (CanSee("Doctor"))
+                                {
+                                    <li class="@ActiveCls("DoctorDashboard", "Index")">
+                                        <a asp-action="Index" asp-controller="DoctorDashboard"><i class="ti ti-layout-dashboard"></i><span>Tableau de Bord</span></a>
+                                    </li>
+                                }
+                                @if (CanSee("Receptionist"))
+                                {
+                                    <li class="@ActiveCls("ReceptionistDashboard", "Index")">
+                                        <a asp-action="Index" asp-controller="ReceptionistDashboard"><i class="ti ti-layout-dashboard"></i><span>Tableau de Bord</span></a>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@SubActive("Doctor")" data-menu="doctor">
+                                        <a href="javascript:void(0);" class="@SubDrop("Doctor")"><i class="ti ti-user-plus"></i><span>Médecins</span><span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a asp-controller="Doctor" asp-action="Index" class="@ActiveCls("Doctor", "Index")">Médecins</a></li>
+                                            <li><a asp-controller="Doctor" asp-action="Upsert" class="@ActiveCls("Doctor", "Upsert")">Ajouter Médecin</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin") || CanSee("Receptionist"))
+                                {
+                                    <li class="@SubActive("Patient")" data-menu="patient">
+                                        <a href="javascript:void(0);" class="@SubDrop("Patient")"><i class="ti ti-user-heart"></i><span>Patients</span><span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a asp-controller="Patient" asp-action="Index" class="@ActiveCls("Patient", "Index")">Patients</a></li>
+                                            <li><a asp-controller="Patient" asp-action="Upsert" class="@ActiveCls("Patient", "Upsert")">Ajouter Patient</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin") || CanSee("Doctor"))
+                                {
+                                    <li class="@ActiveCls("Appointment")"><a asp-action="Index" asp-controller="Appointment"><i class="ti ti-calendar-check"></i><span>Rendez-vous</span></a></li>
+                                }
+                                @if (CanSee("Admin") || CanSee("Doctor") || CanSee("Nurse"))
+                                {
+                                    <li class="@ActiveCls("Appointment", "NurseView")"><a asp-action="NurseView" asp-controller="Appointment"><i class="ti ti-calendar-check"></i><span>Ajouter des signes vitaux</span></a></li>
+                                }
+
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@SubActive("Invoice")" data-menu="invoice">
+                                        <a href="javascript:void(0);" class="@SubDrop("Invoice")"><i class="ti ti-file-invoice"></i><span>Factures</span><span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a asp-controller="Invoice" asp-action="Index" class="@ActiveCls("Invoice", "Index")">Factures</a></li>
+                                            <li><a asp-controller="Invoice" asp-action="Upsert" class="@ActiveCls("Invoice", "Upsert")">Créer Facture</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@SubActive("Inventory")" data-menu="inventory">
+                                        <a href="javascript:void(0);" class="@SubDrop("Inventory")"><i class="ti ti-building-hospital"></i><span>Inventaire</span><span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a asp-controller="Inventory" asp-action="Index" class="@ActiveCls("Inventory", "Index")">Inventaire</a></li>
+                                            <li><a asp-controller="Inventory" asp-action="Upsert" class="@ActiveCls("Inventory", "Upsert")">Ajouter Article</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@SubActive("Employees", "Attendance")" data-menu="staff">
+                                        <a href="javascript:void(0);" class="@SubDrop("Employees", "Attendance")"><i class="ti ti-users-group"></i><span>Personnel</span><span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a asp-controller="Employees" asp-action="Index" class="@ActiveCls("Employees", "Index")">Employés</a></li>
+                                            <li><a asp-controller="Employees" asp-action="Upsert" class="@ActiveCls("Employees", "Upsert")">Ajouter Employé</a></li>
+                                            <li><a asp-controller="Attendance" asp-action="Index" class="@ActiveCls("Attendance", "Index")">Présence</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@SubActive("Reports")" data-menu="reports">
+                                        <a href="javascript:void(0);" class="@SubDrop("Reports")"><i class="ti ti-report"></i><span>Rapports</span><span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a asp-controller="Reports" asp-action="Index" class="@ActiveCls("Reports", "Index")">Tous les Rapports</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@SubActive("Payroll")" data-menu="payroll">
+                                        <a href="javascript:void(0);" class="@SubDrop("Payroll")"><i class="ti ti-coin"></i><span>Paie</span><span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a asp-controller="Payroll" asp-action="Index" class="@ActiveCls("Payroll", "Index")">Toutes les Paies</a></li>
+                                            <li><a asp-controller="Payroll" asp-action="CreateRun" class="@ActiveCls("Payroll", "CreateRun")">Générer Paie</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@SubActive("UserManagement")" data-menu="users">
+                                        <a href="javascript:void(0);" class="@SubDrop("UserManagement")"><i class="ti ti-user"></i><span>Utilisateurs</span><span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a asp-controller="UserManagement" asp-action="Index" class="@ActiveCls("UserManagement", "Index")">Tous les Utilisateurs</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (CanSee("Admin"))
+                                {
+                                    <li class="@SubActive("Currency", "Treatment", "PaymentMethod", "Departments")" data-menu="settings">
+                                        <a href="javascript:void(0);" class="@SubDrop("Currency", "Treatment", "PaymentMethod", "Departments")">
+                                            <i class="ti ti-settings-dollar"></i><span>Paramètres</span><span class="menu-arrow"></span>
+                                        </a>
+                                        <ul>
+                                            <li><a asp-controller="Currency" asp-action="Index" class="@ActiveCls("Currency", "Index")">Devises</a></li>
+                                            <li><a asp-controller="Treatment" asp-action="Index" class="@ActiveCls("Treatment", "Index")">Plans de Traitement</a></li>
+                                            <li><a asp-controller="PaymentMethod" asp-action="Index" class="@ActiveCls("PaymentMethod", "Index")">Méthodes de Paiement</a></li>
+                                            <li><a asp-controller="Departments" asp-action="Index" class="@ActiveCls("Departments", "Index")">Départements</a></li>
+                                            <li><a asp-controller="Settings" asp-action="Index" class="@ActiveCls("Settings", "Index")">Paramètres par Défaut</a></li>
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- CONTENU -->
+        <div class="page-wrapper">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/assets/js/jquery.slimscroll.min.js"></script>
+    <script src="~/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
+    <script src="~/assets/plugins/select2/js/select2.min.js"></script>
+    <script src="~/assets/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/js/delete.js"></script>
+    <script src="~/js/hr.common.js"></script>
+    <script src="~/assets/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/assets/plugins/toastr/toastr.min.js"></script>
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/plugins/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
+    <script src="~/assets/js/moment.min.js"></script>
+    <script src="~/assets/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="~/assets/plugins/flatpickr/flatpickr.min.js"></script>
+    <script src="~/assets/js/script.js" asp-append-version="true"></script>
+    <script src="~/js/recept.js"></script>
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script src="~/assets/js/bootstrap-datetimepicker.min.js"></script>
+
+    <!-- ACCORDÉON BARRE LATÉRALE UNIQUEMENT -->
+    <script>
+        $(function () {
+            function closeAllExcept($keepOpen) {
+                $('.submenu.active').not($keepOpen).each(function () {
+                    $(this).removeClass('active').find('> a').removeClass('subdrop');
+                    $(this).find('ul').removeClass('show').slideUp(300);
+                    var id = $(this).data('menu');
+                    if (id) sessionStorage.setItem('menu_' + id, 'false');
+                });
+            }
+
+            // Restore sidebar
+                        // Restore sidebar submenu states from sessionStorage
+            $('.submenu[data-menu]').each(function () {
+                var $submenu = $(this);
+                var id = $submenu.data('menu');
+                var stored = sessionStorage.getItem('menu_' + id);
+
+                // Open submenu if it was active or stored as open
+                if ($submenu.hasClass('active') || stored === 'true') {
+                    $submenu.addClass('active').find('> a').addClass('subdrop');
+                    $submenu.find('ul').addClass('show').show();
+                } else {
+                    // Ensure closed state on load if not active
+                    $submenu.removeClass('active').find('> a').removeClass('subdrop');
+                    $submenu.find('ul').removeClass('show').hide();
+                }
+            });
+
+            // On clicking submenu anchors that toggle submenu
+            $(document).on('click', '.submenu > a[href="javascript:void(0);"]', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var $submenu = $(this).closest('.submenu');
+                var $submenuList = $submenu.find('ul').first();
+                var id = $submenu.data('menu');
+
+                if ($submenu.hasClass('active')) {
+                    // Close this submenu
+                    $submenu.removeClass('active');
+                    $(this).removeClass('subdrop');
+                    $submenuList.removeClass('show').slideUp(300);
+                    if (id) sessionStorage.setItem('menu_' + id, 'false');
+                } else {
+                    // Close all other submenus before opening this one
+                    $('.submenu.active').not($submenu).each(function () {
+                        var $otherSubmenu = $(this);
+                        $otherSubmenu.removeClass('active').find('> a').removeClass('subdrop');
+                        $otherSubmenu.find('ul').removeClass('show').slideUp(300);
+                        var otherId = $otherSubmenu.data('menu');
+                        if (otherId) sessionStorage.setItem('menu_' + otherId, 'false');
+                    });
+
+                    // Open this submenu
+                    $submenu.addClass('active');
+                    $(this).addClass('subdrop');
+                    $submenuList.addClass('show').slideDown(300);
+                    if (id) sessionStorage.setItem('menu_' + id, 'true');
+                }
+            });
+
+            // On clicking any other sidebar menu link (non-submenu), close all submenus
+            $(document).on('click', '#sidebar-menu a[href!="#"][href!="javascript:void(0);"]', function () {
+                $('.submenu.active').each(function () {
+                    var $submenu = $(this);
+                    $submenu.removeClass('active').find('> a').removeClass('subdrop');
+                    $submenu.find('ul').removeClass('show').slideUp(300);
+                    var id = $submenu.data('menu');
+                    if (id) sessionStorage.setItem('menu_' + id, 'false');
+                });
+            });
+
+            // Save submenu states on page unload
+            $(window).on('beforeunload', function () {
+                $('.submenu[data-menu]').each(function () {
+                    var $submenu = $(this);
+                    var id = $submenu.data('menu');
+                    var isOpen = $submenu.hasClass('active');
+                    if (id) sessionStorage.setItem('menu_' + id, isOpen.toString());
+                });
+            });
+        });
+    </script>
+    @await Html.PartialAsync("_Notification")
+    @RenderSection("Scripts", required: false)
+</body>
+</html> *@

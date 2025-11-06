@@ -104,6 +104,8 @@ namespace CMS.Models
         public decimal AmountDue { get; set; }
 
         // Payment Details
+        public bool IsDeleted { get; set; } = false;
+
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
         [ValidateNever]
         public PaymentMethod PaymentMethod { get; set; }

@@ -661,7 +661,7 @@
 
                 // Move pager; write our own info string so it always shows
                 drawCallback: function () {
-                    $('#doctorList tbody tr.pre-load').remove()
+                    $('#doctorList tbody tr.pre-load').remove();
                     const api = this.api();
 
                     // move DT pager to our container
@@ -722,7 +722,8 @@
                             headers: { 'RequestVerificationToken': token },
                             success: r => {
                                 if (r.status) {
-                                    Swal.fire('Supprimé', r.message, 'success');
+                                    
+                                     toastr.success(r.message, 'Supprimé');
                                     table.ajax.reload(null, false);
                                 } else {
                                     Swal.fire('Erreur', r.message || 'La suppression a échoué', 'error');

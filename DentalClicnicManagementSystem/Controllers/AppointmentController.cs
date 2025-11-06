@@ -2,6 +2,7 @@
 using CMS.Models;
 using CMS.Services; 
 using CMS.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CMS.Controllers
 {
+    [Authorize(Roles = "Admin,Doctor,Nurse")]
     public class AppointmentController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -729,28 +731,53 @@ namespace CMS.Controllers
         }
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            try {
-                var appointment = _context.Appointments.FirstOrDefault(a => a.AppointmentId == id);
-                if (appointment == null)
-                {
-                    return Json(new { success = false, message = "Error while deleting" });
-                }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult Delete(int id)
+        //{
+        //    try {
+        //        var appointment = _context.Appointments.FirstOrDefault(a => a.AppointmentId == id);
+        //        if (appointment == null)
+        //        {
+        //            return Json(new { success = false, message = "Error while deleting" });
+        //        }
 
-                _context.Appointments.Remove(appointment);
-                _context.SaveChanges();
-                return Json(new { success = true, message = "Delete successful" });
-            }
-            catch (DbUpdateException ex)
-            {
-                // Check inner exception for FK violation
-                return Json(new { success = false, message = "Cannot delete this appointment because invoices are linked to it.", ex });
+        //        _context.Appointments.Remove(appointment);
+        //        _context.SaveChanges();
+        //        return Json(new { success = true, message = "Delete successful" });
+        //    }
+        //    catch (DbUpdateException ex)
+        //    {
+        //        // Check inner exception for FK violation
+        //        return Json(new { success = false, message = "Cannot delete this appointment because invoices are linked to it.", ex });
                
-            }
+        //    }
+        //}
+        [HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Delete(int id)
+{
+    try
+    {
+        var appointment = _context.Appointments.FirstOrDefault(a => a.AppointmentId == id);
+        if (appointment == null)
+        {
+            return Json(new { success = false, message = "Error while deleting. Appointment not found." });
         }
+
+        // Soft delete by setting IsDeleted flag
+        appointment.IsDeleted = true;
+
+        _context.Update(appointment);
+        _context.SaveChanges();
+
+        return Json(new { success = true, message = "Delete successful (soft delete)" });
+    }
+    catch (DbUpdateException ex)
+    {
+        return Json(new { success = false, message = "Cannot delete this appointment because invoices are linked to it.", ex });
+    }
+}
 
       
 

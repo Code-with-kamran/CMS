@@ -1,0 +1,388 @@
+﻿@model CMS.Models.Department
+
+<form id="__af" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="main-wrapper">
+    <div class="page-wrapper m-0">
+        <div class="content">
+            <!-- Page Header -->
+            <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 mb-3">
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-0">Departments</h4>
+                </div>
+                <div class="text-end">
+                    <!-- Button to open modal -->
+                    <button type="button" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="modal" data-bs-target="#departmentModal">
+                        <i class="ti ti-plus me-1"></i>New Department
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card with filters and table -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Filters -->
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-auto d-none d-sm-flex align-items-center">
+                            <label class="me-2 mb-0">Show</label>
+                            <select id="pageLength" class="form-select form-select-sm" style="min-width:90px">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">entries</span>
+                        </div>
+                        <div class="col-12 col-sm ms-sm-auto" style="max-width:260px">
+                            <input id="globalSearch" type="search" class="form-control form-control-sm" placeholder="Search..." />
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table id="departmentList" class="table table-hover align-middle w-100 nowrap" style="min-width: 800px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Department Name</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="row align-items-center g-2 mt-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="small text-muted" id="dt-info"></div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
+                            <div id="dt-pager"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Modal -->
+<div class="modal fade" id="departmentModal" tabindex="-1" aria-labelledby="departmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="departmentModalLabel">Add Department</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="departmentForm" asp-controller="Departments" asp-action="Upsert" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" asp-for="DepartmentId" id="departmentId" value="0" />
+
+                    <div class="mb-3">
+                        <label asp-for="DepartmentName" class="form-label">Department Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" asp-for="DepartmentName" id="departmentName" required maxlength="100">
+                        <span asp-validation-for="DepartmentName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea class="form-control" asp-for="Description" id="departmentDescription" rows="3" maxlength="250"></textarea>
+                        <div class="form-text">Optional description about the department.</div>
+                    </div>
+
+                    <div class="mb-3" id="statusField">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" asp-for="IsActive" id="isActiveDepartment" checked>
+                            <label class="form-check-label" asp-for="IsActive">Active Department</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        Add Department
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            const token = $('#__af input[name="__RequestVerificationToken"]').val();
+            const esc = s => s == null ? '' : String(s);
+
+            // Destroy existing DataTable if it exists
+            if ($.fn.DataTable.isDataTable('#departmentList')) {
+                $('#departmentList').DataTable().destroy();
+            }
+
+            const table = $('#departmentList').DataTable({
+                processing: false,
+                serverSide: true,
+                ajax: {
+                    url: '/Departments/GetList',
+                    type: 'GET',
+                            data: function (d) {
+            return {
+                draw: d.draw,
+                start: d.start,
+                length: d.length,
+                "search[value]": d.search.value
+            };
+        }
+                },
+                dom: 'rtip',
+                paging: true,
+                pagingType: 'simple_numbers',
+                info: true,
+                order: [[0, 'asc']],
+                autoWidth: false,
+                responsive: true,
+                columnDefs: [
+                    { targets: 0, responsivePriority: 1 },
+                    { targets: 3, orderable: false, className: 'text-end', responsivePriority: 2 }
+                ],
+                columns: [
+                    {
+                        data: 'departmentName',
+                        render: function (data, type, row) {
+                            return `<p class="mb-0 me-2 fw-medium">${esc(data)}</p>`;
+                        }
+                    },
+                    {
+                        data: 'description',
+                        render: function (data, type, row) {
+                            return data ? `<span class="text-muted">${esc(data)}</span>` : '<span class="text-muted fst-italic">No description</span>';
+                        }
+                    },
+                    {
+                        data: 'isActive',
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return data ?
+                                '<span class="badge bg-soft-success fs-13 fw-medium text-success border border-success py-1 px-2">Active</span>' :
+                                '<span class="badge bg-soft-danger fs-13 fw-medium text-danger border border-danger py-1 px-2">Inactive</span>';
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function (_d, _t, row) {
+                            return `
+                                <div class="dropdown d-inline-block">
+                                    <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1" data-bs-toggle="dropdown">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-edit-department" data-id="${row.departmentId}">
+                                                <i class="ti ti-edit me-2"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center text-danger js-delete" data-id="${row.departmentId}" data-name="${esc(row.departmentName)}">
+                                                <i class="ti ti-trash me-2"></i>Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    }
+                ],
+                drawCallback: function() {
+                    $('#departmentList tbody tr.pre-load').remove();
+                    const api = this.api();
+                    const pagerEl = $(api.table().container()).find('.dataTables_paginate');
+                    if (pagerEl.length) {
+                        $('#dt-pager').empty().append(pagerEl);
+                        $('#dt-pager .paginate_button.previous .page-link').html('&lsaquo;');
+                        $('#dt-pager .paginate_button.next .page-link').html('&rsaquo;');
+                    }
+
+                    const info = api.page.info();
+                    const msg = info.recordsDisplay ?
+                        `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay.toLocaleString()} entries` :
+                        (info.recordsTotal ?
+                            `Showing 0 to 0 of ${info.recordsTotal.toLocaleString()} entries` :
+                            'No entries to display');
+                    $('#dt-info').text(msg);
+                },
+                language: {
+                    emptyTable: "No departments found",
+                   
+                    paginate: {
+                        previous: "&lsaquo;",
+                        next: "&rsaquo;"
+                    }
+                }
+            });
+
+
+    $('#departmentList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
+            // Custom search controls and page length
+            $('#globalSearch').on('input', function() {
+                table.search($(this).val()).draw();
+            });
+
+            $('#pageLength').on('change', function () {
+                table.page.len(parseInt(this.value, 10)).draw();
+            });
+
+            // Reset modal when opening to add new department
+            $('#departmentModal').on('show.bs.modal', function (e) {
+                const button = $(e.relatedTarget);
+                if (button.length === 0) {
+                    // Modal opened programmatically, do nothing (keep form data)
+                    return;
+                }
+                const isEdit = button.hasClass('js-edit-department');
+
+                if (!isEdit) {
+                    resetModalForAdd();
+                }
+            });
+
+            // Function to reset modal for adding new department
+            function resetModalForAdd() {
+                $('#departmentForm')[0].reset();
+                $('#departmentId').val('0');
+                $('#departmentModalLabel').text('Add Department');
+                $('#departmentForm button[type="submit"]').text('Add Department');
+                $('#isActiveDepartment').prop('checked', true);
+            }
+
+            // Handle department deletion (still uses AJAX)
+            $(document).on('click', '.js-delete', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+
+                Swal.fire({
+                    title: `Delete ${name}?`,
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then(res => {
+                    if (!res.isConfirmed) return;
+
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Deleting...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Send AJAX DELETE request (keep AJAX for delete to avoid page refresh)
+                    $.ajax({
+                        url: `/Departments/Delete/${id}`,
+                        type: 'POST',
+                        headers: { 'RequestVerificationToken': token },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Deleted!', response.message || 'Department has been deleted.', 'success');
+                                table.ajax.reload(null, false); // Refresh table
+                            } else {
+                                Swal.fire('Error', response.message || 'Failed to delete department.', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'An error occurred while deleting the department.', 'error');
+                        },
+                        complete: function () {
+                            Swal.close();
+                        }
+                    });
+                });
+            });
+
+            // Handle edit button click
+            $(document).on('click', '.js-edit-department', function () {
+                const departmentId = $(this).data('id');
+                if (!departmentId) return;
+
+                // Set modal for editing
+                $('#departmentModalLabel').text('Edit Department');
+                $('#departmentForm button[type="submit"]').text('Update Department');
+
+                // Fetch department data using Get endpoint
+                $.ajax({
+                    url: `/Departments/Get/${departmentId}`,
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.status && response.data) {
+                            const department = response.data;
+                            // Populate form fields with existing department data
+                            $('#departmentId').val(department.departmentId);
+                            $('#departmentName').val(department.departmentName);
+                            $('#departmentDescription').val(department.description || '');
+                            $('#isActiveDepartment').prop('checked', department.isActive);
+
+                            $('#departmentModal').modal('show');
+                        } else {
+                            Swal.fire('Error', response.message || 'Department not found.', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'An error occurred while loading department data.', 'error');
+                    }
+                });
+            });
+
+            // Handle form submission - traditional form submission
+            $('#departmentForm').on('submit', function (e) {
+                const submitBtn = $(this).find('button[type="submit"]');
+                const spinner = submitBtn.find('.spinner-border');
+                spinner.removeClass('d-none');
+                submitBtn.prop('disabled', true);
+
+                // Form will submit traditionally, no need to prevent default
+                // The page will refresh after submission
+            });
+
+            // Show success message if there's a temp data
+            @if (TempData["SuccessMessage"] != null)
+            {
+                    <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: '@TempData["SuccessMessage"]',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    </text>
+            }
+
+            // Show error message if there's a temp data
+            @if (TempData["ErrorMessage"] != null)
+            {
+                    <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '@TempData["ErrorMessage"]',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    </text>
+            }
+        });
+    </script>
+}

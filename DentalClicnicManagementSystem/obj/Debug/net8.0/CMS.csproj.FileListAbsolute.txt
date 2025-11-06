@@ -1575,8 +1575,8 @@ D:\SirwalaDental\DentalClicnicManagementSystem - Copy (20) - Copy\DentalClicnicM
 D:\SirwalaDental\DentalClicnicManagementSystem - Copy (20) - Copy\DentalClicnicManagementSystem\obj\Debug\net8.0\ref\CMS.dll
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\appsettings.Development.json
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\appsettings.json
-D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\CMS.staticwebassets.endpoints.json
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\CMS.staticwebassets.runtime.json
+D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\CMS.staticwebassets.endpoints.json
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\CMS.exe
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\CMS.deps.json
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\CMS.runtimeconfig.json
@@ -1824,10 +1824,11 @@ D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\o
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\staticwebassets.build.json.cache
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\staticwebassets.development.json
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\swae.build.ex.cache
+D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\CMS.csproj.Up2Date
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\CMS.dll
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\refint\CMS.dll
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\CMS.pdb
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\CMS.genruntimeconfig.cache
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\ref\CMS.dll
-D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

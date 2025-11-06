@@ -480,7 +480,7 @@ namespace CMS.Controllers
             var sortColumnDir = HttpContext.Request.Query["order[0][dir]"].ToString();
 
             // Only get active employees
-            var employees = _context.Employees.Where(e => e.IsActive).AsQueryable();
+            var employees = _context.Employees.Where(e => e.IsActive && e.IsDeleted).AsQueryable();
 
             // Filtering
             if (!string.IsNullOrEmpty(searchValue))
@@ -843,6 +843,40 @@ namespace CMS.Controllers
             return View(model);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> InActive(int id)
+        {
+            try
+            {
+                var employee = await _context.Employees.FindAsync(id);
+                if (employee == null)
+                {
+                    return Json(new { status = false, message = "Employee not found." });
+                }
+
+                // Soft delete: Set IsActive to false
+                employee.IsActive = false;
+                _context.Employees.Update(employee);
+                await _context.SaveChangesAsync();
+
+                return Json(new
+                {
+                    status = true,
+                    message = $"{employee.FirstName} {employee.LastName} has been deactivated successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    status = false,
+                    message = $"An error occurred while deactivating the employee: {ex.Message}"
+                });
+            }
+        }
+
         // POST: Employees/Delete/5 (Soft Delete - Deactivate)
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -858,6 +892,7 @@ namespace CMS.Controllers
 
                 // Soft delete: Set IsActive to false
                 employee.IsActive = false;
+                employee.IsDeleted = true;
                 _context.Employees.Update(employee);
                 await _context.SaveChangesAsync();
 

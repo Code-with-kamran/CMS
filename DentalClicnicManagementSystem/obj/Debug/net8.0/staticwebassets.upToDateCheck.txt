@@ -698,9 +698,9 @@ wwwroot\assets\plugins\tabler-icons\fonts\tabler-icons.woff2
 wwwroot\assets\plugins\tabler-icons\tabler-icons.min.css
 wwwroot\assets\plugins\theia-sticky-sidebar\ResizeSensor.js
 wwwroot\assets\plugins\theia-sticky-sidebar\theia-sticky-sidebar.js
-wwwroot\assets\plugins\toastr\toastr .min.css
 wwwroot\assets\plugins\toastr\toastr.css
 wwwroot\assets\plugins\toastr\toastr.js
+wwwroot\assets\plugins\toastr\toastr.min.css
 wwwroot\assets\plugins\toastr\toastr.min.js
 wwwroot\assets\plugins\twitter-bootstrap-wizard\form-wizard.css
 wwwroot\assets\plugins\vanilla-wizard\js\wizard.min.js
@@ -785,11 +785,13 @@ wwwroot\uploads\doctors\4f246a31a17a4a3ea4835f52b49dccb4.jpg
 wwwroot\uploads\doctors\52b3c017ab894241a8481091533bf979.png
 wwwroot\uploads\doctors\680404e209f54f9f8467082f570fa5f9.png
 wwwroot\uploads\doctors\6d4682d4b800448fae79fa3ed8388c89.png
+wwwroot\uploads\doctors\75f0f2753cb04f7f9312020f29562009.jpg
 wwwroot\uploads\doctors\76d32d5e-a56f-45c3-b73f-61ba466d3de7_748x1200_ecb3b891-d31a-45e3-b755-2253bb516ff2.webp
 wwwroot\uploads\doctors\76d32d5e-a56f-45c3-b73f-61ba466d3de7_748x1200_ff072e7e-416b-41f6-8f5a-4afebfec88be.webp
 wwwroot\uploads\doctors\795499b72558471cb5bc8e1aac62243f.png
 wwwroot\uploads\doctors\80256a50f2a0491bb4ab4fe1e0c0220b.png
 wwwroot\uploads\doctors\842279f905e14a998f5ee77ad0031ae4.png
+wwwroot\uploads\doctors\847a263d30ee466298eec7c3fb36a6ec.webp
 wwwroot\uploads\doctors\856b14edb1f940778da3a13b133ae97f.png
 wwwroot\uploads\doctors\8c81f429e6664e9c9f3b48b612e58739.png
 wwwroot\uploads\doctors\8f3972c72c3046f583638a278a7e453b.jpg
@@ -802,8 +804,13 @@ wwwroot\uploads\doctors\e568ebc0f3f3420cb74ddc7d3cd7467d.png
 wwwroot\uploads\doctors\e8b6c1848ebb47f1bc8e95e416a5f2d6.png
 wwwroot\uploads\doctors\IMG-20220427-WA0006_f5d99bde-a744-4b94-9be7-35e28bec4adc.jpg
 wwwroot\uploads\doctors\patient_default.jpg
+wwwroot\uploads\doctors\profile_26_20251017155757.jpg
+wwwroot\uploads\doctors\profile_5_20251021133810.webp
+wwwroot\uploads\documents\17\e302e4f932dd4305a428d620eee5a46a.jpg
+wwwroot\uploads\documents\17\eebb144919f24b9483d2a0afcde11d01.jpg
 wwwroot\uploads\documents\30\1477f8d8bea6495bbcc9d23aad150cc7.png
 wwwroot\uploads\documents\30\56a779f2d1c544739cff56e232ca2a6a.png
 wwwroot\uploads\documents\30\5e1cdd83bb18450fa534be700323bea8.png
 wwwroot\uploads\documents\30\76d2632f501446c388bac780c8bf5aeb.pdf
 wwwroot\uploads\documents\30\bf7982166eee4bfa8a75505dae98c80a.png
+wwwroot\uploads\profiles\profile_26_20251017155620.jpg

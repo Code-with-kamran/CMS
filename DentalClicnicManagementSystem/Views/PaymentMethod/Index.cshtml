@@ -419,9 +419,16 @@
             }
 
             const table = $('#paymentMethodList').DataTable({
-                processing: true,
+                processing: false,
                 serverSide: true,
-                ajax: { url: '/PaymentMethod/GetList', type: 'GET' },
+                        ajax: { url: '/PaymentMethod/GetList', type: 'GET',data: function (d) {
+            return {
+                draw: d.draw,
+                start: d.start,
+                length: d.length,
+                "search[value]": d.search.value
+            };
+        } },
                 dom: 'rtip',
                 paging: true,
                 pagingType: 'simple_numbers',
@@ -477,6 +484,7 @@
                     }
                 ],
                 drawCallback() {
+                    $('#paymentMethodList tbody tr.pre-load').remove();
                     const api = this.api();
                     const pagerEl = $(api.table().container()).find('.dataTables_paginate');
                     if (pagerEl.length) {
@@ -495,7 +503,7 @@
                 },
                 language: {
                     emptyTable: "Aucun moyen de paiement trouvé",
-                    processing: "Chargement...",
+                    
                     paginate: {
                         previous: "&lsaquo;",
                         next: "&rsaquo;"
@@ -503,6 +511,12 @@
                 }
             });
 
+
+                        $('#paymentMethodList tbody').html(
+          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+           </td></tr>`
+        );
             // Contrôles de recherche personnalisés et longueur de page
             $('#globalSearch').on('input', () => table.search($('#globalSearch').val()).draw());
             $('#pageLength').on('change', function () {

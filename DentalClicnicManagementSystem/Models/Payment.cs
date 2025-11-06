@@ -16,7 +16,9 @@
         public string? Notes { get; internal set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool IsDeleted { get; set; } = false;
+
         // Navigation property
     }
-    
+
 }

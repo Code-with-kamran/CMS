@@ -15,6 +15,8 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v8.0
 build_property.RootNamespace = CMS
 build_property.RootNamespace = CMS
 build_property.ProjectDir = D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\
@@ -240,6 +242,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VycmVuY3lcX0N1cnJlbmN5TW9kZWxQYXJ0aWFsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/SirwalaDental/DentalClicnicManagementSystem -/DentalClicnicManagementSystem/Views/Departments/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwYXJ0bWVudHNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/SirwalaDental/DentalClicnicManagementSystem -/DentalClicnicManagementSystem/Views/DoctorDashboard/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -398,6 +404,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/SirwalaDental/DentalClicnicManagementSystem -/DentalClicnicManagementSystem/Views/PerformanceReviews/_UpsertPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyZm9ybWFuY2VSZXZpZXdzXF9VcHNlcnRQYXJ0aWFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem -/DentalClicnicManagementSystem/Views/Profile/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/SirwalaDental/DentalClicnicManagementSystem -/DentalClicnicManagementSystem/Views/Profile/_EditProfileForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxfRWRpdFByb2ZpbGVGb3JtLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/SirwalaDental/DentalClicnicManagementSystem -/DentalClicnicManagementSystem/Views/PublicAppointments/Index.cshtml]

@@ -140,6 +140,8 @@
         else
         {
             <select asp-for="ItemType" class="form-control item-type-select" data-index="@index">
+                <option value="" selected disabled hidden>--- Sélectionnez un élément ---</option>
+
                 <option value="Inventory" selected="@(Model.ItemType == "Inventory" ? "selected" : null)">Médicament</option>
                 <option value="Treatment" selected="@(Model.ItemType == "Treatment" ? "selected" : null)">Traitement</option>
                 <option value="Test" selected="@(Model.ItemType == "Test" ? "selected" : null)">Test de Laboratoire</option>

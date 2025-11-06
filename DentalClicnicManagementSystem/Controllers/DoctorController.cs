@@ -2,23 +2,28 @@
 using CMS.Helpers;
 using CMS.Models;
 using CMS.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Net;
 using static CMS.Models.ViewModels;
 
 namespace CMS.Controllers
 {
+    [Authorize(Roles = "Admin,Doctor,Acountant,HR")]
     public class DoctorController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly FileHelper _fileHelper;
-        public DoctorController(ApplicationDbContext context, FileHelper fileHelper)
+        private readonly ILogger<DoctorController> _logger;
+        public DoctorController(ApplicationDbContext context, FileHelper fileHelper, ILogger<DoctorController> logger)
         {
             _context = context;
             _fileHelper = fileHelper;
+            _logger = logger;
         }
 
         // ----------------------GET: Doctor
@@ -52,44 +57,6 @@ namespace CMS.Controllers
 
             return Json(doctor);
         }
-        //[HttpGet]
-        //public async Task<JsonResult> GetDoctorData(int id)
-        //{
-        //    var doctor = await _context.Doctors
-        //                               .Where(d => d.Id == id)
-        //                               .Select(d => new
-        //                               {
-        //                                   d.Id,
-        //                                   d.FullName,
-        //                                   d.Specialty,
-        //                                   d.Degrees,
-        //                                   d.About,
-        //                                   d.Email,
-        //                                   d.Phone,
-        //                                   d.Address,
-        //                                   d.ProfileImageUrl,
-        //                                   d.ConsultationCharge,
-        //                                   d.ConsultationDurationInMinutes,
-        //                                   d.MedicalLicenseNumber,
-        //                                   d.BloodGroup,
-        //                                   d.YearOfExperience,
-        //                                   d.AvailabilityStatus,
-        //                                   //// Select related data if it's needed for the details page
-        //                                   //EducationInformation = d.EducationId.Select(e => new { e.Institution, e.Degree, e.Duration }),
-        //                                   //AwardsAndRecognition = d.AwardsAndRecognition.Select(a => new { a.Title, a.Description }),
-        //                                   //Certifications = d.Certifications.Select(c => new { c.Title, c.Description })
-        //                               })
-        //                               .FirstOrDefaultAsync(); // Use FirstOrDefaultAsync for async calls
-
-        //    if (doctor == null)
-        //    {
-        //        Response.StatusCode = 404;
-        //        return Json(new { success = false, message = "Doctor not found." });
-        //    }
-
-        //    return Json(new { success = true, data = doctor });
-        //}
-
         // GET: /Doctor/GetDoctorsData
 
         [HttpGet]
@@ -162,7 +129,7 @@ namespace CMS.Controllers
                 if (length <= 0) length = 10;
                 if (start < 0) start = 0;
 
-                IQueryable<Doctor> q = _context.Doctors.AsNoTracking();
+                IQueryable<Doctor> q = _context.Doctors.Where(d => !d.IsDeleted).AsNoTracking();
 
                 int recordsTotal = await q.CountAsync();
 
@@ -237,34 +204,69 @@ namespace CMS.Controllers
                 var doctor = await _context.Doctors.FindAsync(id);
                 if (doctor == null)
                     return Json(new { status = false, message = "Doctor not found." });
-                bool hasAppointments = _context.Appointments.Any(a => a.DoctorId == id);
+
+                bool hasAppointments = _context.Appointments.Any(a => a.DoctorId == id && !a.IsDeleted);
                 if (hasAppointments)
                 {
                     return Json(new { status = false, message = "Doctor has appointments. Delete them first." });
                 }
-                _fileHelper.DeleteIfNotDefault(doctor.ProfileImageUrl);
 
-                _context.Doctors.Remove(doctor);
+                // Optional: Delete associated profile image if not default
+                _fileHelper.DeleteIfNotDefault(doctor.ProfileImageUrl);
+                // Soft delete doctor record
+                doctor.IsDeleted = true;
+
+                _context.Doctors.Update(doctor);
                 await _context.SaveChangesAsync();
 
-                return Json(new { status = true, message = "Deleted successfully." });
+                return Json(new { status = true, message = "Deleted successfully (soft delete)." });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(new { status = false, message = "Error deleting doctor." });
             }
         }
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    try
+        //    {
+        //        var doctor = await _context.Doctors.FindAsync(id);
+        //        if (doctor == null)
+        //            return Json(new { status = false, message = "Doctor not found." });
+        //        bool hasAppointments = _context.Appointments.Any(a => a.DoctorId == id);
+        //        if (hasAppointments)
+        //        {
+        //            return Json(new { status = false, message = "Doctor has appointments. Delete them first." });
+        //        }
+        //        _fileHelper.DeleteIfNotDefault(doctor.ProfileImageUrl);
+
+        //        _context.Doctors.Remove(doctor);
+        //        await _context.SaveChangesAsync();
+
+        //        return Json(new { status = true, message = "Deleted successfully." });
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        return Json(new { status = false, message = "Error deleting doctor." });
+        //    }
+        //}
 
 
 
 
+        // ---------------------- GET: Doctor/Upsert
         [HttpGet]
-        public async Task<IActionResult> Upsert(int? id, bool prefill5 = false, bool prefill7 = false)
+        public async Task<IActionResult> Upsert(
+            int? id,
+            bool prefill5 = false,
+            bool prefill7 = false,
+            string? returnUrl = null)
         {
             var vm = new DoctorUpsertVM
             {
-                // Load departments from database
                 Departments = await _context.Departments
                     .OrderBy(d => d.DepartmentName)
                     .Select(d => new SelectListItem
@@ -275,22 +277,38 @@ namespace CMS.Controllers
                     .ToListAsync()
             };
 
+            // ---- Safe returnUrl handling (decode + local only) ----
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+            {
+                var decoded = WebUtility.UrlDecode(returnUrl);
+                if (Url.IsLocalUrl(decoded))
+                    ViewData["ReturnUrl"] = decoded;
+            }
+            else
+            {
+                // Fallback: use Referer only if same host and keep only Path+Query
+                var referer = Request.Headers["Referer"].ToString();
+                if (Uri.TryCreate(referer, UriKind.Absolute, out var refUri) &&
+                    string.Equals(refUri.Host, Request.Host.Host, StringComparison.OrdinalIgnoreCase))
+                {
+                    var local = refUri.PathAndQuery; // e.g. "/Doctor/Profile/5?tab=availability"
+                    if (Url.IsLocalUrl(local))
+                        ViewData["ReturnUrl"] = local;
+                }
+            }
+
             if (id == null || id == 0)
             {
-                // Initialize a new Doctor object if no ID is passed (Create)
                 vm.Doctor = new Doctor
                 {
                     AvailabilityStatus = "Available",
                     ConsultationDurationInMinutes = 15
                 };
-
-                // Pre-fill weekly availability if needed
-                if (prefill5) PrefillWeekly(vm, days: 5);
-                if (prefill7) PrefillWeekly(vm, days: 7);
+                if (prefill5) PrefillWeekly(vm, 5);
+                if (prefill7) PrefillWeekly(vm, 7);
             }
             else
             {
-                // Retrieve existing doctor details from the database (Edit)
                 vm.Doctor = await _context.Doctors
                     .Include(d => d.WeeklyAvailabilities)
                     .Include(d => d.DateAvailabilities)
@@ -299,13 +317,8 @@ namespace CMS.Controllers
                     .Include(d => d.Certifications)
                     .FirstOrDefaultAsync(d => d.Id == id.Value);
 
-                if (vm.Doctor == null)
-                {
-                    // If no doctor is found, return a 404 error
-                    return NotFound();
-                }
+                if (vm.Doctor == null) return NotFound();
 
-                // Load additional data for existing doctor
                 vm.WeeklyAvailabilities = vm.Doctor.WeeklyAvailabilities.OrderBy(a => a.DayOfWeek).ToList();
                 vm.DateAvailabilities = vm.Doctor.DateAvailabilities.OrderBy(a => a.Date).ToList();
                 vm.Educations = vm.Doctor.Educations.OrderByDescending(e => e.Year).ToList();
@@ -313,105 +326,97 @@ namespace CMS.Controllers
                 vm.Certifications = vm.Doctor.Certifications.OrderByDescending(c => c.IssuedOn).ToList();
             }
 
-            // Return the correct view with the DoctorUpsertVM
             return View(vm);
         }
 
         // ---------------------- POST: Doctor/Upsert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(DoctorUpsertVM vm, IFormFile? ProfileImage)
+        public async Task<IActionResult> Upsert(DoctorUpsertVM vm, IFormFile? ProfileImage, string? returnUrl)
         {
-            // Load departments for the view (in case of validation errors)
-            vm.Departments = await _context.Departments
-                .OrderBy(d => d.DepartmentName)
-                .Select(d => new SelectListItem
-                {
-                    Text = d.DepartmentName,
-                    Value = d.DepartmentId.ToString()
-                })
-                .ToListAsync();
-
-            if (ProfileImage is { Length: > 1 * 1024 * 1024 })
-            {
-                ModelState.AddModelError(nameof(vm.Doctor.ProfileImageUrl), "Profile photo must not exceed 1 MB.");
-                return View(vm);
-            }
-
-            var isCreate = vm.Doctor.Id == 0;
-
-            // Trim empty child rows
-            TrimEmptyChildren(vm);
-
-
-            if (vm.Doctor.Id == 0) // create
-            {
-                if (string.IsNullOrWhiteSpace(vm.Doctor.Password))
-                    ModelState.AddModelError("Doctor.Password", "Password is required.");
-                if (vm.Doctor.Password != vm.Doctor.ConfirmPassword)
-                    ModelState.AddModelError("Doctor.ConfirmPassword", "Passwords do not match.");
-            }
-            else // edit
-            {
-                if (string.IsNullOrWhiteSpace(vm.Doctor.Password) &&
-                    string.IsNullOrWhiteSpace(vm.Doctor.ConfirmPassword))
-                {
-                    ModelState.Remove("Doctor.Password");
-                    ModelState.Remove("Doctor.ConfirmPassword");
-                }
-                else if (vm.Doctor.Password != vm.Doctor.ConfirmPassword)
-                {
-                    ModelState.AddModelError("Doctor.ConfirmPassword", "Passwords do not match.");
-                }
-            }
-            // Validate Weekly Availability
-            for (int i = 0; i < (vm.WeeklyAvailabilities?.Count ?? 0); i++)
-            {
-                var w = vm.WeeklyAvailabilities[i];
-
-                if (w.DayOfWeek is null)
-                    ModelState.AddModelError($"WeeklyAvailabilities[{i}].DayOfWeek", "Day is required.");
-                if (w.StartTime == default)
-                    ModelState.AddModelError($"WeeklyAvailabilities[{i}].StartTime", "Start time is required.");
-                if (w.EndTime == default)
-                    ModelState.AddModelError($"WeeklyAvailabilities[{i}].EndTime", "End time is required.");
-                if (w.StartTime != default && w.EndTime != default && w.StartTime >= w.EndTime)
-                    ModelState.AddModelError($"WeeklyAvailabilities[{i}].EndTime", "End must be after Start.");
-                if (w.SlotDuration <= TimeSpan.Zero)
-                    ModelState.AddModelError($"WeeklyAvailabilities[{i}].SlotDuration", "Slot duration must be > 0.");
-
-                if (w.StartTime != default && w.EndTime != default &&
-                    (w.EndTime - w.StartTime).TotalMinutes < 30)
-                    ModelState.AddModelError($"WeeklyAvailabilities[{i}].EndTime", "Each availability block must be at least 30 minutes long.");
-            }
-
-            // Validate ModelState
-            if (!ModelState.IsValid)
-            {
-                return View(vm);
-            }
-
-            // Handle Profile Image
-            if (ProfileImage != null)
-            {
-                _fileHelper.DeleteIfNotDefault(vm.Doctor.ProfileImageUrl);
-                vm.Doctor.ProfileImageUrl = await _fileHelper.SaveAsync(ProfileImage, "uploads/doctors");
-            }
-
-            // Default image on create only
-            if (isCreate && string.IsNullOrEmpty(vm.Doctor.ProfileImageUrl))
-                vm.Doctor.ProfileImageUrl = "/uploads/doctors/default.jpg";
-
             try
             {
+                // For redisplay after validation errors
+                vm.Departments = await _context.Departments
+                    .OrderBy(d => d.DepartmentName)
+                    .Select(d => new SelectListItem { Text = d.DepartmentName, Value = d.DepartmentId.ToString() })
+                    .ToListAsync();
+
+                // Basic file size check (keeps request small and returns view instead of 500)
+                if (ProfileImage is { Length: > 1 * 1024 * 1024 })
+                {
+                    ModelState.AddModelError(nameof(vm.Doctor.ProfileImageUrl), "Profile photo must not exceed 1 MB.");
+                    return View(vm);
+                }
+
+                var isCreate = vm.Doctor.Id == 0;
+
+                // Trim empty child rows (your helper)
+                TrimEmptyChildren(vm);
+
+                // Password rules
                 if (isCreate)
                 {
-                    // Create user account
+                    if (string.IsNullOrWhiteSpace(vm.Doctor.Password))
+                        ModelState.AddModelError("Doctor.Password", "Password is required.");
+                    if (vm.Doctor.Password != vm.Doctor.ConfirmPassword)
+                        ModelState.AddModelError("Doctor.ConfirmPassword", "Passwords do not match.");
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(vm.Doctor.Password) &&
+                        string.IsNullOrWhiteSpace(vm.Doctor.ConfirmPassword))
+                    {
+                        ModelState.Remove("Doctor.Password");
+                        ModelState.Remove("Doctor.ConfirmPassword");
+                    }
+                    else if (vm.Doctor.Password != vm.Doctor.ConfirmPassword)
+                    {
+                        ModelState.AddModelError("Doctor.ConfirmPassword", "Passwords do not match.");
+                    }
+                }
+
+                // Weekly availability validation (defensive)
+                for (int i = 0; i < (vm.WeeklyAvailabilities?.Count ?? 0); i++)
+                {
+                    var w = vm.WeeklyAvailabilities[i];
+                    if (w.DayOfWeek is null)
+                        ModelState.AddModelError($"WeeklyAvailabilities[{i}].DayOfWeek", "Day is required.");
+
+                    if (w.StartTime == default)
+                        ModelState.AddModelError($"WeeklyAvailabilities[{i}].StartTime", "Start time is required.");
+                    if (w.EndTime == default)
+                        ModelState.AddModelError($"WeeklyAvailabilities[{i}].EndTime", "End time is required.");
+                    if (w.StartTime != default && w.EndTime != default && w.StartTime >= w.EndTime)
+                        ModelState.AddModelError($"WeeklyAvailabilities[{i}].EndTime", "End must be after Start.");
+                    if (w.SlotDuration <= TimeSpan.Zero)
+                        ModelState.AddModelError($"WeeklyAvailabilities[{i}].SlotDuration", "Slot duration must be > 0.");
+                    if (w.StartTime != default && w.EndTime != default &&
+                        (w.EndTime - w.StartTime).TotalMinutes < 30)
+                        ModelState.AddModelError($"WeeklyAvailabilities[{i}].EndTime", "Each block must be ≥ 30 minutes.");
+                }
+
+                if (!ModelState.IsValid)
+                    return View(vm);
+
+                // Handle profile image
+                if (ProfileImage != null)
+                {
+                    _fileHelper.DeleteIfNotDefault(vm.Doctor.ProfileImageUrl);
+                    vm.Doctor.ProfileImageUrl = await _fileHelper.SaveAsync(ProfileImage, "uploads/doctors");
+                }
+
+                if (isCreate && string.IsNullOrEmpty(vm.Doctor.ProfileImageUrl))
+                    vm.Doctor.ProfileImageUrl = "/uploads/doctors/default.jpg";
+
+                if (isCreate)
+                {
+                    // Create user + doctor
                     var user = new User
                     {
                         Username = vm.Doctor.Email,
                         Email = vm.Doctor.Email,
-                        PasswordHash = vm.Doctor.Password, // Make sure to hash this in production
+                        PasswordHash = vm.Doctor.Password, // hash in production
                         FullName = vm.Doctor.FullName,
                         Role = "Doctor",
                         IsActive = true,
@@ -430,11 +435,9 @@ namespace CMS.Controllers
                     await ReplaceChildren(vm.Doctor.Id, vm);
 
                     TempData["success"] = "Doctor created successfully.";
-                    return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    // Update existing doctor
                     var dbDoctor = await _context.Doctors
                         .Include(d => d.WeeklyAvailabilities)
                         .Include(d => d.DateAvailabilities)
@@ -449,7 +452,6 @@ namespace CMS.Controllers
                         return RedirectToAction(nameof(Index));
                     }
 
-                    // Update doctor properties
                     dbDoctor.FullName = vm.Doctor.FullName;
                     dbDoctor.Specialty = vm.Doctor.Specialty;
                     dbDoctor.DepartmentId = vm.Doctor.DepartmentId;
@@ -467,33 +469,32 @@ namespace CMS.Controllers
                     dbDoctor.AvailabilityStatus = vm.Doctor.AvailabilityStatus;
                     dbDoctor.UpdatedOn = DateTime.Now;
 
-                    // Only update password if provided
                     if (!string.IsNullOrEmpty(vm.Doctor.Password))
-                    {
-                        dbDoctor.Password = vm.Doctor.Password; // Hash this in production
-                    }
+                        dbDoctor.Password = vm.Doctor.Password; // hash in prod
 
-                    // Update profile image if changed
                     if (ProfileImage != null)
-                    {
                         dbDoctor.ProfileImageUrl = vm.Doctor.ProfileImageUrl;
-                    }
 
                     await _context.SaveChangesAsync();
                     await ReplaceChildren(dbDoctor.Id, vm);
 
                     TempData["success"] = "Doctor updated successfully.";
-                    return RedirectToAction(nameof(Index));
                 }
+
+                // ---- Redirect back safely ----
+                var decoded = string.IsNullOrWhiteSpace(returnUrl) ? null : WebUtility.UrlDecode(returnUrl);
+                if (!string.IsNullOrWhiteSpace(decoded) && Url.IsLocalUrl(decoded))
+                    return LocalRedirect(decoded);
+
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in Doctor/Upsert POST");
                 TempData["error"] = $"An error occurred: {ex.Message}";
-                return View(vm);
+                return View(vm); // show validation summary with error
             }
         }
-
-       
         private static void PrefillWeekly(DoctorUpsertVM vm, int days)
         {
             vm.WeeklyAvailabilities.Clear();

@@ -418,7 +418,7 @@ namespace CMS.Controllers
                 if (length <= 0) length = 10;
                 if (start < 0) start = 0;
 
-                IQueryable<Patient> q = _context.Patients.AsNoTracking();
+                IQueryable<Patient> q = _context.Patients.Where(d => !d.IsDeleted).AsNoTracking();
 
                 int recordsTotal = await q.CountAsync();
 
@@ -489,7 +489,7 @@ namespace CMS.Controllers
                 return Json(new { error = "Server error: " + ex.Message });
             }
         }
-        
+
 
 
         // POST: Doctor/Delete/5
@@ -504,29 +504,34 @@ namespace CMS.Controllers
                 {
                     return NotFound();
                 }
-                bool hasAppointments = _context.Appointments.Any(a => a.PatientId == id);
+
+                bool hasAppointments = _context.Appointments.Any(a => a.PatientId == id && !a.IsDeleted);
                 if (hasAppointments)
                 {
                     return Json(new { status = false, message = "Patient has appointments. Delete them first." });
                 }
 
-                // Optional: Delete associated image
+                // Optional: Delete associated image if not default
                 _fileHelper.DeleteIfNotDefault(patient.ProfileImageUrl);
 
+                // Soft delete patient
+                patient.IsDeleted = true;
 
-                _context.Patients.Remove(patient);
+                _context.Patients.Update(patient);
                 await _context.SaveChangesAsync();
 
-                TempData["success"] = "Doctor deleted successfully!";
+                TempData["success"] = "Patient deleted successfully (soft delete)!";
                 return Json(new { status = true, message = "Deleted successfully." });
 
                 //return RedirectToAction(nameof(Index));
             }
-            catch 
+            catch
             {
                 return Json(new { status = false, message = "Error deleting patient." });
             }
         }
+
+       
 
 
         private bool DoctorExists(int id)

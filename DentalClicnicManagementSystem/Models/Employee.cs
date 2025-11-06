@@ -24,6 +24,7 @@ namespace CMS.Models
         [Range(0, 365)] public int LeaveBalance { get; set; } = 14;
 
         public string FullName => $"{FirstName} {LastName}";
+        public bool IsDeleted { get; set; } = false;
 
         // Navigation properties
         [ValidateNever]
