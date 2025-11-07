@@ -465,6 +465,32 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Section Weekend Availability -->
+                            <div class="col-md-6">
+                                <div class="settings-group">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="settings-icon me-3">
+                                            <i class="ti ti-calendar text-warning"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Weekend Availability</h6>
+                                            <small class="text-muted">Mark weekends as working or off days</small>
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="IsSaturdayOpen"
+                                               @(Model.Settings.IsSaturdayOpen ? "checked" : "") />
+                                        <label class="form-check-label" for="IsSaturdayOpen">Saturday Open</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="IsSundayOpen"
+                                               @(Model.Settings.IsSundayOpen ? "checked" : "") />
+                                        <label class="form-check-label" for="IsSundayOpen">Sunday Open</label>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </form>
                 </div>
@@ -545,7 +571,9 @@
                 const formData = {
                     DefaultCurrency: $('#DefaultCurrency').val(),
                     DefaultPaymentMethod: $('#DefaultPaymentMethod').val(),
-                    WorkingHours: $('#WorkingHours').val().trim()
+                    WorkingHours: $('#WorkingHours').val().trim(),
+                    IsSaturdayOpen: $('#IsSaturdayOpen').is(':checked'),
+                    IsSundayOpen: $('#IsSundayOpen').is(':checked')
                 };
 
                 $.ajax({

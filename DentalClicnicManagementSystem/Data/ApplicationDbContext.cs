@@ -28,6 +28,7 @@ namespace CMS.Data
         public DbSet<PatientVitals> PatientVitals { get; set; }
         public DbSet<Payment> Payments{ get; set; }
         public DbSet<BillReceipt> BillReceipts { get; set; }
+        public DbSet<CustomHoliday> CustomHolidays { get; set; }
 
         // Add this line inside your ApplicationDbContext class
         public DbSet<LaboratoryOrder> LaboratoryOrders { get; set; }

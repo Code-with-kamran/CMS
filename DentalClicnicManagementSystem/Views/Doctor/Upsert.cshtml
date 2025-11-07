@@ -807,7 +807,8 @@
                     <div class="card-body">
                         <div class="btn-group btn-group-sm">
                             <button type="button" class="btn btn-outline-primary" onclick="prefillWeekly(5)">Pré-remplir 5 jours</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="prefillWeekly(7)">Pré-remplir 7 jours</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="prefillWeekly(7)">Prefill 7 days</button>
+
                         </div>
                         <div id="weeklyContainer" class="mt-3">
                             @for (int i = 0; i < (Model.WeeklyAvailabilities?.Count ?? 0); i++)
@@ -826,6 +827,7 @@
                                         <!-- CHANGEMENT DE FLATPICKR READONLY VERS INPUT TIME REGULIER -->
                                         <input type="time" class="form-control"
                                                asp-for="WeeklyAvailabilities[@i].StartTime"
+                                               min="09:00" max="16:00"
                                                value="@Model.WeeklyAvailabilities[i].StartTime.ToString(@"hh\:mm")" />
                                         <span asp-validation-for="WeeklyAvailabilities[@i].StartTime" class="text-danger"></span>
                                     </div>
@@ -834,6 +836,7 @@
                                         <!-- CHANGEMENT DE FLATPICKR READONLY VERS INPUT TIME REGULIER -->
                                         <input type="time" class="form-control"
                                                asp-for="WeeklyAvailabilities[@i].EndTime"
+                                               min="09:00" max="16:00"
                                                value="@Model.WeeklyAvailabilities[i].EndTime.ToString(@"hh\:mm")" />
                                         <span asp-validation-for="WeeklyAvailabilities[@i].EndTime" class="text-danger"></span>
                                     </div>
@@ -1085,13 +1088,15 @@
                 <label class="form-label">Début</label>
                 <input type="time" class="form-control"
                        name="WeeklyAvailabilities[${idx}].StartTime"
+                       min="09:00" max="16:00"
                        value="09:00" />
               </div>
               <div class="col-3">
                 <label class="form-label">Fin</label>
                 <input type="time" class="form-control"
                        name="WeeklyAvailabilities[${idx}].EndTime"
-                       value="17:00" />
+                       min="09:00" max="16:00"
+                       value="16:00" />
               </div>
               <div class="col-1 text-end">
                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeRow(this)">✕</button>
@@ -1108,7 +1113,7 @@
             container.innerHTML = '';
 
             const startTime = '09:00';
-            const endTime = '17:00';
+            const endTime = '16:00';
             const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
             let daysToFill = days === 5 ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] : daysOfWeek;
@@ -1126,6 +1131,7 @@
                     <div class="col-3">
                         <label class="form-label">Début</label>
                         <input type="time" class="form-control"
+                        min="09:00" max="16:00"
                                name="WeeklyAvailabilities[${index}].StartTime"
                                value="${startTime}" />
                     </div>
@@ -1133,6 +1139,7 @@
                         <label class="form-label">Fin</label>
                         <input type="time" class="form-control"
                                name="WeeklyAvailabilities[${index}].EndTime"
+                               min="09:00" max="16:00"
                                value="${endTime}" />
                     </div>
                     <div class="col-1 text-end">

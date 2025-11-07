@@ -1,0 +1,252 @@
+﻿@model IEnumerable<CMS.Models.CustomHoliday>
+
+<div class="content">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Custom Holidays</h5>
+            <button class="btn btn-primary btn-sm" onclick="openHolidayModal()">+ Add Holiday</button>
+        </div>
+
+        <div class="card-body">
+            <form id="__af">@Html.AntiForgeryToken()</form>
+
+            <table id="customeHolyday" class="table table-bordered datatable align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th style="width:120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr data-id="@item.Id">
+                        <td>@item.Name</td>
+                            <td>@(item.Date.HasValue? item.Date.Value.ToString("dd MMM yyyy") : "")</td>
+
+                                              <td>@item.Reason</td>
+                        <td>
+                            <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
+                                @(item.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>
+                                <button type="button"
+                                        class="btn btn-warning btn-sm"
+                                        data-id="@item.Id"
+                                        data-name="@item.Name"
+                                        data-reason="@item.Reason"
+                                        data-date="@item.Date?.ToString("yyyy-MM-dd")"
+                                        data-active="@item.IsActive.ToString().ToLower()"
+                                        onclick="openHolidayModalFromButton(this)">
+                                    Edit
+                                </button>
+
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="deleteHoliday(@item.Id)">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="holidayModal" tabindex="-1" aria-labelledby="holidayModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="holidayModalLabel">Add Holiday</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="holidayForm">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" id="Id" name="Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Name</label>
+                        <input type="text" class="form-control" id="Name" name="Name" required maxlength="100">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Date</label>
+                        <input type="date" class="form-control" id="Date" name="Date" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Reason</label>
+                        <input type="text" class="form-control" id="Reason" name="Reason" maxlength="255">
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive" value="true">
+                        <label class="form-check-label" for="IsActive">Active</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // Open modal NEW
+        function openHolidayModal() {
+          $('#Id').val(0);
+          $('#Name').val('');
+          $('#Reason').val('');
+          $('#Date').val('');
+          $('#IsActive').prop('checked', true);
+          $('#holidayModalLabel').text('Add Holiday');
+          $('#holidayModal').modal('show');
+        }
+
+        // Open modal EDIT
+        function openHolidayModalFromButton(btn) {
+          const $b = $(btn);
+          $('#Id').val($b.data('id'));
+          $('#Name').val($b.data('name'));
+          $('#Reason').val($b.data('reason'));
+          $('#Date').val($b.attr('data-date') || $b.data('date') || '');
+          $('#IsActive').prop('checked', String($b.data('active')) === 'true');
+          $('#holidayModalLabel').text('Edit Holiday');
+          $('#holidayModal').modal('show');
+        }
+
+        // Anti-forgery header for ALL AJAX
+        const afToken = $('#__af input[name="__RequestVerificationToken"]').val();
+        $.ajaxSetup({ headers: { 'RequestVerificationToken': afToken } });
+
+        // Helpers
+        function badgeHtml(isActive){
+          return isActive
+            ? '<span class="badge bg-success">Active</span>'
+            : '<span class="badge bg-secondary">Inactive</span>';
+        }
+        function actionsHtml(d){
+          return `
+            <button type="button"
+                    class="btn btn-warning btn-sm"
+                    data-id="${d.id}"
+                    data-name="${$('<div>').text(d.name||'').html()}"
+                    data-reason="${$('<div>').text(d.reason||'').html()}"
+                    data-date="${d.dateIso||''}"
+                    data-active="${String(d.isActive)}"
+                    onclick="openHolidayModalFromButton(this)">
+              Edit
+            </button>
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    onclick="deleteHoliday(${d.id})">
+              Delete
+            </button>`;
+        }
+
+        function getTable(){
+          // grabs existing instance (or creates if your theme doesn't auto-init)
+          return $('#customeHolyday').DataTable();
+        }
+
+        // Create / Edit submit
+        $('#holidayForm').on('submit', function (e) {
+          e.preventDefault();
+
+          const id = Number($('#Id').val() || 0);
+          const url = id > 0
+            ? '@Url.Action("Edit", "CustomHolidays")'
+            : '@Url.Action("Create", "CustomHolidays")';
+
+          const formData = $(this).serialize(); // ONLY the checkbox when checked; nothing when unchecked
+
+          $.post(url, formData)
+            .done(res => {
+              Swal.fire({ icon: 'success', title: 'Success', text: res.message, timer: 1200, showConfirmButton: false });
+              $('#holidayModal').modal('hide');
+
+              const d = res; // id, name, reason, isActive, dateIso, dateDisplay
+              const table = getTable();
+
+              if (id === 0) {
+                // ADD row
+                const rowNode = table.row.add([
+                  $('<div>').text(d.name || '').html(),
+                  d.dateDisplay || '',
+                  $('<div>').text(d.reason || '').html(),
+                  badgeHtml(d.isActive),
+                  actionsHtml(d)
+                ]).draw(false).node();
+
+                $(rowNode).setAttribute?.('data-id', d.id);
+                $(rowNode).attr('data-id', d.id);
+              } else {
+                // UPDATE row
+                const $tr = $(`#customeHolyday tbody tr[data-id="${d.id}"]`);
+                if ($tr.length) {
+                  table.row($tr).data([
+                    $('<div>').text(d.name || '').html(),
+                    d.dateDisplay || '',
+                    $('<div>').text(d.reason || '').html(),
+                    badgeHtml(d.isActive),
+                    actionsHtml(d)
+                  ]).draw(false);
+
+                  // keep the data-id on the row
+                  $tr.attr('data-id', d.id);
+                } else {
+                  // fallback: if not found, add
+                  const rowNode = table.row.add([
+                    $('<div>').text(d.name || '').html(),
+                    d.dateDisplay || '',
+                    $('<div>').text(d.reason || '').html(),
+                    badgeHtml(d.isActive),
+                    actionsHtml(d)
+                  ]).draw(false).node();
+                  $(rowNode).attr('data-id', d.id);
+                }
+              }
+            })
+            .fail(xhr => {
+              Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseText || 'Failed to save.' });
+            });
+        });
+
+        // Delete (remove row without reload)
+        function deleteHoliday(id) {
+          Swal.fire({
+            title: 'Are you sure?',
+            text: 'This will permanently delete the record.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!'
+          }).then(r => {
+            if (!r.isConfirmed) return;
+
+            $.post('@Url.Action("Delete", "CustomHolidays")', { id, __RequestVerificationToken: afToken })
+              .done(res => {
+                const table = getTable();
+                const $tr = $(`#customeHolyday tbody tr[data-id="${id}"]`);
+                if ($tr.length) table.row($tr).remove().draw(false);
+
+                Swal.fire({ icon: 'success', title: 'Deleted', text: res.message, timer: 1000, showConfirmButton: false });
+              })
+              .fail(xhr => {
+                Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseText || 'Failed to delete.' });
+              });
+          });
+        }
+    </script>
+}
+

@@ -57,6 +57,44 @@ namespace CMS.Controllers
 
             return Json(doctor);
         }
+        //[HttpGet]
+        //public async Task<JsonResult> GetDoctorData(int id)
+        //{
+        //    var doctor = await _context.Doctors
+        //                               .Where(d => d.Id == id)
+        //                               .Select(d => new
+        //                               {
+        //                                   d.Id,
+        //                                   d.FullName,
+        //                                   d.Specialty,
+        //                                   d.Degrees,
+        //                                   d.About,
+        //                                   d.Email,
+        //                                   d.Phone,
+        //                                   d.Address,
+        //                                   d.ProfileImageUrl,
+        //                                   d.ConsultationCharge,
+        //                                   d.ConsultationDurationInMinutes,
+        //                                   d.MedicalLicenseNumber,
+        //                                   d.BloodGroup,
+        //                                   d.YearOfExperience,
+        //                                   d.AvailabilityStatus,
+        //                                   //// Select related data if it's needed for the details page
+        //                                   //EducationInformation = d.EducationId.Select(e => new { e.Institution, e.Degree, e.Duration }),
+        //                                   //AwardsAndRecognition = d.AwardsAndRecognition.Select(a => new { a.Title, a.Description }),
+        //                                   //Certifications = d.Certifications.Select(c => new { c.Title, c.Description })
+        //                               })
+        //                               .FirstOrDefaultAsync(); // Use FirstOrDefaultAsync for async calls
+
+        //    if (doctor == null)
+        //    {
+        //        Response.StatusCode = 404;
+        //        return Json(new { success = false, message = "Doctor not found." });
+        //    }
+
+        //    return Json(new { success = true, data = doctor });
+        //}
+
         // GET: /Doctor/GetDoctorsData
 
         [HttpGet]

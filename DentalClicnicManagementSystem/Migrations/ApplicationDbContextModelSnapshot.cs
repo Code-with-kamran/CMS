@@ -155,7 +155,7 @@ namespace CMS.Migrations
                             Id = 1,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 24, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 6, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -165,7 +165,7 @@ namespace CMS.Migrations
                             Id = 2,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 24, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 6, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -173,7 +173,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 3,
-                            Date = new DateTime(2025, 10, 24, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 6, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -183,7 +183,7 @@ namespace CMS.Migrations
                             Id = 4,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 23, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 5, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -193,7 +193,7 @@ namespace CMS.Migrations
                             Id = 5,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 23, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 5, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -203,7 +203,7 @@ namespace CMS.Migrations
                             Id = 6,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 23, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 5, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -213,7 +213,7 @@ namespace CMS.Migrations
                             Id = 7,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 22, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 4, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -223,7 +223,7 @@ namespace CMS.Migrations
                             Id = 8,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 22, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 4, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -233,7 +233,7 @@ namespace CMS.Migrations
                             Id = 9,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 22, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 4, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -243,7 +243,7 @@ namespace CMS.Migrations
                             Id = 10,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 21, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 3, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -253,7 +253,7 @@ namespace CMS.Migrations
                             Id = 11,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 21, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 3, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -263,7 +263,7 @@ namespace CMS.Migrations
                             Id = 12,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 21, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 3, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -273,7 +273,7 @@ namespace CMS.Migrations
                             Id = 13,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -283,7 +283,7 @@ namespace CMS.Migrations
                             Id = 14,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -293,7 +293,7 @@ namespace CMS.Migrations
                             Id = 15,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -303,7 +303,7 @@ namespace CMS.Migrations
                             Id = 16,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 19, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -313,7 +313,7 @@ namespace CMS.Migrations
                             Id = 17,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 19, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -321,7 +321,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 18,
-                            Date = new DateTime(2025, 10, 19, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -331,7 +331,7 @@ namespace CMS.Migrations
                             Id = 19,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 18, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -341,7 +341,7 @@ namespace CMS.Migrations
                             Id = 20,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 18, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -351,7 +351,7 @@ namespace CMS.Migrations
                             Id = 21,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 18, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -361,7 +361,7 @@ namespace CMS.Migrations
                             Id = 22,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -371,7 +371,7 @@ namespace CMS.Migrations
                             Id = 23,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -381,7 +381,7 @@ namespace CMS.Migrations
                             Id = 24,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -391,7 +391,7 @@ namespace CMS.Migrations
                             Id = 25,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 16, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -401,7 +401,7 @@ namespace CMS.Migrations
                             Id = 26,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 16, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -411,7 +411,7 @@ namespace CMS.Migrations
                             Id = 27,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 16, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -421,7 +421,7 @@ namespace CMS.Migrations
                             Id = 28,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 15, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 28, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -431,7 +431,7 @@ namespace CMS.Migrations
                             Id = 29,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 15, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 28, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -441,7 +441,7 @@ namespace CMS.Migrations
                             Id = 30,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 15, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 28, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -451,7 +451,7 @@ namespace CMS.Migrations
                             Id = 31,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 14, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -461,7 +461,7 @@ namespace CMS.Migrations
                             Id = 32,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 14, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -469,7 +469,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 33,
-                            Date = new DateTime(2025, 10, 14, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -479,7 +479,7 @@ namespace CMS.Migrations
                             Id = 34,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 26, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -489,7 +489,7 @@ namespace CMS.Migrations
                             Id = 35,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 26, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -499,7 +499,7 @@ namespace CMS.Migrations
                             Id = 36,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 26, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -509,7 +509,7 @@ namespace CMS.Migrations
                             Id = 37,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -519,7 +519,7 @@ namespace CMS.Migrations
                             Id = 38,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -529,7 +529,7 @@ namespace CMS.Migrations
                             Id = 39,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -539,7 +539,7 @@ namespace CMS.Migrations
                             Id = 40,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 24, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -549,7 +549,7 @@ namespace CMS.Migrations
                             Id = 41,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 24, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -559,7 +559,7 @@ namespace CMS.Migrations
                             Id = 42,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 24, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -569,7 +569,7 @@ namespace CMS.Migrations
                             Id = 43,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 23, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -579,7 +579,7 @@ namespace CMS.Migrations
                             Id = 44,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 23, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -589,7 +589,7 @@ namespace CMS.Migrations
                             Id = 45,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 23, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -599,7 +599,7 @@ namespace CMS.Migrations
                             Id = 46,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 22, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -609,7 +609,7 @@ namespace CMS.Migrations
                             Id = 47,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 22, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -617,7 +617,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 48,
-                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 22, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -627,7 +627,7 @@ namespace CMS.Migrations
                             Id = 49,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 21, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -637,7 +637,7 @@ namespace CMS.Migrations
                             Id = 50,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 21, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -647,7 +647,7 @@ namespace CMS.Migrations
                             Id = 51,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 21, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -657,7 +657,7 @@ namespace CMS.Migrations
                             Id = 52,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 7, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -667,7 +667,7 @@ namespace CMS.Migrations
                             Id = 53,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 7, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -677,7 +677,7 @@ namespace CMS.Migrations
                             Id = 54,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 7, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -687,7 +687,7 @@ namespace CMS.Migrations
                             Id = 55,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -697,7 +697,7 @@ namespace CMS.Migrations
                             Id = 56,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -707,7 +707,7 @@ namespace CMS.Migrations
                             Id = 57,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -717,7 +717,7 @@ namespace CMS.Migrations
                             Id = 58,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -727,7 +727,7 @@ namespace CMS.Migrations
                             Id = 59,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -737,7 +737,7 @@ namespace CMS.Migrations
                             Id = 60,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 18, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -747,7 +747,7 @@ namespace CMS.Migrations
                             Id = 61,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 4, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 17, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -757,7 +757,7 @@ namespace CMS.Migrations
                             Id = 62,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 4, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 17, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -765,7 +765,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 63,
-                            Date = new DateTime(2025, 10, 4, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 17, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -775,7 +775,7 @@ namespace CMS.Migrations
                             Id = 64,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 16, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -785,7 +785,7 @@ namespace CMS.Migrations
                             Id = 65,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 16, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -795,7 +795,7 @@ namespace CMS.Migrations
                             Id = 66,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 16, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -805,7 +805,7 @@ namespace CMS.Migrations
                             Id = 67,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 15, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -815,7 +815,7 @@ namespace CMS.Migrations
                             Id = 68,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 15, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -825,7 +825,7 @@ namespace CMS.Migrations
                             Id = 69,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 15, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -835,7 +835,7 @@ namespace CMS.Migrations
                             Id = 70,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 14, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -845,7 +845,7 @@ namespace CMS.Migrations
                             Id = 71,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 14, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -855,7 +855,7 @@ namespace CMS.Migrations
                             Id = 72,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 14, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -865,7 +865,7 @@ namespace CMS.Migrations
                             Id = 73,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -875,7 +875,7 @@ namespace CMS.Migrations
                             Id = 74,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -885,7 +885,7 @@ namespace CMS.Migrations
                             Id = 75,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -895,7 +895,7 @@ namespace CMS.Migrations
                             Id = 76,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 29, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -905,7 +905,7 @@ namespace CMS.Migrations
                             Id = 77,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 29, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -913,7 +913,7 @@ namespace CMS.Migrations
                         new
                         {
                             Id = 78,
-                            Date = new DateTime(2025, 9, 29, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Sick leave",
                             Status = "Absent"
@@ -923,7 +923,7 @@ namespace CMS.Migrations
                             Id = 79,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -933,7 +933,7 @@ namespace CMS.Migrations
                             Id = 80,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -943,7 +943,7 @@ namespace CMS.Migrations
                             Id = 81,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -953,7 +953,7 @@ namespace CMS.Migrations
                             Id = 82,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 27, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -963,7 +963,7 @@ namespace CMS.Migrations
                             Id = 83,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 27, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -973,7 +973,7 @@ namespace CMS.Migrations
                             Id = 84,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 27, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -983,7 +983,7 @@ namespace CMS.Migrations
                             Id = 85,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -993,7 +993,7 @@ namespace CMS.Migrations
                             Id = 86,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -1003,7 +1003,7 @@ namespace CMS.Migrations
                             Id = 87,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -1013,7 +1013,7 @@ namespace CMS.Migrations
                             Id = 88,
                             CheckIn = new TimeOnly(9, 0, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 25, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 1,
                             Note = "Regular day",
                             Status = "Present"
@@ -1023,7 +1023,7 @@ namespace CMS.Migrations
                             Id = 89,
                             CheckIn = new TimeOnly(9, 15, 0),
                             CheckOut = new TimeOnly(17, 0, 0),
-                            Date = new DateTime(2025, 9, 25, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 2,
                             Note = "Traffic delay",
                             Status = "Late"
@@ -1033,7 +1033,7 @@ namespace CMS.Migrations
                             Id = 90,
                             CheckIn = new TimeOnly(8, 55, 0),
                             CheckOut = new TimeOnly(16, 50, 0),
-                            Date = new DateTime(2025, 9, 25, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Local),
                             EmployeeId = 3,
                             Note = "Regular day",
                             Status = "Present"
@@ -1120,6 +1120,37 @@ namespace CMS.Migrations
                     b.ToTable("Currencies");
                 });
 
+            modelBuilder.Entity("CMS.Models.CustomHoliday", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CustomHolidays");
+                });
+
             modelBuilder.Entity("CMS.Models.DefaultSettings", b =>
                 {
                     b.Property<int>("Id")
@@ -1138,6 +1169,12 @@ namespace CMS.Migrations
                     b.Property<string>("DefaultPaymentMethod")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsSaturdayOpen")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSundayOpen")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

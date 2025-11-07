@@ -16,6 +16,8 @@ namespace CMS.Models
         [Required]
         public string WorkingHours { get; set; } = string.Empty;
 
+        public bool IsSaturdayOpen { get; set; } = false;
+        public bool IsSundayOpen { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
     }
