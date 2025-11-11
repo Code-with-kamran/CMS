@@ -40,6 +40,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowPublicForms", policy =>
+    {
+        policy.AllowAnyOrigin()  // Or specify specific domains: .WithOrigins("https://example.com")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 builder.Services.AddControllersWithViews(o =>
     o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
