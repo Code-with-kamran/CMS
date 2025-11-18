@@ -345,6 +345,10 @@ namespace CMS.Controllers
                 // Generate a unique patient ID and set the creation date
                 viewModel.Patient.PatientIdNumber = $"PT{DateTime.Now.Ticks.ToString().Substring(10)}";
                 viewModel.Patient.CreatedDate = DateTime.Now;
+                if (string.IsNullOrEmpty(viewModel.Patient.ProfileImageUrl))
+                {
+                    viewModel.Patient.ProfileImageUrl = "/uploads/doctors/patient_default.jpg";
+                }
                 _context.Patients.Add(viewModel.Patient);
                 await _context.SaveChangesAsync();
 
@@ -377,7 +381,7 @@ namespace CMS.Controllers
                 dbPatient.Notes = viewModel.Patient.Notes;
                 dbPatient.LastVisited = viewModel.Patient.LastVisited;
                 dbPatient.Gender = viewModel.Patient.Gender;
-
+               
                 await _context.SaveChangesAsync();
 
                 TempData["success"] = "Patient updated successfully.";

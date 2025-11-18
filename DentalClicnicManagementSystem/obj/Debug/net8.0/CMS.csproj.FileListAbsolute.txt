@@ -1830,3 +1830,5 @@ D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\o
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\CMS.pdb
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\CMS.genruntimeconfig.cache
 D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\obj\Debug\net8.0\ref\CMS.dll
+D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
+D:\SirwalaDental\DentalClicnicManagementSystem -\DentalClicnicManagementSystem\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll

@@ -780,6 +780,7 @@ wwwroot\uploads\doctors\08e03b8835534d0bb6dd2e54db35004b.jpg
 wwwroot\uploads\doctors\0eae86210618434093d2a5e167afa30d.jpg
 wwwroot\uploads\doctors\22d26c069e2c457292a21d6a94a593d5.png
 wwwroot\uploads\doctors\27063f45d9be1203f0e0daa9fda14c8055613384.f30_3c9850c5-26ce-4a9b-b732-84bc671569bb.mp4
+wwwroot\uploads\doctors\2715b95ef2004c6b935ba3d71ee67926.jpg
 wwwroot\uploads\doctors\2f3b6f2728af45f594658cec1e0e3cc8.jpg
 wwwroot\uploads\doctors\4f246a31a17a4a3ea4835f52b49dccb4.jpg
 wwwroot\uploads\doctors\52b3c017ab894241a8481091533bf979.png

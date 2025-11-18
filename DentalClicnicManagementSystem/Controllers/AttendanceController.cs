@@ -315,45 +315,69 @@ namespace CMS.Controllers
         }
 
         // POST: Attendance/Upsert
+        // Enhanced POST Attendance/Upsert
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert(AttendanceRecord record)
         {
+            // Check if date is weekend
+            if (record.Date.DayOfWeek == DayOfWeek.Saturday || record.Date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return Json(new
+                {
+                    status = false,
+                    message = $"Cannot mark attendance for {record.Date:dddd, yyyy-MM-dd}. Saturdays and Sundays are off days."
+                });
+            }
+
             if (ModelState.IsValid)
             {
                 if (record.Id == 0)
                 {
+                    // Adding new record
                     var existingRecord = await _context.AttendanceRecords
-                                                       .FirstOrDefaultAsync(ar => ar.EmployeeId == record.EmployeeId && ar.Date.Date == record.Date.Date);
+                        .FirstOrDefaultAsync(ar => ar.EmployeeId == record.EmployeeId && ar.Date.Date == record.Date.Date);
+
                     if (existingRecord != null)
                     {
-                        return Json(new { status = false, message = "An attendance record for this employee on this date already exists. Please edit the existing record." });
+                        return Json(new
+                        {
+                            status = false,
+                            message = "An attendance record for this employee on this date already exists. Please edit the existing record."
+                        });
                     }
 
                     _context.AttendanceRecords.Add(record);
                 }
                 else
                 {
+                    // Updating existing record
                     var existingRecord = await _context.AttendanceRecords
-                                                       .FirstOrDefaultAsync(ar => ar.EmployeeId == record.EmployeeId && ar.Date.Date == record.Date.Date && ar.Id != record.Id);
+                        .FirstOrDefaultAsync(ar => ar.EmployeeId == record.EmployeeId &&
+                                                 ar.Date.Date == record.Date.Date &&
+                                                 ar.Id != record.Id);
+
                     if (existingRecord != null)
                     {
-                        return Json(new { status = false, message = "An attendance record for this employee on this date already exists. Please edit the existing record." });
+                        return Json(new
+                        {
+                            status = false,
+                            message = "An attendance record for this employee on this date already exists. Please edit the existing record."
+                        });
                     }
 
                     _context.AttendanceRecords.Update(record);
                 }
+
                 await _context.SaveChangesAsync();
                 TempData["success"] = "Attendance record saved successfully!";
-                return RedirectToAction(nameof(Index));
-
-                //return Json(new { status = true, message = "Attendance record saved successfully!" });
+                return Json(new { status = true, message = "Attendance record saved successfully!" });
             }
+
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            TempData["error"] = "Fail to record Validation error!";
-            return RedirectToAction(nameof(Index));
-            //return Json(new { status = false, message = "Validation failed: " + string.Join("; ", errors) });
+            return Json(new { status = false, message = "Validation failed: " + string.Join(", ", errors) });
         }
+
 
         // POST: Attendance/Delete/5
         [HttpPost]
@@ -495,5 +519,100 @@ namespace CMS.Controllers
         {
             return $"Attendance_Report_{reportType}_{start:yyyyMMdd}_to_{end:yyyyMMdd}.csv";
         }
+
+
+        // Add to AttendanceController.cs
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAbsentEmployees(DateTime? targetDate = null)
+        {
+            try
+            {
+                var date = targetDate ?? DateTime.Today;
+
+                // Skip weekends
+                if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    return Json(new
+                    {
+                        status = false,
+                        message = $"Cannot mark attendance for weekend ({date:yyyy-MM-dd}). Saturdays and Sundays are off days."
+                    });
+                }
+
+                // Get all active employees
+                var activeEmployees = await _context.Employees
+                    .Where(e => e.IsActive && !e.IsDeleted)
+                    .ToListAsync();
+
+                // Get employees who already have attendance
+                var employeesWithAttendance = await _context.AttendanceRecords
+                    .Where(a => a.Date.Date == date.Date)
+                    .Select(a => a.EmployeeId)
+                    .ToListAsync();
+
+                // Find employees without attendance
+                var employeesWithoutAttendance = activeEmployees
+                    .Where(e => !employeesWithAttendance.Contains(e.Id))
+                    .ToList();
+
+                if (!employeesWithoutAttendance.Any())
+                {
+                    return Json(new
+                    {
+                        status = true,
+                        message = $"All active employees already have attendance marked for {date:yyyy-MM-dd}."
+                    });
+                }
+
+                // Mark them as absent
+                foreach (var employee in employeesWithoutAttendance)
+                {
+                    var absentRecord = new AttendanceRecord
+                    {
+                        EmployeeId = employee.Id,
+                        Date = date,
+                        Status = AttendanceStatus.Absent,
+                        Note = "Auto-marked as absent (no attendance recorded)",
+                        CheckIn = null,
+                        CheckOut = null,
+                        OvertimeHours = 0
+                    };
+
+                    _context.AttendanceRecords.Add(absentRecord);
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Json(new
+                {
+                    status = true,
+                    message = $"Successfully marked {employeesWithoutAttendance.Count} employees as absent for {date:yyyy-MM-dd}.",
+                    count = employeesWithoutAttendance.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    status = false,
+                    message = $"Error: {ex.Message}"
+                });
+            }
+        }
+
+        // Helper method to check if date is weekend
+        [HttpGet]
+        public IActionResult IsWeekend(DateTime date)
+        {
+            var isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
+            return Json(new
+            {
+                date = date.ToString("yyyy-MM-dd"),
+                dayOfWeek = date.DayOfWeek.ToString(),
+                isWeekend = isWeekend
+            });
+        }
+
     }
 }

@@ -177,6 +177,12 @@ namespace CMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PatientModel(Patient patient)
         {
+            patient.PatientIdNumber = $"PT{DateTime.Now.Ticks.ToString().Substring(10)}";
+            patient.CreatedDate = DateTime.Now;
+            if (string.IsNullOrEmpty(patient.ProfileImageUrl))
+            {
+                patient.ProfileImageUrl = "/uploads/doctors/patient_default.jpg";
+            }
             if (!ModelState.IsValid)
                 return PartialView("_Upsert", patient);
 

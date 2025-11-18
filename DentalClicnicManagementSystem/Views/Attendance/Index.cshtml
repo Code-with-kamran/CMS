@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Attendance Records";
+    Layout = "_Layout";
 }
 
 <form id="__af" method="post" style="display:none">
@@ -14,16 +15,20 @@
                     <h4 class="fw-bold mb-0">Attendance Records</h4>
                 </div>
                 <div class="text-end">
+                    <button type="button" class="btn btn-warning btn-sm" onclick="markAbsentEmployees()">
+                        <i class="ti ti-clock-exclamation me-1"></i>Mark Absentees Today
+                    </button>
                     <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md"
                        data-bs-toggle="modal" data-bs-target="#attendanceModal"
                        data-url="@Url.Action("Upsert", "Attendance")">
-                        <i class="ti ti-plus me-1"></i>New Record
+                        <i class="ti ti-plus me-1"></i>Add Attendance
                     </a>
                 </div>
             </div>
 
             <!-- Card -->
             <div class="card">
+                 
                 <div class="card-body">
                     <!-- Status Filter Tabs -->
                     
@@ -76,15 +81,15 @@
                         <table id="attendanceList" class="table table-hover align-middle w-100">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Employee Code</th>
-                                    <th>Employee Name</th>
-                                    <th>Date</th>
-                                    <th>Check-in</th>
-                                    <th>Check-out</th>
-                                    <th>Total Hours</th>
-                                    <th>Status</th>
-                                    <th>Note</th>
-                                    <th>Actions</th>
+                                    <th class="text-nowrap">Employee Code</th>
+                                    <th class="text-nowrap">Employee Name</th>
+                                    <th class="text-nowrap">Date</th>
+                                    <th class="text-nowrap">Check-in</th>
+                                    <th class="text-nowrap">Check-out</th>
+                                    <th class="text-nowrap">Total Hours</th>
+                                    <th class="text-nowrap">Status</th>
+                                    <th class="text-nowrap">Note</th>
+                                    <th class="text-nowrap">Actions</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -99,6 +104,11 @@
                         <div class="col-12 col-sm-6 d-flex justify-content-sm-end">
                             <div id="dt-pager"></div>
                         </div>
+
+
+                       
+
+
                     </div>
                 </div>
             </div>
@@ -151,10 +161,87 @@
         } */
     </style>
 
-
 @section Scripts {
     <script>
-        $(function () {
+        // Mark absent employees with SweetAlert
+        function markAbsentEmployees() {
+            Swal.fire({
+                title: 'Mark Absent Employees?',
+                text: 'This will mark all employees without attendance as absent for today. Continue?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="ti ti-check me-1"></i> Yes, Mark Absent',
+                cancelButtonText: '<i class="ti ti-x me-1"></i> Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Marking absent employees',
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Make AJAX call
+                    $.ajax({
+                        url: '/Attendance/MarkAbsentEmployees',
+                        type: 'POST',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
+                            if (response.status) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    html: `<div class="text-center">
+                                                    <i class="ti ti-circle-check fs-40 text-success mb-2"></i>
+                                                    <p class="mb-0">${response.message}</p>
+                                                    ${response.count ? `<p class="fw-bold mt-2">${response.count} employees marked absent</p>` : ''}
+                                                  </div>`,
+                                    icon: 'success',
+                                    confirmButtonColor: '#198754',
+                                    confirmButtonText: 'OK',
+                                    timer: 4000,
+                                    timerProgressBar: true
+                                }).then(() => {
+                                    // Reload attendance table
+                                    if (typeof attTable !== 'undefined') {
+                                        attTable.ajax.reload(null, false);
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Notice',
+                                    text: response.message,
+                                    icon: 'info',
+                                    confirmButtonColor: '#0d6efd',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: 'Failed!',
+                                text: 'Failed to mark absent employees. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#dc3545',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        $(function() {
             function esc(str) {
                 if (str == null) return '';
                 return String(str)
@@ -183,16 +270,16 @@
                 ajax: {
                     url: '@Url.Action("GetAttendanceRecords", "Attendance")',
                     type: 'GET',
-                    data: function (d) {
-                         return {
-                        draw: d.draw,
-                        start: d.start,
-                        length: d.length,
-                        search: d.search.value,
-                        orderColumn: d.order[0]?.column,
-                        orderDirection: d.order[0]?.dir,
-                        status: currentStatus  // Your custom parameter
-                    };
+                    data: function(d) {
+                        return {
+                            draw: d.draw,
+                            start: d.start,
+                            length: d.length,
+                            search: d.search.value,
+                            orderColumn: d.order[0]?.column,
+                            orderDirection: d.order[0]?.dir,
+                            status: currentStatus
+                        };
                     }
                 },
                 dom: 'rtip',
@@ -220,7 +307,7 @@
                         data: null,
                         orderable: false,
                         className: 'text-center total-hours',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return calculateTotalHours(row.checkIn, row.checkOut);
                         }
                     },
@@ -232,44 +319,45 @@
                             if (d === 'Present') badge = 'bg-success';
                             else if (d === 'Late') badge = 'bg-warning';
                             else if (d === 'Absent') badge = 'bg-danger';
+                            else if (d === 'Leave') badge = 'bg-info';
                             return `<span class="badge ${badge}">${esc(d)}</span>`;
                         }
                     },
                     {
                         data: 'note',
                         orderable: false,
-                        render: d => `<span class="truncate truncate-220">${esc(d || '')}</span>`
+                        render: d => `<span class="text-nowrap truncate truncate-20">${esc(d || '')}</span>`
                     },
                     {
                         data: null,
                         orderable: false,
                         className: 'text-center',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return `
-                                <div class="dropdown d-inline-block">
-                                    <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
-                                       data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></a>
-                                    <ul class="dropdown-menu p-2 dropdown-menu-end">
-                                        <li>
-                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
-                                               data-bs-toggle="modal" data-bs-target="#attendanceModal"
-                                               data-url="@Url.Action("Upsert", "Attendance")/${row.id}">
-                                                <i class="ti ti-edit me-2"></i> Edit
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-delete-att"
-                                               data-url="/Attendance/Delete/${row.id}"
-                                               data-name="record for ${esc(row.employeeName)} on ${esc(row.date)}">
-                                                <i class="ti ti-trash me-2"></i> Delete
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>`;
+                                        <div class="dropdown d-inline-block">
+                                            <a href="javascript:void(0);" class="shadow-sm fs-14 d-inline-flex border rounded-2 p-1"
+                                               data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></a>
+                                            <ul class="dropdown-menu p-2 dropdown-menu-end">
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                                       data-bs-toggle="modal" data-bs-target="#attendanceModal"
+                                                       data-url="@Url.Action("Upsert", "Attendance")/${row.id}">
+                                                        <i class="ti ti-edit me-2"></i> Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center js-delete-att"
+                                                       data-url="/Attendance/Delete/${row.id}"
+                                                       data-name="record for ${esc(row.employeeName)} on ${esc(row.date)}">
+                                                        <i class="ti ti-trash me-2"></i> Delete
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>`;
                         }
                     }
                 ],
-                drawCallback: function () {
+                drawCallback: function() {
                     $('#attendanceList tbody tr.pre-load').remove();
                     const api = this.api();
                     const pagerEl = $(api.table().container()).find('.dataTables_paginate');
@@ -287,7 +375,7 @@
                     $('#dt-info').text(msg);
                 },
                 language: {
-                    emptyTable: function () {
+                    emptyTable: function() {
                         return currentStatus === 'all'
                             ? "No attendance records found"
                             : `No ${currentStatus.toLowerCase()} records found`;
@@ -295,28 +383,28 @@
                 }
             });
 
+            $('#attendanceList tbody').html(
+                `<tr class="pre-load"><td colspan="9" class="text-center py-5">
+                           <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+                         </td></tr>`
+            );
 
-                    $('#attendanceList tbody').html(
-          `<tr class="pre-load"><td colspan="9" class="text-center py-5">
-             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
-           </td></tr>`
-        );
             // Status filter handler
-            $('.js-status-filter').on('click', function () {
+            $('.js-status-filter').on('click', function() {
                 $('.js-status-filter').removeClass('active');
                 $(this).addClass('active');
                 currentStatus = $(this).data('status');
                 attTable.ajax.reload();
             });
 
-            /* Global search & page-length */
+            // Global search & page-length
             $('#globalSearch').on('input', () => attTable.search($('#globalSearch').val()).draw());
             $('#pageLength').on('change', () => attTable.page.len(parseInt($('#pageLength').val(), 10)).draw());
 
-            /* Delete handler */
-            $(document).on('click', '.js-delete-att', function () {
+            // Delete handler with SweetAlert
+            $(document).on('click', '.js-delete-att', function() {
                 const url = $(this).data('url'),
-                      name = $(this).data('name');
+                    name = $(this).data('name');
 
                 Swal.fire({
                     title: `Delete ${name}?`,
@@ -325,9 +413,24 @@
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#aaa',
-                    confirmButtonText: 'Yes, delete!'
+                    confirmButtonText: '<i class="ti ti-trash me-1"></i> Yes, delete!',
+                    cancelButtonText: '<i class="ti ti-x me-1"></i> Cancel',
+                    reverseButtons: true
                 }).then(res => {
                     if (res.isConfirmed) {
+                        // Show loading
+                        Swal.fire({
+                            title: 'Deleting...',
+                            text: 'Please wait',
+                            icon: 'info',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
                         const token = $('form#__af input[name="__RequestVerificationToken"]').val();
                         $.ajax({
                             url: url,
@@ -335,29 +438,62 @@
                             headers: { 'RequestVerificationToken': token },
                             success: r => {
                                 if (r.status) {
-                                    Swal.fire('Deleted', r.message, 'success');
-                                    attTable.ajax.reload(null, false);
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: r.message,
+                                        icon: 'success',
+                                        confirmButtonColor: '#198754',
+                                        timer: 2000,
+                                        timerProgressBar: true
+                                    }).then(() => {
+                                        attTable.ajax.reload(null, false);
+                                    });
                                 } else {
-                                    Swal.fire('Error', r.message || 'Delete failed', 'error');
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: r.message || 'Delete failed',
+                                        icon: 'error',
+                                        confirmButtonColor: '#dc3545'
+                                    });
                                 }
                             },
-                            error: () => Swal.fire('Error', 'Something went wrong', 'error')
+                            error: () => {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'Something went wrong',
+                                    icon: 'error',
+                                    confirmButtonColor: '#dc3545'
+                                });
+                            }
                         });
                     }
                 });
             });
 
-            /* Modal loader */
-            $('#attendanceModal').on('show.bs.modal', function (e) {
-                const btn = $(e.relatedTarget), url = btn.data('url'), modal = $(this);
-                modal.find('.modal-body').html('<div class="text-center py-5"><div class="spinner-border avatar-lg text-primary m-2" role="status"></div></div>');
+            // Modal loader
+            $('#attendanceModal').on('show.bs.modal', function(e) {
+                const btn = $(e.relatedTarget),
+                    url = btn.data('url'),
+                    modal = $(this);
+
+                modal.find('.modal-body').html(
+                    '<div class="text-center py-5"><div class="spinner-border avatar-lg text-primary m-2" role="status"></div></div>'
+                );
+
                 $.get(url)
                     .done(data => {
                         modal.find('.modal-body').html(data);
                         $.validator.unobtrusive.parse(modal.find('form'));
                     })
-                    .fail(() => modal.find('.modal-body').html('<div class="alert alert-danger">Error loading content.</div>'));
+                    .fail(() => {
+                        modal.find('.modal-body').html(
+                            '<div class="alert alert-danger">Error loading content. Please try again.</div>'
+                        );
+                    });
             });
+
+            // Make attTable globally accessible for markAbsentEmployees function
+            window.attTable = attTable;
         });
     </script>
 }

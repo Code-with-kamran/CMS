@@ -1,0 +1,728 @@
+﻿@model CMS.ViewModels.HRDashboardViewModel
+@inject CMS.Services.ICurrencyService CurrencyService
+@{
+    ViewData["Title"] = "HR Dashboard";
+    Layout = "_Layout";
+    var currencySymbol = await CurrencyService.GetCurrentCurrencySymbolAsync();
+}
+
+<div class="content pb-0">
+    <!-- Page Header -->
+    <div class="d-flex align-items-sm-center justify-content-between flex-wrap gap-2 mb-4">
+        <div>
+            <h4 class="fw-bold mb-0">Welcome, @Model.HRUser.FullName</h4>
+            <p class="text-muted mb-0">HR Dashboard - Manage Employees, Attendance & Payroll</p>
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <a href="/Employee/Upsert" class="btn btn-primary d-inline-flex align-items-center">
+                <i class="ti ti-user-plus me-1"></i>Add Employee
+            </a>
+            <a href="/Attendance/Upsert" class="btn btn-success d-inline-flex align-items-center">
+                <i class="ti ti-calendar-check me-1"></i>Mark Attendance
+            </a>
+            <a href="/Payroll/Upsert" class="btn btn-info d-inline-flex align-items-center">
+                <i class="ti ti-receipt me-1"></i>Process Payroll
+            </a>
+        </div>
+    </div>
+
+    <!-- Top Stats Cards Row -->
+    <div class="row">
+        <!-- Total Employees -->
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="mb-1">Total Employees</p>
+                            <div class="d-flex align-items-center gap-1">
+                                <h3 class="fw-bold mb-0" id="total-employees">0</h3>
+                                <span class="badge fw-medium bg-success flex-shrink-0" id="employee-change-top">+0%</span>
+                            </div>
+                        </div>
+                        <span class="avatar border border-success text-primary rounded-2 flex-shrink-0">
+                            <i class="ti ti-users fs-20"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="employee-change-bottom">
+                                +0% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">vs last week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Present Today -->
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="mb-1">Present Today</p>
+                            <div class="d-flex align-items-center gap-1">
+                                <h3 class="fw-bold mb-0" id="present-today">0</h3>
+                                <span class="badge fw-medium bg-info flex-shrink-0" id="attendance-change-top">+0%</span>
+                            </div>
+                        </div>
+                        <span class="avatar border border-info text-info rounded-2 flex-shrink-0">
+                            <i class="ti ti-circle-check fs-20"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="attendance-change-bottom">
+                                +0% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">vs last week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Absent Today -->
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="mb-1">Absent Today</p>
+                            <div class="d-flex align-items-center gap-1">
+                                <h3 class="fw-bold mb-0" id="absent-today">0</h3>
+                                <span class="badge fw-medium bg-danger flex-shrink-0" id="absent-change-top">+0%</span>
+                            </div>
+                        </div>
+                        <span class="avatar border border-danger text-danger rounded-2 flex-shrink-0">
+                            <i class="ti ti-user-x fs-20"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-danger mb-1" id="absent-change-bottom">
+                                +0% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">vs last week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Payroll -->
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="mb-1">Monthly Payroll</p>
+                            <div class="d-flex align-items-center gap-1">
+                                <h3 class="fw-bold mb-0" id="monthly-payroll">@currencySymbol 0</h3>
+                                <span class="badge fw-medium bg-warning flex-shrink-0" id="payroll-change-top">+0%</span>
+                            </div>
+                        </div>
+                        <span class="avatar border border-warning text-warning rounded-2 flex-shrink-0">
+                            <i class="ti ti-currency-dollar fs-20"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge fw-medium badge-soft-success mb-1" id="payroll-change-bottom">
+                                +0% <i class="ti ti-arrow-up ms-1"></i>
+                            </span>
+                            <p class="fs-13 mb-0 text-muted">vs last month</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row mt-4">
+        <!-- Today's Attendance -->
+        <div class="col-xl-4 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Today's Attendance</h5>
+                    <a href="/Attendance/Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body" id="todays-attendance-container">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading attendance...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Chart -->
+        <div class="col-xl-8 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Attendance Overview</h5>
+                    <div class="dropdown" id="attendance-chart">
+                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-sm px-2 border shadow-sm btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                            Monthly
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="#" data-filter="weekly">
+                                    Weekly
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="#" data-filter="monthly">
+                                    Monthly
+                                    <i class="ti ti-check fs-16 ms-auto"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="#" data-filter="yearly">
+                                    Yearly
+                                    <i class="ti ti-check fs-16 ms-auto d-none"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body pb-0">
+                    <div class="d-flex align-items-center justify-content-end gap-2 mb-1 flex-wrap mb-3">
+                        <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-point-filled me-1 fs-18 text-success"></i>Present</p>
+                        <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-point-filled me-1 fs-18 text-danger"></i>Absent</p>
+                        <p class="mb-0 d-inline-flex align-items-center"><i class="ti ti-point-filled me-1 fs-18 text-warning"></i>Late</p>
+                    </div>
+                    <div class="chart-set" id="attendance-chart-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards Row -->
+    <div class="row row-cols-1 row-cols-xl-6 row-cols-md-3 row-cols-sm-2 mt-4">
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-primary rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-building"></i></span>
+                    <p class="mb-1 text-truncate">Departments</p>
+                    <h3 class="fw-bold mb-2" id="total-departments">0</h3>
+                    <p class="mb-0 text-success text-truncate">Active</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-secondary rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-user-plus"></i></span>
+                    <p class="mb-1 text-truncate">Weekly New Hires</p>
+                    <h3 class="fw-bold mb-2" id="weekly-new-hires">0</h3>
+                    <p class="mb-0 text-success text-truncate">This Week</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-success rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-star"></i></span>
+                    <p class="mb-1 text-truncate">Avg Performance</p>
+                    <h3 class="fw-bold mb-2" id="avg-performance">0.0</h3>
+                    <p class="mb-0 text-success text-truncate">Out of 5</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-danger rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-clock"></i></span>
+                    <p class="mb-1 text-truncate">Late Today</p>
+                    <h3 class="fw-bold mb-2" id="late-today">0</h3>
+                    <p class="mb-0 text-danger text-truncate">Employees</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-info rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-beach"></i></span>
+                    <p class="mb-1 text-truncate">On Leave</p>
+                    <h3 class="fw-bold mb-2" id="on-leave-today">0</h3>
+                    <p class="mb-0 text-info text-truncate">Today</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span class="avatar bg-warning rounded-2 fs-20 d-inline-flex mb-2"><i class="ti ti-percentage"></i></span>
+                    <p class="mb-1 text-truncate">Attendance Rate</p>
+                    <h3 class="fw-bold mb-2" id="attendance-rate">0%</h3>
+                    <p class="mb-0 text-success text-truncate">This Week</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Data Row -->
+    <div class="row mt-4">
+        <!-- Recent Employees -->
+        <div class="col-xl-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Recent Employees</h5>
+                    <a href="/Employee/Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table border">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Designation</th>
+                                    <th>Hire Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-employees-tbody">
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading employees...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Performance Reviews -->
+        <div class="col-xl-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Recent Performance Reviews</h5>
+                    <a href="/PerformanceReview/Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table border">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Reviewer</th>
+                                    <th>Rating</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-reviews-tbody">
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading reviews...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts & Quick Stats -->
+    <div class="row mt-4">
+        <!-- Low Leave Balance Alerts -->
+        <div class="col-xl-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0 text-warning"><i class="ti ti-alert-triangle me-2"></i>Low Leave Balance</h5>
+                    <a href="/Employee/Index" class="btn btn-sm btn-outline-warning">View All</a>
+                </div>
+                <div class="card-body">
+                    <div id="low-leave-balance-container">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Checking leave balances...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="col-xl-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0">Quick Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="border-end">
+                                <span class="avatar bg-success rounded-2 fs-18 d-inline-flex mb-2"><i class="ti ti-circle-check"></i></span>
+                                <p class="mb-1 fs-12">Present</p>
+                                <h4 class="fw-bold mb-0" id="quick-present">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border-end">
+                                <span class="avatar bg-danger rounded-2 fs-18 d-inline-flex mb-2"><i class="ti ti-user-x"></i></span>
+                                <p class="mb-1 fs-12">Absent</p>
+                                <h4 class="fw-bold mb-0" id="quick-absent">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div>
+                                <span class="avatar bg-warning rounded-2 fs-18 d-inline-flex mb-2"><i class="ti ti-clock"></i></span>
+                                <p class="mb-1 fs-12">Late</p>
+                                <h4 class="fw-bold mb-0" id="quick-late">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Global functions
+        window.updateBadge = function (element, value, isTopBadge) {
+            const formattedValue = (value >= 0 ? '+' : '') + Math.abs(value) + '%';
+            element.text(formattedValue);
+
+            if (isTopBadge) {
+                element.removeClass('bg-success bg-danger bg-warning bg-info')
+                    .addClass(value >= 0 ? 'bg-success' : 'bg-danger');
+            } else {
+                element.removeClass('badge-soft-success badge-soft-danger')
+                    .addClass(value >= 0 ? 'badge-soft-success' : 'badge-soft-danger');
+                const arrow = value >= 0 ? '<i class="ti ti-arrow-up ms-1"></i>' : '<i class="ti ti-arrow-down ms-1"></i>';
+                element.html(formattedValue + ' ' + arrow);
+            }
+        };
+
+        window.getStatusClass = function (status) {
+            switch ((status || '').toLowerCase()) {
+                case 'present': return 'bg-success';
+                case 'absent': return 'bg-danger';
+                case 'late': return 'bg-warning';
+                case 'leave': return 'bg-info';
+                case 'halfday': return 'bg-secondary';
+                default: return 'bg-secondary';
+            }
+        };
+
+        // Load dashboard data
+        window.loadDashboardData = function () {
+            $.ajax({
+                url: '/HRDashboard/GetData',
+                type: 'GET',
+                success: function(data){
+                    // Update top cards
+                    $('#total-employees').text(data.totalEmployees || 0);
+                    $('#present-today').text(data.presentToday || 0);
+                    $('#absent-today').text(data.absentToday || 0);
+                    $('#monthly-payroll').text('@currencySymbol' + (data.totalPayrollThisMonth || 0).toLocaleString());
+
+                    // Update percentage changes
+                    updateBadge($('#employee-change-top'), data.employeeGrowthChange || 0, true);
+                    updateBadge($('#attendance-change-top'), data.attendanceChange || 0, true);
+                    updateBadge($('#payroll-change-top'), data.payrollChange || 0, true);
+
+                    updateBadge($('#employee-change-bottom'), data.employeeGrowthChange || 0, false);
+                    updateBadge($('#attendance-change-bottom'), data.attendanceChange || 0, false);
+                    updateBadge($('#payroll-change-bottom'), data.payrollChange || 0, false);
+
+                    // Update small stats
+                    $('#late-today').text(data.lateToday || 0);
+                    $('#on-leave-today').text(data.onLeaveToday || 0);
+                    $('#avg-performance').text((data.avgPerformanceRating || 0).toFixed(1));
+
+                    // Load today's attendance
+                    loadTodaysAttendance(data.todayAttendanceDetails);
+
+                    // Load low leave balance employees
+                    loadLowLeaveBalance(data.lowLeaveBalanceEmployees);
+
+                    // Load recent employees
+                    loadRecentEmployees(data.recentEmployees);
+
+                    // Load recent reviews
+                    loadRecentReviews(data.recentReviews);
+                },
+                error: function(xhr, status, error){
+                    console.error('Failed to load dashboard data:', error);
+                }
+            });
+        };
+
+        // Load today's attendance
+        function loadTodaysAttendance(attendance) {
+            const container = $('#todays-attendance-container');
+
+            if (attendance && attendance.length > 0) {
+                let html = '';
+                attendance.forEach(att => {
+                    const statusClass = getStatusClass(att.status);
+                    html += `
+                        <div class="d-flex align-items-center justify-content-between mb-3 p-2 border rounded bg-light">
+                            <div>
+                                <h6 class="fs-14 mb-0 fw-semibold">${att.employeeName}</h6>
+                                <p class="mb-0 fs-12 text-muted">${att.department}</p>
+                            </div>
+                            <div class="text-end">
+                                <p class="mb-0 fs-12 fw-semibold">${att.checkIn} - ${att.checkOut}</p>
+                                <span class="badge ${statusClass} fw-medium">${att.status}</span>
+                            </div>
+                        </div>`;
+                });
+                container.html(html);
+            } else {
+                container.html(`
+                    <div class="text-center py-4">
+                        <i class="ti ti-calendar-off fs-40 text-muted"></i>
+                        <h6 class="fw-semibold text-muted mt-2">No Attendance Records</h6>
+                        <a href="/Attendance/Create" class="btn btn-primary btn-sm mt-2">Mark Attendance</a>
+                    </div>
+                `);
+            }
+        }
+
+        // Load low leave balance
+        function loadLowLeaveBalance(employees) {
+            const container = $('#low-leave-balance-container');
+
+            if (employees && employees.length > 0) {
+                let html = '';
+                employees.forEach(emp => {
+                    const alertClass = emp.leaveBalance < 3 ? 'border-danger' : 'border-warning';
+                    html += `
+                        <div class="d-flex align-items-center justify-content-between mb-2 p-2 border ${alertClass} rounded">
+                            <div>
+                                <h6 class="fs-14 mb-0 fw-semibold">${emp.name}</h6>
+                                <p class="mb-0 fs-12 text-muted">${emp.department} - ${emp.designation}</p>
+                            </div>
+                            <div class="text-end">
+                                <p class="mb-0 fs-12 fw-semibold text-${emp.leaveBalance < 3 ? 'danger' : 'warning'}">Balance: ${emp.leaveBalance} days</p>
+                                <small class="text-muted">Low balance</small>
+                            </div>
+                        </div>`;
+                });
+                container.html(html);
+            } else {
+                container.html(`
+                    <div class="text-center py-2">
+                        <i class="ti ti-circle-check fs-40 text-success"></i>
+                        <h6 class="fw-semibold text-success mt-2">All Employees Have Adequate Leave</h6>
+                    </div>
+                `);
+            }
+        }
+
+        // Load recent employees
+        function loadRecentEmployees(employees) {
+            const tbody = $('#recent-employees-tbody');
+
+            if (employees && employees.length > 0) {
+                let html = '';
+                employees.forEach(emp => {
+                    html += `
+                        <tr>
+                            <td>
+                                <h6 class="fs-14 mb-0">${emp.name}</h6>
+                                <p class="mb-0 fs-12 text-muted">${emp.email || 'N/A'}</p>
+                            </td>
+                            <td>${emp.department}</td>
+                            <td>${emp.designation}</td>
+                            <td>${emp.hireDate}</td>
+                        </tr>`;
+                });
+                tbody.html(html);
+            } else {
+                tbody.html('<tr><td colspan="4" class="text-center py-4 text-muted">No recent employees</td></tr>');
+            }
+        }
+
+        // Load recent reviews
+        function loadRecentReviews(reviews) {
+            const tbody = $('#recent-reviews-tbody');
+
+            if (reviews && reviews.length > 0) {
+                let html = '';
+                reviews.forEach(review => {
+                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                    html += `
+                        <tr>
+                            <td>
+                                <h6 class="fs-14 mb-0">${review.employeeName}</h6>
+                                <p class="mb-0 fs-12 text-muted">${review.department}</p>
+                            </td>
+                            <td>${review.reviewer}</td>
+                            <td><span class="text-warning">${stars}</span></td>
+                            <td>${review.reviewDate}</td>
+                        </tr>`;
+                });
+                tbody.html(html);
+            } else {
+                tbody.html('<tr><td colspan="4" class="text-center py-4 text-muted">No recent reviews</td></tr>');
+            }
+        }
+
+        // Load statistics
+        window.loadStatistics = function () {
+            $.ajax({
+                url: '/HRDashboard/GetStatistics',
+                type: 'GET',
+                success: function (data) {
+                    $('#total-departments').text(data.totalDepartments || 0);
+                    $('#weekly-new-hires').text(data.weeklyNewHires || 0);
+                    $('#attendance-rate').text((data.avgAttendanceRate || 0) + '%');
+                },
+                error: function () {
+                    console.error('Failed to load statistics');
+                }
+            });
+        };
+
+        // Load quick stats
+        window.loadQuickStats = function () {
+            $.ajax({
+                url: '/HRDashboard/GetQuickStats',
+                type: 'GET',
+                success: function (data) {
+                    $('#quick-present').text(data.todaysPresent || 0);
+                    $('#quick-absent').text(data.todaysAbsent || 0);
+                    $('#quick-late').text(data.todaysLate || 0);
+                },
+                error: function () {
+                    console.error('Failed to load quick stats');
+                }
+            });
+        };
+
+        // Chart functions
+        window.initializeCharts = function () {
+            if (typeof ApexCharts === 'undefined') {
+                console.error('ApexCharts missing');
+                return;
+            }
+
+            // Attendance chart
+            window.attendanceMainChart = new ApexCharts(document.querySelector("#attendance-chart-container"), {
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: { show: false },
+                    zoom: { enabled: false },
+                    animations: { enabled: true }
+                },
+                series: [
+                    { name: 'Present', data: [] },
+                    { name: 'Absent', data: [] },
+                    { name: 'Late', data: [] }
+                ],
+                colors: ['#198754', '#dc3545', '#ffc107'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                },
+                stroke: { curve: 'smooth', width: 2 },
+                xaxis: {
+                    categories: [],
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: { style: { colors: '#6c757d' } }
+                },
+                yaxis: {
+                    show: true,
+                    labels: { style: { colors: '#6c757d' } }
+                },
+                grid: {
+                    show: true,
+                    borderColor: '#f1f1f1',
+                    strokeDashArray: 3
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                    horizontalAlign: 'right'
+                },
+                dataLabels: { enabled: false }
+            });
+
+            window.attendanceMainChart.render();
+        };
+
+        function loadAttendanceChart(filter = 'monthly') {
+            $.get('/HRDashboard/GetAttendanceChart', { filter }, function(data) {
+                if (window.attendanceMainChart && data) {
+                    window.attendanceMainChart.updateOptions({
+                        series: [
+                            { name: 'Present', data: data.presentCounts || [] },
+                            { name: 'Absent', data: data.absentCounts || [] },
+                            { name: 'Late', data: data.lateCounts || [] }
+                        ],
+                        xaxis: { categories: data.categories || [] }
+                    });
+                }
+            }).fail(() => console.error('Failed to load attendance chart data'));
+        }
+
+        // Dropdown filter handler
+        $(document).on('click', '.dropdown-item[data-filter]', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const $item = $(this);
+            const $dropdown = $item.closest('.dropdown');
+            const $toggle = $dropdown.find('.dropdown-toggle');
+            const $menu = $item.closest('.dropdown-menu');
+
+            // Update button text
+            const newText = $item.text().trim();
+            $toggle.html(newText + ' ');
+
+            // Update checkmarks
+            $menu.find('.ti-check').addClass('d-none');
+            $item.find('.ti-check').removeClass('d-none');
+
+            // Get filter and load chart
+            const filter = $item.data('filter') || newText.toLowerCase();
+            if ($dropdown.attr('id') === 'attendance-chart') {
+                loadAttendanceChart(filter);
+            }
+
+            // Close dropdown
+            $dropdown.removeClass('show');
+            $menu.removeClass('show');
+        });
+
+        // Initialize everything
+        $(function () {
+            initializeCharts();
+            loadDashboardData();
+            loadStatistics();
+            loadQuickStats();
+            loadAttendanceChart('monthly');
+        });
+    </script>
+}
