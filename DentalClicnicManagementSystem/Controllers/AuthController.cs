@@ -255,6 +255,8 @@ namespace CMS.Controllers
                     return RedirectToAction("Index", "DoctorDashboard");
                 case "Receptionist":
                     return RedirectToAction("Index", "ReceptionistDashboard");
+                case "HR":
+                    return RedirectToAction("Index", "HRDashboard");
                 default:
                     return RedirectToAction("Index", "Home");
             }
