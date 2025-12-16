@@ -28,8 +28,7 @@ namespace CMS.Controllers
             {
                 Settings = await _settingsService.GetSettingsAsync(),
                 Currencies = await _context.Currencies.Where(c => c.IsActive).ToListAsync(),
-                PaymentMethods = await _context.PaymentMethods.Where(p => p.IsActive).ToListAsync(),
-
+                PaymentMethods = await _context.PaymentMethods.Where(p => p.IsActive).ToListAsync()
             };
 
             return View(viewModel);
@@ -54,10 +53,7 @@ namespace CMS.Controllers
                 {
                     defaultCurrency = model.DefaultCurrency,
                     defaultPaymentMethod = model.DefaultPaymentMethod,
-                    workingHours = model.WorkingHours,
-                    isSaturdayOpen = model.IsSaturdayOpen,
-                    isSundayOpen = model.IsSundayOpen
-                     
+                    workingHours = model.WorkingHours
                 });
 
                 return Json(new { status = true, message = "Settings updated successfully!" });
