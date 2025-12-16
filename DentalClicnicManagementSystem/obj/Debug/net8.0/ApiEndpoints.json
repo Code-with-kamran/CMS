@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "ContainingType": "CMS.Controllers.Api.AppointmentApiController",
+    "Method": "SubmitAppointment",
+    "RelativePath": "api/AppointmentApi/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CMS.ViewModels.AppointmentApiRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "CMS.ViewModels.AppointmentApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "CMS.Controllers.Api.PublicAppointmentController",
+    "Method": "BookAppointment",
+    "RelativePath": "api/PublicAppointment/book",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "CMS.ViewModels.PublicAppointmentViewModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
