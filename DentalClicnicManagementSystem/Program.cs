@@ -47,7 +47,7 @@ builder.Services.AddControllersWithViews(o =>
 builder.Services.AddRazorPages();
 
 builder.Services.AddSession();
-
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 

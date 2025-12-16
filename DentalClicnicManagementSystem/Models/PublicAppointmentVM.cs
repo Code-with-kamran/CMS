@@ -132,7 +132,14 @@ namespace CMS.ViewModels
         [Display(Name = "Date of Birth")]
         public DateTime? DateOfBirth { get; set; }
 
+        public string SelectedDomain { get; set; }
+        public int DepartmentId { get; set; }
+        public int DoctorId { get; set; }
+        public int PatientId { get; set; }
+        public string Fee { get; set; }
+        public string Mode { get; set; }
         public string? Address { get; set; }
+
 
         [Required]
         [Display(Name = "Preferred Date")]
