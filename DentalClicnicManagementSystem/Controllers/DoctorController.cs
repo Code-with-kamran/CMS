@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using static CMS.Models.ViewModels;
 
 namespace CMS.Controllers
@@ -57,43 +59,7 @@ namespace CMS.Controllers
 
             return Json(doctor);
         }
-        //[HttpGet]
-        //public async Task<JsonResult> GetDoctorData(int id)
-        //{
-        //    var doctor = await _context.Doctors
-        //                               .Where(d => d.Id == id)
-        //                               .Select(d => new
-        //                               {
-        //                                   d.Id,
-        //                                   d.FullName,
-        //                                   d.Specialty,
-        //                                   d.Degrees,
-        //                                   d.About,
-        //                                   d.Email,
-        //                                   d.Phone,
-        //                                   d.Address,
-        //                                   d.ProfileImageUrl,
-        //                                   d.ConsultationCharge,
-        //                                   d.ConsultationDurationInMinutes,
-        //                                   d.MedicalLicenseNumber,
-        //                                   d.BloodGroup,
-        //                                   d.YearOfExperience,
-        //                                   d.AvailabilityStatus,
-        //                                   //// Select related data if it's needed for the details page
-        //                                   //EducationInformation = d.EducationId.Select(e => new { e.Institution, e.Degree, e.Duration }),
-        //                                   //AwardsAndRecognition = d.AwardsAndRecognition.Select(a => new { a.Title, a.Description }),
-        //                                   //Certifications = d.Certifications.Select(c => new { c.Title, c.Description })
-        //                               })
-        //                               .FirstOrDefaultAsync(); // Use FirstOrDefaultAsync for async calls
-
-        //    if (doctor == null)
-        //    {
-        //        Response.StatusCode = 404;
-        //        return Json(new { success = false, message = "Doctor not found." });
-        //    }
-
-        //    return Json(new { success = true, data = doctor });
-        //}
+       
 
         // GET: /Doctor/GetDoctorsData
 
@@ -454,7 +420,9 @@ namespace CMS.Controllers
                     {
                         Username = vm.Doctor.Email,
                         Email = vm.Doctor.Email,
-                        PasswordHash = vm.Doctor.Password, // hash in production
+                        //PasswordHash = vm.Doctor.Password, // hash in production
+                        PasswordHash = HashPassword(vm.Doctor.Password),
+
                         FullName = vm.Doctor.FullName,
                         Role = "Doctor",
                         IsActive = true,
@@ -508,7 +476,8 @@ namespace CMS.Controllers
                     dbDoctor.UpdatedOn = DateTime.Now;
 
                     if (!string.IsNullOrEmpty(vm.Doctor.Password))
-                        dbDoctor.Password = vm.Doctor.Password; // hash in prod
+                        dbDoctor.Password = HashPassword(vm.Doctor.Password);
+
 
                     if (ProfileImage != null)
                         dbDoctor.ProfileImageUrl = vm.Doctor.ProfileImageUrl;
@@ -641,6 +610,20 @@ namespace CMS.Controllers
             await _context.SaveChangesAsync();
         }
 
+
+        private string HashPassword(string password)
+        {
+            using var sha256 = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
+        }
+
+        private bool VerifyPassword(string inputPassword, string storedHash)
+        {
+            var inputHash = HashPassword(inputPassword);
+            return inputHash == storedHash;
+        }
     }
 }
 
