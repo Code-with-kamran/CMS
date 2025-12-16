@@ -81,7 +81,8 @@ namespace CMS.Controllers
 
         // 2) Server-side validator (doctor exists, works that date/time, and no overlap)
         private readonly TimeZoneInfo _clinicTimeZone =
-     TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
+    TimeZoneInfo.FindSystemTimeZoneById("Haiti Standard Time");
+
         private async Task<(bool ok, string? message)> ValidateAppointmentAsync(Appointment appt)
         {
             if (appt == null) return (false, "Invalid appointment.");
@@ -143,21 +144,27 @@ namespace CMS.Controllers
                     Text = d.FullName
                 }).ToListAsync();
 
+            // Updated French appointment types
             vm.AppointmentTypes = new List<SelectListItem>
-            {
-                new() { Value = "Checkup", Text = "Checkup" },
-                new() { Value = "Consultation", Text = "Consultation" },
-                new() { Value = "FollowUp", Text = "Follow Up" }
-            };
+    {
+        new() { Value = "Checkup", Text = "Check-up" },
+        new() { Value = "Prophylaxie", Text = "Prophylaxie" },
+        new() { Value = "SoinsSpecialises", Text = "Soins spécialisés" },
+        new() { Value = "Extraction", Text = "Extraction" },
+        new() { Value = "Autres", Text = "Autres (à préciser)" }
+    };
 
             vm.Statuses = new List<SelectListItem>
-            {
-                new() { Value = "Scheduled", Text = "Scheduled" },
-                new() { Value = "Completed", Text = "Completed" },
-                new() { Value = "Cancelled", Text = "Cancelled" },
-                new() { Value = "Rescheduled", Text = "Rescheduled" }
-            };
+    {
+        new() { Value = "Scheduled", Text = "Scheduled" },
+        new() { Value = "Completed", Text = "Completed" },
+        new() { Value = "Cancelled", Text = "Cancelled" },
+        new() { Value = "Rescheduled", Text = "Rescheduled" }
+    };
         }
+
+
+
 
         // ===== Patient modal (partial) =====
         [HttpGet]
@@ -203,8 +210,240 @@ namespace CMS.Controllers
         }
 
         // ===== Helper =====
-        private async Task SendAppointmentCreatedEmailAsync(int appointmentId)
+
+        private string GetAppointmentEmailTemplate(string patientName, DateTimeOffset appointmentDate,
+    string appointmentType, string appointmentNo, string doctorName)
         {
+            var haitiTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(appointmentDate, "Haiti Standard Time");
+
+            return $@"
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <style>
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+        }}
+        .email-container {{
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }}
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }}
+        .header p {{
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.95;
+        }}
+        .content {{
+            padding: 40px 30px;
+        }}
+        .greeting {{
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }}
+        .message {{
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }}
+        .appointment-details {{
+            background-color: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }}
+        .detail-row {{
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }}
+        .detail-row:last-child {{
+            margin-bottom: 0;
+        }}
+        .detail-icon {{
+            font-size: 20px;
+            margin-right: 12px;
+            min-width: 25px;
+        }}
+        .detail-label {{
+            font-weight: 600;
+            color: #333;
+            margin-right: 8px;
+        }}
+        .detail-value {{
+            color: #555;
+        }}
+        .clinics-section {{
+            background-color: #e8f4f8;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }}
+        .clinics-title {{
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }}
+        .clinic {{
+            margin-bottom: 18px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }}
+        .clinic:last-child {{
+            margin-bottom: 0;
+        }}
+        .clinic-name {{
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }}
+        .clinic-address {{
+            color: #666;
+            font-size: 14px;
+        }}
+        .footer {{
+            background-color: #f8f9fa;
+            padding: 25px 30px;
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            border-top: 1px solid #e9ecef;
+        }}
+        .footer-note {{
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }}
+        .footer-brand {{
+            font-weight: 600;
+            color: #667eea;
+            font-size: 16px;
+            margin-top: 15px;
+        }}
+        @media only screen and (max-width: 600px) {{
+            .email-container {{
+                margin: 20px;
+            }}
+            .content, .header {{
+                padding: 25px 20px;
+            }}
+            .detail-row {{
+                flex-direction: column;
+                align-items: flex-start;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class='email-container'>
+        <div class='header'>
+            <h1>✨ Confirmation de Rendez-vous</h1>
+            <p>Cabinet Dentaire Corvil</p>
+        </div>
+        
+        <div class='content'>
+            <div class='greeting'>Bonjour {System.Net.WebUtility.HtmlEncode(patientName)},</div>
+            
+            <div class='message'>
+                Nous sommes heureux de vous accueillir parmi nos patients.<br>
+                Votre rendez-vous au <strong>Cabinet Dentaire Corvil</strong> a été enregistré avec succès.
+            </div>
+            
+            <div class='appointment-details'>
+                <div class='detail-row'>
+                    <span class='detail-icon'>📅</span>
+                    <span class='detail-label'>Date:</span>
+                    <span class='detail-value'>{haitiTime:dddd, d MMMM yyyy}</span>
+                </div>
+                <div class='detail-row'>
+                    <span class='detail-icon'>🕘</span>
+                    <span class='detail-label'>Heure:</span>
+                    <span class='detail-value'>{haitiTime:HH:mm}</span>
+                </div>
+                <div class='detail-row'>
+                    <span class='detail-icon'>👨‍⚕️</span>
+                    <span class='detail-label'>Médecin:</span>
+                    <span class='detail-value'>{System.Net.WebUtility.HtmlEncode(doctorName)}</span>
+                </div>
+                <div class='detail-row'>
+                    <span class='detail-icon'>📋</span>
+                    <span class='detail-label'>Type:</span>
+                    <span class='detail-value'>{System.Net.WebUtility.HtmlEncode(appointmentType)}</span>
+                </div>
+                <div class='detail-row'>
+                    <span class='detail-icon'>🔢</span>
+                    <span class='detail-label'>N° de rendez-vous:</span>
+                    <span class='detail-value'>{System.Net.WebUtility.HtmlEncode(appointmentNo)}</span>
+                </div>
+            </div>
+            
+            <div class='message'>
+                En cas de changement, vous recevrez un rappel avant votre rendez-vous.
+            </div>
+            
+            <div class='clinics-section'>
+                <div class='clinics-title'>🏥 Nos Adresses</div>
+                <div class='clinic'>
+                    <div class='clinic-name'>Port-au-Prince</div>
+                    <div class='clinic-address'>2, Rue Richard Jules, Delmas 75</div>
+                </div>
+                <div class='clinic'>
+                    <div class='clinic-name'>Cap-Haïtien</div>
+                    <div class='clinic-address'>115, Rue 21 E-F</div>
+                </div>
+                <div class='clinic'>
+                    <div class='clinic-name'>Gonaïves</div>
+                    <div class='clinic-address'>2, Ruelle Polo, Avenue des Dattes</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class='footer'>
+            <div class='footer-note'>
+                Cet email a été envoyé automatiquement. Veuillez ne pas y répondre.<br>
+                Pour toute question, veuillez contacter directement notre clinique.
+            </div>
+            <div class='footer-brand'>Cabinet Dentaire Corvil</div>
+        </div>
+    </div>
+</body>
+</html>";
+        }
+
+
+
+        private async Task SendAppointmentCreatedEmailAsync(int appointmentId, bool sendEmail)
+        {
+            if (!sendEmail) return; // Skip if user unchecked the toggle
+
             var appt = await _context.Appointments
                 .AsNoTracking()
                 .Include(a => a.Patient)
@@ -215,23 +454,43 @@ namespace CMS.Controllers
 
             var patientName = $"{appt.Patient?.FirstName} {appt.Patient?.LastName}".Trim();
             var to = appt.Patient?.Email;
-            if (string.IsNullOrWhiteSpace(to)) return; // nothing to send
 
-            var subject = $"Appointment Confirmed (#{appt.AppointmentNo})";
+            if (string.IsNullOrWhiteSpace(to))
+            {
+                _logger?.LogWarning("Cannot send email - patient email is missing for appointment {AppointmentId}", appointmentId);
+                return;
+            }
 
-            var body = $@"
-        <p>Dear {System.Net.WebUtility.HtmlEncode(patientName)},</p>
-        <p>Your appointment has been scheduled.</p>
-        <ul>
-          <li><b>Doctor:</b> {System.Net.WebUtility.HtmlEncode(appt.Doctor?.FullName)} ({System.Net.WebUtility.HtmlEncode(appt.Doctor?.Specialty)})</li>
-          <li><b>Date:</b> {appt.AppointmentDate:dddd, MMM d, yyyy}</li>
-          <li><b>Time:</b> {appt.AppointmentDate:hh:mm tt}</li>
-          <li><b>Fee:</b> {appt.Fee:C}</li>
-          <li><b>Appointment No:</b> {System.Net.WebUtility.HtmlEncode(appt.AppointmentNo)}</li>
-        </ul>
-        <p>Thank you.</p>";
+            // Get appointment type display text
+            string appointmentTypeText = appt.AppointmentType switch
+            {
+                "Checkup" => "Check-up",
+                "Prophylaxie" => "Prophylaxie",
+                "SoinsSpecialises" => "Soins spécialisés",
+                "Extraction" => "Extraction",
+                "Autres" => "Autres",
+                _ => appt.AppointmentType
+            };
 
-            await _email.SendAsync(to, subject, body);
+            var subject = $"Confirmation de Rendez-vous - Cabinet Dentaire Corvil (#{appt.AppointmentNo})";
+            var body = GetAppointmentEmailTemplate(
+                patientName,
+                appt.AppointmentDate,
+                appointmentTypeText,
+                appt.AppointmentNo,
+                appt.Doctor?.FullName ?? "N/A"
+            );
+
+            try
+            {
+                await _email.SendAsync(to, subject, body);
+                _logger?.LogInformation("Appointment confirmation email sent successfully to {Email} for appointment {AppointmentId}", to, appointmentId);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed to send appointment confirmation email to {Email}", to);
+                // Don't throw - email failure shouldn't break the appointment creation
+            }
         }
 
         // ===== Upsert =====
@@ -342,7 +601,7 @@ namespace CMS.Controllers
 
                         try
                         {
-                            await SendAppointmentCreatedEmailAsync(vm.Appointment.AppointmentId);
+                            await SendAppointmentCreatedEmailAsync(vm.Appointment.AppointmentId, vm.SendEmailNotification);
                         }
                         catch (Exception ex)
                         {
@@ -558,7 +817,7 @@ namespace CMS.Controllers
             if (doctor == null)
                 return BadRequest("Doctor not found.");
 
-            var clinicZone = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
+            var clinicZone = TimeZoneInfo.FindSystemTimeZoneById("Haiti Standard Time");
 
             // 1. Get the *local* day (DateTimeOffset) that corresponds to the incoming start
             var localDate = TimeZoneInfo.ConvertTime(start, clinicZone).Date; // DateTimeOffset

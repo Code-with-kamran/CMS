@@ -10,6 +10,8 @@ namespace CMS.ViewModels
         public Appointment Appointment { get; set; } = new Appointment();
         public string? AppointmentNo { get; set; }
         public bool ChangeSlot { get; set; }
+        public bool SendEmailNotification { get; set; } = true;
+        public string AutresSpecification { get; set; } // New property for "Autres" specification
         public List<SelectListItem> Patients { get; set; } = new();
         public List<SelectListItem> Doctors { get; set; } = new();
 

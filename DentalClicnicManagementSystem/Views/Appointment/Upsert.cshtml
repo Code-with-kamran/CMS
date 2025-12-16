@@ -74,29 +74,51 @@
                             </div>
 
                             <!-- Type de Rendez-vous -->
+                            <!-- Type de Rendez-vous -->
                             <div class="col-md-6">
-                                <label asp-for="Appointment.AppointmentType" class="form-label">Type</label>
-                                <select asp-for="Appointment.AppointmentType" asp-items="Model.AppointmentTypes" class="form-select select2" required>
+                                <label asp-for="Appointment.AppointmentType" class="form-label">Type<span class="text-danger ms-1">*</span></label>
+                                <select asp-for="Appointment.AppointmentType"
+                                        asp-items="Model.AppointmentTypes"
+                                        class="form-select select2"
+                                        id="appointmentTypeSelect"
+                                        required>
                                     <option value="">--Sélectionner le Type--</option>
                                 </select>
                                 <span asp-validation-for="Appointment.AppointmentType" class="text-danger"></span>
                             </div>
 
+                            <!-- Autres - Champ de précision (caché par défaut) -->
+                            <div class="col-md-6" id="autresContainer" style="display: none;">
+                                <label for="autresSpecification" class="form-label">Précisez le type<span class="text-danger ms-1">*</span></label>
+                                <input type="text"
+                                       id="autresSpecification"
+                                       name="AutresSpecification"
+                                       class="form-control"
+                                       placeholder="Ex: Détartrage, Blanchiment, etc."
+                                       maxlength="100" />
+                                <div class="form-text small">Veuillez préciser le type de rendez-vous</div>
+                                <span class="text-danger" id="autresError"></span>
+                            </div>
+
+
                             <!-- Statut -->
                             @if (Model?.Appointment?.AppointmentId > 0)
-                            {
-                                <div class="col-md-6">
-                                    <label asp-for="Appointment.Status" class="form-label mb-1 fw-medium">Statut</label>
-                                    <select asp-for="Appointment.Status"
-                                            asp-items="Model.Statuses"
-                                            class="form-select select2"
-                                            required>
-                                        <option value="">--Sélectionner le Statut--</option>
-                                    </select>
-                                    <span asp-validation-for="Appointment.Status" class="text-danger"></span>
-                                </div>
-                            }
+                                {
+                                    <div class="col-md-6">
+                                        <label asp-for="Appointment.Status" class="form-label mb-1 fw-medium">Statut</label>
+                                        <select asp-for="Appointment.Status"
+                                                asp-items="Model.Statuses"
+                                                class="form-select select2"
+                                                required>
+                                            <option value="">--Sélectionner le Statut--</option>
+                                        </select>
+                                        <span asp-validation-for="Appointment.Status" class="text-danger"></span>
+                                    </div>
+                                }
 
+
+                           
+                                
                             <!-- Date de Rendez-vous Cachée (définie par sélection de créneau) -->
                             <input asp-for="Appointment.AppointmentDate"
                                    type="hidden"
@@ -128,6 +150,29 @@
                                     </span>
                                 </div>
                             </div>
+
+                            <div class="col-md-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body py-3">
+                                        <div class="form-check form-switch">
+                                            <input asp-for="SendEmailNotification"
+                                                   class="form-check-input"
+                                                   type="checkbox"
+                                                   role="switch"
+                                                   id="sendEmailSwitch"
+                                                   checked>
+                                            <label class="form-check-label fw-medium" for="sendEmailSwitch">
+                                                <i class="ti ti-mail me-1"></i>
+                                                Envoyer un email de confirmation au patient
+                                            </label>
+                                            <div class="form-text small">
+                                                Un email de confirmation sera envoyé à l'adresse email du patient avec les détails du rendez-vous.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <div class="col-md-12">
                                 <div id="dayAvailabilityCard">
@@ -489,7 +534,41 @@
             });
 
             /* -------- Select2 -------- */
-            $('.select2').select2({ width: '100%' });
+                    /* -------- Select2 -------- */
+        $('.select2').select2({ width: '100%' });
+
+        /* -------- Handle "Autres" appointment type -------- */
+        function handleAppointmentTypeChange() {
+            const selectedType = $('#appointmentTypeSelect').val();
+            const $autresContainer = $('#autresContainer');
+            const $autresInput = $('#autresSpecification');
+
+            if (selectedType === 'Autres') {
+                $autresContainer.slideDown(300);
+                $autresInput.attr('required', true);
+
+                // Update hidden field or append to appointment type
+                $autresInput.on('input', function() {
+                    const specification = $(this).val().trim();
+                    if (specification) {
+                        $('#autresError').text('');
+                    }
+                });
+            } else {
+                $autresContainer.slideUp(300);
+                $autresInput.attr('required', false).val('');
+                $('#autresError').text('');
+            }
+        }
+
+        // Initialize on page load
+        handleAppointmentTypeChange();
+
+        // Handle change event
+        $('#appointmentTypeSelect').on('change', function() {
+            handleAppointmentTypeChange();
+        });
+
 
             /* -------- changement de médecin -------- */
             $('select[name="Appointment.DoctorId"]').on('change', function() {
