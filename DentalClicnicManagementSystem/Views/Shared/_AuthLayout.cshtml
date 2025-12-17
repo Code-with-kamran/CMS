@@ -1,0 +1,134 @@
+﻿
+@using System.Security.Claims
+@inject IHttpContextAccessor ctx
+@{
+    bool IsInRole(string role) => ctx.HttpContext?.User?.IsInRole(role) == true;
+    bool CanSee(params string[] roles) => roles.Any(r => ctx.HttpContext?.User?.IsInRole(r) == true);
+
+    var defaultImage = Url.Content("~/uploads/doctors/patient_default.jpg");
+    var profileImage = User.Claims.FirstOrDefault(c => c.Type == "ProfileImageUrl")?.Value ?? defaultImage;
+    string Ctrl() => ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string Act() => ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    bool IsActive(string c, string a = "") =>
+        string.IsNullOrEmpty(a)
+            ? string.Equals(Ctrl(), c, StringComparison.OrdinalIgnoreCase)
+            : string.Equals(Ctrl(), c, StringComparison.OrdinalIgnoreCase) &&
+              string.Equals(Act(), a, StringComparison.OrdinalIgnoreCase);
+
+    string ActiveCls(string c, string a = "") => IsActive(c, a) ? "active" : "";
+    string SubDrop(params string[] ctrls) => ctrls.Any(c => string.Equals(Ctrl(), c, StringComparison.OrdinalIgnoreCase)) ? "subdrop" : "";
+    string SubActive(params string[] ctrls) => ctrls.Any(c => string.Equals(Ctrl(), c, StringComparison.OrdinalIgnoreCase)) ? "submenu active" : "submenu";
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Tableau de Bord Administrateur - Cabinet Médical</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dreams Technologies">
+    <link rel="shortcut icon" href="~/assets/img/CABINET-DENTAIRE-CORVIL.png">
+    <link rel="apple-touch-icon" href="~/assets/img/apple-icon.png">
+
+    <!-- =====  CSS  ===== -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+    <link href="~/assets/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/bootstrap-datetimepicker.min.css">
+    <link href="~/assets/plugins/flatpickr/flatpickr.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/plugins/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/simplebar/simplebar.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/tabler-icons/tabler-icons.min.css">
+    <link rel="stylesheet" href="~/assets/css/dataTables.bootstrap5.min.css">
+    <link  rel="stylesheet" href="~/assets/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/assets/css/style.css" id="app-style">
+    <link href="~/assets/plugins/toastr/toastr.min.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="main-wrapper">
+        <!--  BARRE SUPÉRIEURE  -->
+       
+
+
+        <!--  BARRE LATÉRALE  -->
+          <!--  FIN BARRE LATÉRALE  -->
+        <!--  CONTENU  -->
+        <div class="page-wrapper">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!--  SCRIPTS  -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/assets/js/jquery.slimscroll.min.js"></script>
+    <script src="~/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
+    <script src="~/assets/plugins/select2/js/select2.min.js"></script>
+    <script src="~/assets/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/js/delete.js"></script>
+    <script src="~/js/hr.common.js"></script>
+    <script src="~/assets/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/assets/plugins/toastr/toastr.min.js"></script>
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/plugins/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/plugins/apexchart/apexcharts.min.js"></script>
+    <script src="~/assets/js/moment.min.js"></script>
+    <script src="~/assets/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="~/assets/plugins/flatpickr/flatpickr.min.js"></script>
+    <script src="~/assets/js/script.js" asp-append-version="true"></script>
+    <script src="~/js/recept.js"></script>
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script src="~/assets/js/bootstrap-datetimepicker.min.js"></script>
+
+    <!--  ACCORDÉON BARRE LATÉRALE UNIQUEMENT  -->
+    <script>
+        $(function () {
+            function closeAllExcept($keepOpen) {
+                $('.submenu.active').not($keepOpen).each(function () {
+                    $(this).removeClass('active').find('> a').removeClass('subdrop');
+                    $(this).find('ul').removeClass('show').slideUp(300);
+                    var id = $(this).data('menu');
+                    if (id) sessionStorage.setItem('menu_' + id, 'false');
+                });
+            }
+            $('.submenu[data-menu]').each(function () {
+                var id = $(this).data('menu'), stored = sessionStorage.getItem('menu_' + id);
+                if ($(this).hasClass('active') || stored === 'true') {
+                    $(this).addClass('active').find('> a').addClass('subdrop');
+                    $(this).find('ul').addClass('show').show();
+                }
+            });
+            $(document).on('click', '.submenu > a[href="javascript:void(0);"]', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                var $li = $(this).closest('.submenu'), $ul = $li.find('ul').first(), id = $li.data('menu');
+                closeAllExcept($li.hasClass('active') ? null : $li);
+                if ($li.hasClass('active')) {
+                    $li.removeClass('active'); $(this).removeClass('subdrop');
+                    $ul.removeClass('show').slideUp(300); if (id) sessionStorage.setItem('menu_' + id, 'false');
+                } else {
+                    $li.addClass('active'); $(this).addClass('subdrop');
+                    $ul.addClass('show').slideDown(300); if (id) sessionStorage.setItem('menu_' + id, 'true');
+                }
+            });
+            $(document).on('click', '#sidebar-menu a[href!="javascript:void(0);"]', function () { closeAllExcept(null); });
+            $(window).on('beforeunload', function () {
+                $('.submenu[data-menu]').each(function () {
+                    var id = $(this).data('menu'), open = $(this).hasClass('active');
+                    sessionStorage.setItem('menu_' + id, open.toString());
+                });
+            });
+        });
+    </script>
+
+    @await Html.PartialAsync("_Notification")
+    @RenderSection("Scripts", required: false)
+</body>
+</html> 
+
+

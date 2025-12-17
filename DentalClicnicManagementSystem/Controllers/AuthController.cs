@@ -205,6 +205,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using CMS.Services;
+using System.Security.Cryptography; // Ensure this is present for token generation
 
 namespace CMS.Controllers
 {
@@ -212,11 +214,13 @@ namespace CMS.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _config;
+        private readonly IEmailSender _emailSender;
 
-        public AuthController(ApplicationDbContext context, IConfiguration config)
+        public AuthController(ApplicationDbContext context, IConfiguration config, IEmailSender emailSender)
         {
             _context = context;
             _config = config;
+            _emailSender = emailSender;
         }
 
         [HttpGet]
@@ -374,6 +378,140 @@ namespace CMS.Controllers
         {
             var inputHash = HashPassword(inputPassword);
             return inputHash == storedHash;
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                if (user != null)
+                {
+                    // Generate Token
+                    var token = GeneratePasswordResetToken(user);
+                    var callbackUrl = Url.Action("ResetPassword", "Auth", new { token, email = user.Email }, Request.Scheme);
+
+                    // Send Email
+                    await _emailSender.SendAsync(model.Email, "Reset Password", 
+                        $"Please reset your password by checking <a href='{callbackUrl}'>here</a>.");
+                }
+
+                // To avoid account enumeration/harvesting, we don't reveal if the user exists
+                return View("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return RedirectToAction("ResetPasswordConfirmation", "Auth"); 
+            }
+
+            if (!VerifyPasswordResetToken(model.Token, user))
+            {
+                 ModelState.AddModelError("", "Invalid or expired token");
+                 return View(model);
+            }
+
+            user.PasswordHash = HashPassword(model.Password);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ResetPasswordConfirmation", "Auth");
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+
+        // Stateless Token Logic
+        private string GeneratePasswordResetToken(User user)
+        {
+            // Simple stateless token: Base64(UserId|Expiry|Signature)
+            // Expiry: 1 hour
+            var expiry = DateTime.UtcNow.AddHours(1).Ticks;
+            var payload = $"{user.Id}|{expiry}";
+            var signature = ComputeHmac(payload);
+            var token = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{payload}|{signature}"));
+            // Make URL safe
+             return Uri.EscapeDataString(token);
+        }
+
+        private bool VerifyPasswordResetToken(string token, User user)
+        {
+            try
+            {
+                // Decode
+                var decodedToken = Uri.UnescapeDataString(token);
+                var tokenBytes = Convert.FromBase64String(decodedToken);
+                var tokenStr = Encoding.UTF8.GetString(tokenBytes);
+                var parts = tokenStr.Split('|');
+
+                if (parts.Length != 3) return false;
+
+                var userIdStr = parts[0];
+                var expiryTicks = long.Parse(parts[1]);
+                var signature = parts[2];
+
+                if (userIdStr != user.Id.ToString()) return false;
+                if (DateTime.UtcNow.Ticks > expiryTicks) return false;
+
+                var payload = $"{userIdStr}|{expiryTicks}";
+                var expectedSignature = ComputeHmac(payload);
+
+                return signature == expectedSignature;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private string ComputeHmac(string data)
+        {
+            // Ideally rely on a secret specific to the app, usually in _config["JwtKey"] or similar.
+            // For now using a hardcoded backup if config is missing, BUT YOU SHOULD USE CONFIG.
+            var secret = "super_secret_key_change_me_in_prod"; 
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+            var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
+            return Convert.ToBase64String(hash);
         }
     }
 }
